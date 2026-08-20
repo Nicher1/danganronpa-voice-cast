@@ -124,7 +124,7 @@ immutable
 set search_path = public
 as $$
   select jsonb_set(
-    coalesce(p_state, '{}'::jsonb),
+    coalesce(p_state, '{}'::jsonb) - 'secretSettings',
     '{roles}',
     coalesce(
       (
@@ -152,6 +152,23 @@ as $$
   select auth.uid() is not null and exists (
     select 1 from public.cast_host_sessions chs
     where chs.board_slug = p_slug and chs.user_id = auth.uid()
+  );
+$$;
+
+create or replace function public.cast_controls_actor(p_slug text, p_actor_id text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select public.cast_is_host(p_slug) or (
+    auth.uid() is not null and exists (
+      select 1 from public.cast_actor_sessions cas
+      where cas.board_slug = p_slug
+        and cas.actor_id = p_actor_id
+        and cas.user_id = auth.uid()
+    )
   );
 $$;
 
@@ -400,23 +417,28 @@ begin
     merged_state := p_state;
   else
     merged_state := jsonb_set(
-      coalesce(p_state, '{}'::jsonb),
-      '{roles}',
-      coalesce(p_state -> 'roles', '[]'::jsonb) || coalesce(
-        (
-          select jsonb_agg(item.role order by item.ordinality)
-          from jsonb_array_elements(coalesce(board_row.state -> 'roles', '[]'::jsonb))
-            with ordinality as item(role, ordinality)
-          where coalesce((item.role ->> 'hiddenSpoiler')::boolean, false)
-            and not coalesce((item.role ->> 'revealed')::boolean, false)
-            and not exists (
-              select 1
-              from jsonb_array_elements(coalesce(p_state -> 'roles', '[]'::jsonb)) as incoming(role)
-              where incoming.role ->> 'id' = item.role ->> 'id'
-            )
+      jsonb_set(
+        coalesce(p_state, '{}'::jsonb),
+        '{roles}',
+        coalesce(p_state -> 'roles', '[]'::jsonb) || coalesce(
+          (
+            select jsonb_agg(item.role order by item.ordinality)
+            from jsonb_array_elements(coalesce(board_row.state -> 'roles', '[]'::jsonb))
+              with ordinality as item(role, ordinality)
+            where coalesce((item.role ->> 'hiddenSpoiler')::boolean, false)
+              and not coalesce((item.role ->> 'revealed')::boolean, false)
+              and not exists (
+                select 1
+                from jsonb_array_elements(coalesce(p_state -> 'roles', '[]'::jsonb)) as incoming(role)
+                where incoming.role ->> 'id' = item.role ->> 'id'
+              )
+          ),
+          '[]'::jsonb
         ),
-        '[]'::jsonb
+        true
       ),
+      '{secretSettings}',
+      coalesce(board_row.state -> 'secretSettings', '{}'::jsonb),
       true
     );
   end if;
@@ -448,6 +470,7 @@ $$;
 revoke all on function public.cast_state_with_password_flags(text, jsonb) from public, anon, authenticated;
 revoke all on function public.cast_state_for_public(jsonb) from public, anon, authenticated;
 revoke all on function public.cast_is_host(text) from public, anon, authenticated;
+revoke all on function public.cast_controls_actor(text, text) from public, anon, authenticated;
 revoke all on function public.cast_initialize_board(text, text, text, jsonb) from public, anon, authenticated;
 revoke all on function public.cast_login_host(text, text) from public, anon, authenticated;
 revoke all on function public.cast_claim_actor(text, text, text) from public, anon, authenticated;
@@ -455,6 +478,7 @@ revoke all on function public.cast_register_actor(text, text, text) from public,
 revoke all on function public.cast_set_actor_password(text, text, text) from public, anon, authenticated;
 revoke all on function public.cast_save_board(text, jsonb, bigint) from public, anon, authenticated;
 grant execute on function public.cast_is_host(text) to authenticated;
+grant execute on function public.cast_controls_actor(text, text) to authenticated;
 grant execute on function public.cast_initialize_board(text, text, text, jsonb) to authenticated;
 grant execute on function public.cast_login_host(text, text) to authenticated;
 grant execute on function public.cast_claim_actor(text, text, text) to authenticated;
@@ -482,5 +506,75 @@ begin
   end if;
 end;
 $$;
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'voice-clips',
+  'voice-clips',
+  true,
+  5242880,
+  array['audio/mpeg','audio/ogg','audio/wav','audio/webm','audio/mp4']
+)
+on conflict (id) do update
+set public = excluded.public,
+    file_size_limit = excluded.file_size_limit,
+    allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "voice clips host upload" on storage.objects;
+create policy "voice clips host upload"
+on storage.objects for insert
+to authenticated
+with check (
+  bucket_id = 'voice-clips'
+  and public.cast_is_host((storage.foldername(name))[1])
+);
+
+drop policy if exists "voice clips host update" on storage.objects;
+create policy "voice clips host update"
+on storage.objects for update
+to authenticated
+using (
+  bucket_id = 'voice-clips'
+  and public.cast_is_host((storage.foldername(name))[1])
+)
+with check (
+  bucket_id = 'voice-clips'
+  and public.cast_is_host((storage.foldername(name))[1])
+);
+
+drop policy if exists "voice clips host delete" on storage.objects;
+create policy "voice clips host delete"
+on storage.objects for delete
+to authenticated
+using (
+  bucket_id = 'voice-clips'
+  and public.cast_is_host((storage.foldername(name))[1])
+);
+
+drop policy if exists "personal voice actor upload" on storage.objects;
+create policy "personal voice actor upload"
+on storage.objects for insert
+to authenticated
+with check (
+  bucket_id = 'voice-clips'
+  and (storage.foldername(name))[2] = 'personal'
+  and public.cast_controls_actor(
+    (storage.foldername(name))[1],
+    (storage.foldername(name))[3]
+  )
+);
+
+drop policy if exists "personal voice actor delete" on storage.objects;
+create policy "personal voice actor delete"
+on storage.objects for delete
+to authenticated
+using (
+  bucket_id = 'voice-clips'
+  and (storage.foldername(name))[2] = 'personal'
+  and public.cast_controls_actor(
+    (storage.foldername(name))[1],
+    (storage.foldername(name))[3]
+  )
+);
 
 commit;

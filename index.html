@@ -460,7 +460,18 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   margin-top:3px
 }
-.role-badges{display:flex;gap:3px;align-items:center}
+.role-badges{display:flex;gap:3px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.voice-play-btn{
+  width:29px;height:29px;padding:0;border-radius:999px;font-size:.69rem;line-height:1;
+}
+.voice-play-btn:hover{color:white;transform:none}
+.official-voice-btn{color:#d9edff;border-color:rgba(112,184,255,.4);background:rgba(112,184,255,.12)}
+.official-voice-btn:hover,.official-voice-btn.playing{border-color:var(--blue);background:var(--blue);color:#101116}
+.personal-voice-btn,.practice-record-btn{color:#ffd9dc;border-color:rgba(255,77,87,.48);background:rgba(255,77,87,.13)}
+.personal-voice-btn:hover,.personal-voice-btn.playing,.practice-record-btn:hover,.practice-record-btn.recording{border-color:var(--red);background:var(--red);color:white}
+.voice-play-btn.playing{animation:voicePulse 1s ease-in-out infinite}
+.voice-play-btn.error{color:#fff;background:var(--red);border-color:var(--red)}
+@keyframes voicePulse{50%{box-shadow:0 0 0 5px rgba(245,64,148,.1)}}
 .lock-badge{font-size:.78rem;color:var(--gold);margin-right:4px}
 .role-chevron{color:var(--muted2);font-size:.75rem}
 .role-expanded{
@@ -609,6 +620,44 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   box-shadow:0 8px 24px rgba(255,77,87,.18)!important;
 }
 .auth-error{min-height:1.25em;color:#ff9ca5;font-size:.76rem}
+.voice-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.voice-controls label{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.72rem;font-weight:800}
+.voice-controls select,.voice-upload-grid select{
+  border:1px solid var(--line);background:#11141c;color:var(--text);border-radius:9px;padding:.55rem .65rem;outline:none
+}
+.vault-switch-card{
+  margin:9px 0 12px;padding:11px;border:1px solid rgba(245,64,148,.26);border-radius:11px;
+  background:linear-gradient(135deg,rgba(245,64,148,.08),rgba(255,255,255,.015));
+}
+.vault-switch-title{font-size:.76rem;font-weight:950;color:#ffd9e8}
+.vault-switch-copy{font-size:.66rem;color:var(--muted);line-height:1.4;margin:4px 0 9px}
+.voice-editor{margin-top:15px;padding-top:13px;border-top:1px solid var(--line)}
+.voice-editor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.voice-editor-head strong{font-size:.82rem}
+.voice-editor-head span{color:var(--muted);font-size:.68rem}
+.voice-clip-list{display:flex;flex-direction:column;gap:6px;margin:9px 0}
+.voice-clip-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 8px;border:1px solid var(--line);border-radius:9px;background:#10131a;font-size:.69rem}
+.voice-clip-row span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.voice-clip-row button{padding:.22rem .38rem;font-size:.65rem}
+.voice-upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.voice-upload-grid label{margin:0}
+.voice-upload-grid .voice-file{grid-column:1/-1}
+.voice-upload-grid button{grid-column:1/-1}
+.memorial-heading-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
+.memorial-heading-row .memorial-name{margin-top:0}
+.practice-dialog-card{width:min(92vw,570px)}
+.practice-character{color:var(--blue);font-size:.8rem;font-weight:950;letter-spacing:.08em;text-transform:uppercase}
+.practice-line{
+  margin:13px 0;padding:18px 20px;border:1px solid rgba(112,184,255,.25);border-radius:13px;
+  background:linear-gradient(135deg,rgba(112,184,255,.08),rgba(255,255,255,.018));
+  color:white;font-size:1.02rem;line-height:1.55;text-align:center;font-style:italic
+}
+.practice-tools{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.practice-tools button{min-height:48px}
+.practice-record-btn{width:100%}
+.practice-timer{text-align:center;color:var(--muted);font-variant-numeric:tabular-nums;font-size:.76rem;margin-top:8px}
+.practice-preview{width:100%;margin-top:10px;height:40px}
+.practice-status{min-height:1.2em;color:var(--muted);font-size:.72rem;text-align:center;margin-top:7px}
 
 </style>
 </head>
@@ -666,6 +715,24 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
           <span><strong>Game in progress</strong><small>Players can only claim from the Library</small></span>
         </label>
 
+        <div class="voice-controls host-only" aria-label="Voice sample controls">
+          <label>Samples from
+            <select id="voiceChapterSelect" aria-label="Current story chapter">
+              <option value="1">Chapter 1</option>
+              <option value="2">Chapter 2</option>
+              <option value="3">Chapter 3</option>
+              <option value="4">Chapter 4</option>
+              <option value="5">Chapter 5</option>
+              <option value="6">Chapter 6</option>
+            </select>
+          </label>
+          <label class="toggle-wrap compact-toggle">
+            <input id="voiceTrialToggle" type="checkbox">
+            <span class="toggle"></span>
+            <span><strong>In trial</strong><small>Add this chapter’s trial highlights</small></span>
+          </label>
+        </div>
+
         <div class="spacer"></div>
         <button id="expandAllBtn" class="ghost host-only">Expand all available</button>
         <button id="collapseAllBtn" class="ghost host-only">Collapse all</button>
@@ -692,6 +759,15 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
               <span id="spoilerCount" class="count-pill">0</span>
             </summary>
             <p class="muted tiny">Players and viewers cannot see this section at all. Drag a character out of the vault to reveal it.</p>
+            <div class="vault-switch-card">
+              <div class="vault-switch-title">Junko / Mukuro identity swap</div>
+              <div class="vault-switch-copy">Reversibly changes the original dead “Junko” card to Mukuro’s real name, talent, and portrait. The separate real Junko stays hidden below until Chapter 6.</div>
+              <label class="toggle-wrap">
+                <input id="junkoMukuroToggle" type="checkbox">
+                <span class="toggle"></span>
+                <span><strong>Show Mukuro’s true identity</strong><small>You can switch this off again at any time</small></span>
+              </label>
+            </div>
             <div id="spoilerPool" class="role-stack spoiler-stack drop-zone" data-zone="spoiler"></div>
           </details>
         </aside>
@@ -763,9 +839,64 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
         </div>
       </div>
 
+      <div class="voice-editor">
+        <div class="voice-editor-head">
+          <div><strong>Custom voice samples</strong><br><span>Host uploads supplement the built-in spoiler-safe samples.</span></div>
+          <span id="roleVoiceCount">0 uploaded</span>
+        </div>
+        <div id="roleVoiceList" class="voice-clip-list"></div>
+        <div class="voice-upload-grid">
+          <label>Chapter
+            <select id="voiceUploadChapter">
+              <option value="1">Chapter 1</option><option value="2">Chapter 2</option><option value="3">Chapter 3</option>
+              <option value="4">Chapter 4</option><option value="5">Chapter 5</option><option value="6">Chapter 6</option>
+            </select>
+          </label>
+          <label>Clip type
+            <select id="voiceUploadPhase">
+              <option value="pretrial">Pretrial / personality</option>
+              <option value="trial">Trial highlight</option>
+            </select>
+          </label>
+          <label class="voice-file">Audio file
+            <input id="roleVoiceInput" type="file" accept="audio/mpeg,audio/ogg,audio/wav,audio/webm,audio/mp4">
+          </label>
+          <label class="voice-file">Spoken line <span class="muted">(optional)</span>
+            <input id="voiceUploadTranscript" placeholder="Text shown to the actor for practice">
+          </label>
+          <button id="uploadVoiceBtn" type="button" class="ghost">Upload sample</button>
+        </div>
+        <p id="roleVoiceHelp" class="muted tiny">Save this character once before uploading samples. Maximum 5 MB per file.</p>
+      </div>
+
       <div class="modal-actions">
         <button type="button" class="ghost" data-close="roleDialog">Cancel</button>
         <button type="submit" class="primary">Save character</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="practiceDialog" class="modal">
+    <form id="practiceForm" class="modal-card practice-dialog-card">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">PERSONAL LINE RECORDING</div>
+          <h3>Voice practice</h3>
+        </div>
+        <button id="practiceCloseBtn" type="button" class="icon-btn">×</button>
+      </div>
+      <div id="practiceCharacter" class="practice-character"></div>
+      <blockquote id="practiceLine" class="practice-line"></blockquote>
+      <div class="practice-tools">
+        <button id="practiceReferenceBtn" type="button" class="official-voice-btn">▶ Listen to reference</button>
+        <button id="practiceRecordBtn" type="button" class="practice-record-btn">● Record when ready</button>
+      </div>
+      <div id="practiceTimer" class="practice-timer">0:00 / 0:10</div>
+      <audio id="practicePreview" class="practice-preview hidden" controls></audio>
+      <div id="practiceStatus" class="practice-status">Listen as many times as you like, then record your version.</div>
+      <div class="modal-actions">
+        <button id="practiceCancelBtn" type="button" class="ghost">Cancel</button>
+        <button id="practiceSaveBtn" type="submit" class="primary" disabled>Save recording</button>
       </div>
     </form>
   </dialog>
@@ -836,6 +967,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
           <h3 id="hostAuthTitle">Host login</h3>
         </div>
       </div>
+
       <p id="hostAuthHelp" class="muted"></p>
       <label id="hostSetupCodeWrap" class="hidden">One-time setup code
         <input id="hostSetupCode" autocomplete="one-time-code">
@@ -904,6 +1036,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-sync.js"></script>
+  <script src="voice-clips.js"></script>
   <script>
 
 (async () => {
@@ -922,6 +1055,8 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     chihiro:"https://static.wikia.nocookie.net/danganronpa/images/f/f2/Chihiro_Fujisaki_VA_ID.png/revision/latest?cb=20170217202828",
     hifumi:"https://static.wikia.nocookie.net/danganronpa/images/6/6c/Hifumi_Yamada_VA_ID.png/revision/latest?cb=20170217211552",
     junko:"https://static.wikia.nocookie.net/danganronpa/images/5/5b/Guide_Project_Junko_Disguise_10.png/revision/latest?cb=20171012011045",
+    mukuro:"https://static.wikia.nocookie.net/danganronpa/images/0/06/Mukuro_Ikusaba_Illustration.png/revision/latest?cb=20210508221203",
+    realJunko:"https://static.wikia.nocookie.net/danganronpa/images/5/5e/Junko_Enoshima_Illustration.png/revision/latest?cb=20250121230002",
     taka:"https://static.wikia.nocookie.net/danganronpa/images/a/ac/Kiyotaka_Ishimaru_VA_ID.png/revision/latest?cb=20170217203233",
     kyoko:"https://static.wikia.nocookie.net/danganronpa/images/9/91/Kyoko_Kirigiri_VA_ID.png/revision/latest?cb=20170217165232",
     leon:"https://static.wikia.nocookie.net/danganronpa/images/d/d7/Leon_Kuwata_VA_ID.png/revision/latest?cb=20170217221855",
@@ -936,11 +1071,14 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     return window.crypto?.randomUUID ? crypto.randomUUID() : "id-" + Math.random().toString(36).slice(2) + Date.now();
   }
 
-  function mkRole(name, title, image = "", hiddenSpoiler = false) {
+  function mkRole(name, title, image = "", hiddenSpoiler = false, extra = {}) {
     return {
       id:id(), name, title, modifier:"", image,
       ownerId:null, dead:false, lastActorName:"", deathTime:null,
-      hiddenSpoiler, revealed:!hiddenSpoiler
+      hiddenSpoiler, revealed:!hiddenSpoiler,
+      voiceProfile:name,voiceRevealChapter:1,voiceFinalChapter:null,customVoiceClips:[],
+      personalRecordings:[],practiceLineHistory:[],
+      ...extra
     };
   }
 
@@ -964,6 +1102,13 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     return normaliseHistory(String(text || "").split(/[\n,]+/));
   }
 
+  const LEGACY_DEATH_CHAPTERS={
+    "Sayaka Maizono":1,"Leon Kuwata":1,"Junko Enoshima":1,"Mukuro Ikusaba":1,
+    "Chihiro Fujisaki":2,"Mondo Owada":2,
+    "Kiyotaka Ishimaru":3,"Hifumi Yamada":3,"Celestia Ludenberg":3,
+    "Sakura Ogami":4
+  };
+
   function addActorHistory(actor,characterName) {
     if(!actor)return false;
     actor.history=normaliseHistory(actor.history);
@@ -976,8 +1121,9 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
   function defaultState() {
     return {
-      version:5,
-      settings:{ maxPerActor:3, gameActive:true },
+      version:6,
+      settings:{ maxPerActor:3, gameActive:true, voiceChapter:2, voiceInTrial:false },
+      secretSettings:{ junkoMukuroRevealed:false },
       actors:[
         {id:id(),name:"Nicher",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
         {id:id(),name:"Fae",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
@@ -994,7 +1140,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
         mkRole("Celestia Ludenberg","Ultimate Gambler",IMG.celeste),
         mkRole("Chihiro Fujisaki","Ultimate Programmer",IMG.chihiro),
         mkRole("Hifumi Yamada","Ultimate Fanfic Creator",IMG.hifumi),
-        mkRole("Junko Enoshima","Ultimate Fashionista",IMG.junko),
+        mkRole("Junko Enoshima","Ultimate Fashionista",IMG.junko,false,{specialRole:"junko-disguise",voiceProfile:"Junko Enoshima (Disguise)"}),
         mkRole("Kiyotaka Ishimaru","Ultimate Moral Compass",IMG.taka),
         mkRole("Kyoko Kirigiri","Ultimate ???",IMG.kyoko),
         mkRole("Leon Kuwata","Ultimate Baseball Star",IMG.leon),
@@ -1003,9 +1149,9 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
         mkRole("Sayaka Maizono","Ultimate Pop Sensation",IMG.sayaka),
         mkRole("Toko Fukawa","Ultimate Writing Prodigy",IMG.toko),
         mkRole("Yasuhiro Hagakure","Ultimate Clairvoyant",IMG.yasuhiro),
-        mkRole("Narrator","Narrator",""),
-        mkRole("Mukuro Ikusaba","Ultimate Soldier","",true),
-        mkRole("Genocide Jack","Ultimate Murderous Fiend","",true)
+        mkRole("Narrator","Narrator","",false,{voiceProfile:""}),
+        mkRole("Junko Enoshima","Ultimate Despair",IMG.realJunko,true,{specialRole:"real-junko",voiceProfile:"Junko Enoshima (Real)",voiceRevealChapter:6}),
+        mkRole("Genocide Jack","Ultimate Murderous Fiend","",true,{voiceRevealChapter:2})
       ]
     };
   }
@@ -1025,6 +1171,16 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   let hostAuthSetup = false;
   let hostAuthResolver = null;
   let applyingRemoteState = false;
+  let activeAudio = null;
+  let activeVoiceButton = null;
+  const voiceShuffleBags = new Map();
+  let practiceSession = null;
+  let practiceRecorder = null;
+  let practiceStream = null;
+  let practiceChunks = [];
+  let practiceTimerInterval = null;
+  let practiceAutoStop = null;
+  let practiceBlobUrl = "";
 
   const $ = sel => document.querySelector(sel);
   const $$ = sel => [...document.querySelectorAll(sel)];
@@ -1035,10 +1191,15 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
   function normaliseState(s) {
     const previousVersion=Number(s.version)||0;
-    s.version = 5;
+    s.version = 6;
     s.settings ||= {};
     if (!Number.isFinite(s.settings.maxPerActor)) s.settings.maxPerActor = 3;
     if (typeof s.settings.gameActive !== "boolean") s.settings.gameActive = true;
+    if (!Number.isFinite(s.settings.voiceChapter)) s.settings.voiceChapter = 2;
+    s.settings.voiceChapter=Math.max(1,Math.min(6,Math.floor(s.settings.voiceChapter)));
+    if (typeof s.settings.voiceInTrial !== "boolean") s.settings.voiceInTrial = false;
+    s.secretSettings ||= {};
+    if (typeof s.secretSettings.junkoMukuroRevealed !== "boolean") s.secretSettings.junkoMukuroRevealed = false;
     s.actors ||= [];
     s.roles ||= [];
     const actorNameMigrations={
@@ -1064,11 +1225,63 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
       r.image ||= "";
       r.modifier ||= "";
       r.lastActorName ||= "";
+      if(!Array.isArray(r.customVoiceClips))r.customVoiceClips=[];
+      r.customVoiceClips=r.customVoiceClips.filter(c=>c&&typeof c.url==="string"&&c.url).map(c=>({
+        id:c.id||id(),url:c.url,path:c.path||"",name:c.name||"Custom sample",
+        text:String(c.text||""),chapter:Math.max(1,Math.min(6,Number(c.chapter)||1)),phase:c.phase==="trial"?"trial":"pretrial"
+      }));
+      if(!Array.isArray(r.personalRecordings))r.personalRecordings=[];
+      r.personalRecordings=r.personalRecordings.filter(x=>x&&x.actorId&&x.url).map(x=>({
+        id:x.id||id(),actorId:String(x.actorId),lineId:String(x.lineId||""),lineText:String(x.lineText||""),
+        referenceUrl:String(x.referenceUrl||""),chapter:Math.max(1,Math.min(6,Number(x.chapter)||1)),
+        path:String(x.path||""),url:String(x.url),mimeType:String(x.mimeType||"audio/webm"),
+        durationMs:Math.max(0,Number(x.durationMs)||0),recordedAt:Number(x.recordedAt)||Date.now()
+      }));
+      if(!Array.isArray(r.practiceLineHistory))r.practiceLineHistory=[];
+      r.practiceLineHistory=r.practiceLineHistory.filter(x=>x&&x.actorId&&x.lineId).map(x=>({
+        actorId:String(x.actorId),lineId:String(x.lineId),chapter:Math.max(1,Math.min(6,Number(x.chapter)||1)),
+        recordedAt:Number(x.recordedAt)||Date.now()
+      }));
+      if(!Number.isFinite(r.voiceRevealChapter))r.voiceRevealChapter=r.name==="Genocide Jack"?2:1;
+      r.voiceRevealChapter=Math.max(1,Math.min(6,Math.floor(r.voiceRevealChapter)));
+      if(r.dead&&!Number.isFinite(r.voiceFinalChapter)){
+        r.voiceFinalChapter=LEGACY_DEATH_CHAPTERS[r.name]||Math.max(1,s.settings.voiceChapter-1);
+      }
+      if(!r.voiceProfile&&r.name!=="Narrator")r.voiceProfile=r.name;
     });
+
+    if(mode==="host"){
+      let disguise=s.roles.find(r=>r.specialRole==="junko-disguise") || s.roles.find(r=>
+        !r.hiddenSpoiler && ((r.name==="Junko Enoshima"&&/Fashionista/i.test(r.title||"")) || (r.name==="Mukuro Ikusaba"&&/Soldier/i.test(r.title||"")))
+      );
+      if(disguise){
+        disguise.specialRole="junko-disguise";
+        applyJunkoIdentity(disguise,s.secretSettings.junkoMukuroRevealed);
+      }
+
+      let realJunko=s.roles.find(r=>r.specialRole==="real-junko");
+      if(!realJunko){
+        realJunko=s.roles.find(r=>r.hiddenSpoiler&&!r.revealed&&r.name==="Mukuro Ikusaba");
+        if(realJunko){
+          Object.assign(realJunko,{name:"Junko Enoshima",title:"Ultimate Despair",image:IMG.realJunko,specialRole:"real-junko",voiceProfile:"Junko Enoshima (Real)",voiceRevealChapter:6});
+        }else{
+          s.roles.push(mkRole("Junko Enoshima","Ultimate Despair",IMG.realJunko,true,{specialRole:"real-junko",voiceProfile:"Junko Enoshima (Real)",voiceRevealChapter:6}));
+        }
+      }
+    }
     s.roles.forEach(r=>{
       if(!r.dead&&r.ownerId)addActorHistory(s.actors.find(a=>a.id===r.ownerId),r.name);
     });
     return s;
+  }
+
+  function applyJunkoIdentity(role,revealed){
+    if(!role)return;
+    Object.assign(role,revealed?{
+      name:"Mukuro Ikusaba",title:"Ultimate Soldier",image:IMG.mukuro,voiceProfile:"Mukuro Ikusaba"
+    }:{
+      name:"Junko Enoshima",title:"Ultimate Fashionista",image:IMG.junko,voiceProfile:"Junko Enoshima (Disguise)"
+    });
   }
 
   function loadState() {
@@ -1286,6 +1499,9 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
     $("#maxRolesLabel").textContent=state.settings.maxPerActor;
     $("#gameActiveToggle").checked=state.settings.gameActive;
+    $("#voiceChapterSelect").value=String(state.settings.voiceChapter);
+    $("#voiceTrialToggle").checked=state.settings.voiceInTrial;
+    $("#junkoMukuroToggle").checked=!!state.secretSettings.junkoMukuroRevealed;
     $("#actorCount").textContent=state.actors.length;
 
     const free=state.roles.filter(r=>!r.dead && !r.ownerId && currentRoleVisible(r) && (!r.hiddenSpoiler || r.revealed));
@@ -1376,6 +1592,310 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     return !state.settings.gameActive;
   }
 
+  function voiceLibraryProfile(r){
+    const library=window.CAST_VOICE_LIBRARY;
+    if(!library)return null;
+    const requested=r.voiceProfile||r.name;
+    const profileName=library.aliases?.[requested]||requested;
+    return library.profiles?.[profileName]||null;
+  }
+
+  function voicePackForChapter(profile,chapter){
+    if(!profile?.chapters)return null;
+    const chapters=Object.keys(profile.chapters).map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
+    if(!chapters.length)return null;
+    const safe=chapters.filter(n=>n<=chapter);
+    const selected=safe.length?safe[safe.length-1]:chapters[0];
+    return {chapter:selected,...profile.chapters[selected]};
+  }
+
+  function voiceUrl(path){
+    if(/^https?:/i.test(path))return path;
+    return `${window.CAST_VOICE_LIBRARY?.cdnBase||""}${path}/revision/latest`;
+  }
+
+  function officialVoiceClip(item,chapter,phase){
+    const path=typeof item==="string"?item:item?.path;
+    if(!path)return null;
+    const rawId=typeof item==="string"?path:(item.id||path);
+    return {id:`official:${rawId}`,url:voiceUrl(path),text:String(item?.text||""),chapter,phase,kind:"official"};
+  }
+
+  function customVoiceFor(r,chapter,phase){
+    const clips=(r.customVoiceClips||[]).filter(c=>c.phase===phase&&Number(c.chapter)<=chapter);
+    if(!clips.length)return [];
+    const bestChapter=Math.max(...clips.map(c=>Number(c.chapter)||1));
+    return clips.filter(c=>(Number(c.chapter)||1)===bestChapter).map(c=>({
+      id:`custom:${c.id}`,url:c.url,text:String(c.text||""),chapter:Number(c.chapter)||1,phase,kind:"custom"
+    }));
+  }
+
+  function voicePoolForRole(r){
+    const selected=state.settings.voiceChapter;
+    if(!r.dead&&selected<(Number(r.voiceRevealChapter)||1))return {clips:[],label:"Not revealed yet"};
+    const profile=voiceLibraryProfile(r);
+    const pretrial=(profile?.pretrial||[]).map(item=>officialVoiceClip(item,selected,"pretrial")).filter(Boolean);
+    let clips=[];
+    let label="";
+
+    if(r.dead){
+      const target=Number(r.voiceFinalChapter)||Math.max(1,selected-1);
+      const pack=voicePackForChapter(profile,target);
+      clips=[...(pack?.highlights||[]).map(item=>officialVoiceClip(item,pack?.chapter||target,"trial")),...customVoiceFor(r,target,"trial")];
+      label=`best samples from Chapter ${pack?.chapter||target}`;
+    }else if(state.settings.voiceInTrial){
+      const pack=voicePackForChapter(profile,selected);
+      clips=[
+        ...pretrial.slice(0,2),
+        ...(pack?.highlights||[]).slice(0,3).map(item=>officialVoiceClip(item,pack?.chapter||selected,"trial")),
+        ...customVoiceFor(r,selected,"pretrial"),
+        ...customVoiceFor(r,selected,"trial")
+      ];
+      label=`Chapter ${selected} pretrial + trial mix`;
+    }else if((Number(r.voiceRevealChapter)||1)===selected){
+      const pack=voicePackForChapter(profile,selected);
+      clips=[...(pack?.reveal||[]).map(item=>officialVoiceClip(item,pack?.chapter||selected,"pretrial")),...customVoiceFor(r,selected,"pretrial")];
+      label=`safe early Chapter ${selected} samples`;
+    }else{
+      const target=Math.max(1,selected-1);
+      const pack=voicePackForChapter(profile,target);
+      clips=[...(pack?.highlights||[]).map(item=>officialVoiceClip(item,pack?.chapter||target,"trial")),...customVoiceFor(r,target,"trial")];
+      label=`best samples from Chapter ${pack?.chapter||target}`;
+    }
+
+    const seen=new Set();
+    return {clips:clips.filter(clip=>clip?.url&&!seen.has(clip.url)&&seen.add(clip.url)),label};
+  }
+
+  function personalRecordingsFor(r,actorId){
+    return (r.personalRecordings||[]).filter(x=>x.actorId===actorId).sort((a,b)=>b.chapter-a.chapter||b.recordedAt-a.recordedAt);
+  }
+
+  function unrecordedPracticeClips(r,actorId){
+    const completed=new Set((r.practiceLineHistory||[]).filter(x=>x.actorId===actorId).map(x=>x.lineId));
+    return voicePoolForRole(r).clips.filter(clip=>clip.text&&!completed.has(clip.id));
+  }
+
+  function canRecordPractice(r,assigned){
+    if(!assigned||!r.ownerId||mode==="viewer")return false;
+    return mode==="host"||(mode==="player"&&r.ownerId===activeActorId);
+  }
+
+  function voiceButtonMarkup(r,{assigned=false}={}){
+    const pool=voicePoolForRole(r);
+    let markup=pool.clips.length
+      ? `<button type="button" class="voice-play-btn official-voice-btn" data-action="play-voice" aria-label="Play an official voice sample for ${esc(r.name)}" title="Play one of ${pool.clips.length} ${esc(pool.label)}">▶</button>`
+      : "";
+    if(assigned&&r.ownerId){
+      const recordings=personalRecordingsFor(r,r.ownerId);
+      if(recordings.length)markup+=`<button type="button" class="voice-play-btn personal-voice-btn" data-action="play-personal" aria-label="Play ${esc(actorById(r.ownerId)?.name||"actor")}’s recording for ${esc(r.name)}" title="Play one of ${recordings.length} saved personal recordings">▶</button>`;
+      if(canRecordPractice(r,assigned)){
+        const remaining=unrecordedPracticeClips(r,r.ownerId);
+        if(remaining.length)markup+=`<button type="button" class="voice-play-btn personal-voice-btn" data-action="record-personal" aria-label="Record a personal line for ${esc(r.name)}" title="Record one of ${remaining.length} unrecorded lines">●</button>`;
+      }
+    }
+    return markup;
+  }
+
+  function resetActiveAudio(){
+    if(activeVoiceButton){activeVoiceButton.classList.remove("playing","error");activeVoiceButton.textContent=activeVoiceButton.dataset.idleLabel||"▶"}
+    activeAudio=null;activeVoiceButton=null;
+  }
+
+  async function playUrlPool(urls,key,button){
+    if(!urls.length)return;
+    if(activeAudio){activeAudio.pause();resetActiveAudio()}
+
+    let stateBag=voiceShuffleBags.get(key);
+    if(!stateBag||!stateBag.bag.length){
+      const bag=urls.slice();
+      for(let i=bag.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[bag[i],bag[j]]=[bag[j],bag[i]]}
+      if(stateBag?.last&&bag.length>1&&bag[0]===stateBag.last)[bag[0],bag[1]]=[bag[1],bag[0]];
+      stateBag={bag,last:stateBag?.last||null};voiceShuffleBags.set(key,stateBag);
+    }
+    const url=stateBag.bag.shift();stateBag.last=url;
+    const audio=new Audio(url);
+    activeAudio=audio;activeVoiceButton=button;
+    button.dataset.idleLabel=button.textContent;
+    button.classList.add("playing");button.textContent="■";
+    const finish=()=>{if(activeAudio===audio)resetActiveAudio()};
+    audio.addEventListener("ended",finish,{once:true});
+    audio.addEventListener("error",()=>{
+      if(activeAudio!==audio)return;
+      button.classList.add("error");
+      toast("That voice sample could not be played. Try the next one.");
+      setTimeout(finish,900);
+    },{once:true});
+    try{await audio.play()}catch(_){
+      if(activeAudio!==audio)return;
+      button.classList.add("error");toast("Your browser blocked or could not load that sample.");setTimeout(finish,900);
+    }
+  }
+
+  async function playVoiceSample(r,button){
+    const pool=voicePoolForRole(r);
+    if(!pool.clips.length){toast("No spoiler-safe sample is available for this chapter yet.");return}
+    const urls=pool.clips.map(clip=>clip.url);
+    return playUrlPool(urls,`official|${r.id}|${urls.join("|")}`,button);
+  }
+
+  async function playPersonalSample(r,button){
+    const clips=personalRecordingsFor(r,r.ownerId);
+    if(!clips.length)return;
+    const urls=clips.map(clip=>clip.url);
+    return playUrlPool(urls,`personal|${r.id}|${r.ownerId}|${urls.join("|")}`,button);
+  }
+
+  function practiceMimeType(){
+    const candidates=["audio/webm;codecs=opus","audio/ogg;codecs=opus","audio/mp4"];
+    return candidates.find(type=>window.MediaRecorder?.isTypeSupported?.(type))||"";
+  }
+
+  function updatePracticeTimer(ms=0){
+    const seconds=Math.min(10,Math.max(0,Math.ceil(ms/100)/10));
+    $("#practiceTimer").textContent=`0:${String(Math.floor(seconds)).padStart(2,"0")}${seconds%1?`.${Math.round((seconds%1)*10)}`:""} / 0:10`;
+  }
+
+  function stopPracticeStream(){
+    practiceStream?.getTracks().forEach(track=>track.stop());
+    practiceStream=null;
+  }
+
+  function clearPracticeTimers(){
+    clearInterval(practiceTimerInterval);practiceTimerInterval=null;
+    clearTimeout(practiceAutoStop);practiceAutoStop=null;
+  }
+
+  function discardPracticeSession(closeDialog=true){
+    clearPracticeTimers();
+    if(practiceRecorder&&practiceRecorder.state!=="inactive"){
+      practiceRecorder.ondataavailable=null;practiceRecorder.onstop=null;
+      try{practiceRecorder.stop()}catch(_){}
+    }
+    practiceRecorder=null;practiceChunks=[];stopPracticeStream();
+    if(practiceBlobUrl){URL.revokeObjectURL(practiceBlobUrl);practiceBlobUrl=""}
+    const preview=$("#practicePreview");preview.pause();preview.removeAttribute("src");preview.classList.add("hidden");
+    practiceSession=null;
+    if(closeDialog&&$("#practiceDialog").open)$("#practiceDialog").close();
+  }
+
+  function openPracticeDialog(role,actorId){
+    if(!canRecordPractice(role,true))return;
+    const choices=unrecordedPracticeClips(role,actorId);
+    if(!choices.length){toast("Every currently available line has already been recorded for this actor.");return}
+    discardPracticeSession(false);
+    const clip=choices[Math.floor(Math.random()*choices.length)];
+    practiceSession={roleId:role.id,actorId,clip,blob:null,durationMs:0,mimeType:""};
+    $("#practiceCharacter").textContent=role.name;
+    $("#practiceLine").textContent=`“${clip.text}”`;
+    $("#practiceRecordBtn").textContent="● Record when ready";
+    $("#practiceRecordBtn").classList.remove("recording");
+    $("#practiceRecordBtn").disabled=false;
+    $("#practiceSaveBtn").disabled=true;
+    $("#practiceReferenceBtn").disabled=false;
+    $("#practiceStatus").textContent="Listen as many times as you like, then record your version.";
+    updatePracticeTimer(0);
+    $("#practiceDialog").showModal();
+  }
+
+  async function startPracticeRecording(){
+    if(!practiceSession)return;
+    if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
+      toast("This browser does not support microphone recording.");return;
+    }
+    if(activeAudio){activeAudio.pause();resetActiveAudio()}
+    if(practiceBlobUrl){URL.revokeObjectURL(practiceBlobUrl);practiceBlobUrl=""}
+    const preview=$("#practicePreview");preview.pause();preview.removeAttribute("src");preview.classList.add("hidden");
+    $("#practiceSaveBtn").disabled=true;
+    $("#practiceRecordBtn").disabled=true;
+    $("#practiceStatus").textContent="Waiting for microphone permission…";
+    try{
+      practiceStream=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+      const mimeType=practiceMimeType();
+      practiceChunks=[];
+      practiceRecorder=new MediaRecorder(practiceStream,{...(mimeType?{mimeType}:{}),audioBitsPerSecond:48000});
+      const startedAt=Date.now();
+      practiceSession.startedAt=startedAt;
+      practiceRecorder.ondataavailable=e=>{if(e.data?.size)practiceChunks.push(e.data)};
+      practiceRecorder.onstop=()=>{
+        clearPracticeTimers();
+        const durationMs=Math.min(10000,Date.now()-startedAt);
+        const finalType=practiceRecorder?.mimeType||mimeType||"audio/webm";
+        const blob=new Blob(practiceChunks,{type:finalType});
+        stopPracticeStream();practiceRecorder=null;practiceChunks=[];
+        $("#practiceRecordBtn").classList.remove("recording");
+        $("#practiceRecordBtn").disabled=false;
+        $("#practiceRecordBtn").textContent="↻ Record again";
+        if(!blob.size){$("#practiceStatus").textContent="Nothing was recorded. Please try again.";return}
+        practiceSession.blob=blob;practiceSession.durationMs=durationMs;practiceSession.mimeType=finalType;
+        practiceBlobUrl=URL.createObjectURL(blob);
+        preview.src=practiceBlobUrl;preview.classList.remove("hidden");
+        $("#practiceSaveBtn").disabled=false;
+        $("#practiceStatus").textContent="Review your take, record again if needed, or save it.";
+      };
+      practiceRecorder.start(200);
+      $("#practiceRecordBtn").disabled=false;
+      $("#practiceRecordBtn").classList.add("recording");
+      $("#practiceRecordBtn").textContent="■ Stop recording";
+      $("#practiceStatus").textContent="Recording… press again to stop early.";
+      practiceTimerInterval=setInterval(()=>updatePracticeTimer(Date.now()-startedAt),100);
+      practiceAutoStop=setTimeout(stopPracticeRecording,10000);
+    }catch(error){
+      stopPracticeStream();practiceRecorder=null;
+      $("#practiceRecordBtn").disabled=false;
+      $("#practiceStatus").textContent="Microphone access was not granted. Check your browser permission and try again.";
+    }
+  }
+
+  function stopPracticeRecording(){
+    if(practiceRecorder?.state==="recording"){
+      $("#practiceRecordBtn").disabled=true;
+      practiceRecorder.stop();
+    }
+  }
+
+  $("#practiceReferenceBtn").onclick=e=>{
+    if(practiceSession)playUrlPool([practiceSession.clip.url],`practice-reference|${practiceSession.clip.id}`,e.currentTarget);
+  };
+  $("#practiceRecordBtn").onclick=()=>practiceRecorder?.state==="recording"?stopPracticeRecording():startPracticeRecording();
+  $("#practiceCloseBtn").onclick=()=>discardPracticeSession();
+  $("#practiceCancelBtn").onclick=()=>discardPracticeSession();
+  $("#practiceDialog").addEventListener("cancel",e=>{e.preventDefault();discardPracticeSession()});
+
+  $("#practiceForm").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const session=practiceSession;if(!session?.blob)return;
+    const role=roleById(session.roleId);
+    if(!role||role.ownerId!==session.actorId){toast("That character is no longer assigned to this actor.");discardPracticeSession();return}
+    if(mode==="player"&&activeActorId!==session.actorId)return toast("Log in as the assigned actor before saving.");
+    if(!remoteReady)return toast("The shared board must be connected before saving a recording.");
+    const saveButton=$("#practiceSaveBtn");saveButton.disabled=true;saveButton.textContent="Saving…";
+    try{
+      const extension=session.mimeType.includes("ogg")?"ogg":session.mimeType.includes("mp4")?"m4a":"webm";
+      const uploaded=await remoteSync.uploadPracticeRecording(session.actorId,role.id,session.blob,extension);
+      const now=Date.now();
+      const recording={
+        id:id(),actorId:session.actorId,lineId:session.clip.id,lineText:session.clip.text,
+        referenceUrl:session.clip.url,chapter:session.clip.chapter,path:uploaded.path,url:uploaded.url,
+        mimeType:session.mimeType,durationMs:session.durationMs,recordedAt:now
+      };
+      role.personalRecordings.push(recording);
+      if(!role.practiceLineHistory.some(x=>x.actorId===session.actorId&&x.lineId===session.clip.id)){
+        role.practiceLineHistory.push({actorId:session.actorId,lineId:session.clip.id,chapter:session.clip.chapter,recordedAt:now});
+      }
+      const ranked=personalRecordingsFor(role,session.actorId);
+      const keep=new Set(ranked.slice(0,5).map(x=>x.id));
+      const pruned=ranked.slice(5);
+      role.personalRecordings=role.personalRecordings.filter(x=>x.actorId!==session.actorId||keep.has(x.id));
+      await Promise.allSettled(pruned.filter(x=>x.path).map(x=>remoteSync.removePracticeRecording(x.path)));
+      voiceShuffleBags.clear();saveState();discardPracticeSession();render();
+      toast(`Recording saved for ${actorById(session.actorId)?.name||"this actor"}.`);
+    }catch(error){
+      $("#practiceStatus").textContent=window.CastSupabaseSync.errorMessage(error);
+      saveButton.disabled=false;
+    }finally{saveButton.textContent="Save recording"}
+  });
+
   function roleCard(r,{assigned=false,locked=false,spoiler=false}={}){
     const canExpand=!assigned && mode==="host";
     const isExpanded=canExpand && expanded.has(r.id);
@@ -1399,6 +1919,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
           <div class="role-title">${esc(r.title||"No title")}</div>
         </div>
         <div class="role-badges">
+          ${voiceButtonMarkup(r,{assigned})}
           ${locked?`<span class="lock-badge" title="Locked character">🔒</span>`:""}
           ${hostAssignedActions}
           ${canExpand?`<span class="role-chevron">${isExpanded?"▲":"▼"}</span>`:""}
@@ -1424,6 +1945,16 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
         e.dataTransfer.setData("text/plain",r.id);
       });
     }
+
+    el.querySelector('[data-action="play-voice"]')?.addEventListener("click",e=>{
+      e.stopPropagation();playVoiceSample(r,e.currentTarget);
+    });
+    el.querySelector('[data-action="play-personal"]')?.addEventListener("click",e=>{
+      e.stopPropagation();playPersonalSample(r,e.currentTarget);
+    });
+    el.querySelector('[data-action="record-personal"]')?.addEventListener("click",e=>{
+      e.stopPropagation();openPracticeDialog(r,r.ownerId);
+    });
 
     if(mode==="host"){
       el.addEventListener("click",e=>{
@@ -1557,7 +2088,10 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
         <div class="memorial-visual death-x">
           ${r.image?`<img src="${esc(r.image)}" alt="" referrerpolicy="no-referrer">`:`<div class="memorial-placeholder">☠</div>`}
         </div>
-        <div class="memorial-name">${esc(r.name)}</div>
+        <div class="memorial-heading-row">
+          <div class="memorial-name">${esc(r.name)}</div>
+          ${voiceButtonMarkup(r)}
+        </div>
         <div class="memorial-title">${esc(r.title||"No title")}</div>
         <div class="last-actor">Last voiced by: <strong>${esc(r.lastActorName||"None")}</strong></div>
         ${r.modifier?`<div class="role-detail">${esc(r.modifier)}</div>`:""}
@@ -1567,6 +2101,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
             <button type="button" data-edit-dead="${r.id}">✎ Edit</button>
           </div>`:""}
       `;
+      card.querySelector('[data-action="play-voice"]')?.addEventListener("click",e=>playVoiceSample(r,e.currentTarget));
       if(mode==="host"){
         card.querySelector(`[data-revive="${r.id}"]`).onclick=()=>reviveRole(r.id);
         card.querySelector(`[data-edit-dead="${r.id}"]`).onclick=()=>openRoleDialog(r);
@@ -1661,6 +2196,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     // A hidden spoiler becomes public the moment host places it in Open Library or on an actor.
     if(mode==="host" && r.hiddenSpoiler && !r.revealed && zone!=="spoiler"){
       r.revealed=true;
+      r.voiceRevealChapter=state.settings.voiceChapter;
     }
 
     // Players cannot intentionally move revealed roles back into the host-only spoiler vault.
@@ -1805,6 +2341,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     }
 
     r.dead=true;
+    r.voiceFinalChapter=state.settings.voiceChapter;
     r.lastActorName=owner?owner.name:"None";
     r.deathTime=Date.now();
     r.ownerId=null;
@@ -1828,7 +2365,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   function reviveRole(roleId){
     if(mode!=="host")return;
     const r=roleById(roleId);if(!r)return;
-    r.dead=false;r.ownerId=null;r.deathTime=null;
+    r.dead=false;r.ownerId=null;r.deathTime=null;r.voiceFinalChapter=null;
     saveState();render();toast(`${r.name} is back in the Library.`);
   }
 
@@ -1836,6 +2373,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     if(mode!=="host")return;
     const r=roleById(roleId);if(!r)return;
     r.revealed=true;
+    r.voiceRevealChapter=state.settings.voiceChapter;
     saveState();render();toast(`${r.name} has been revealed in the Open Library.`);
   }
 
@@ -1957,10 +2495,65 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     pendingImage=r?.image||"";
     $("#roleImageUrl").value=(pendingImage&&/^https?:/i.test(pendingImage))?pendingImage:"";
     $("#roleDialogTitle").textContent=r?"Edit character":"Add character";
+    $("#voiceUploadTranscript").value="";
     updateImagePreview();
+    renderRoleVoiceEditor(r);
     $("#roleDialog").showModal();
     setTimeout(()=>$("#roleName").focus(),40);
   }
+
+  function renderRoleVoiceEditor(role){
+    const list=$("#roleVoiceList");
+    const clips=role?.customVoiceClips||[];
+    $("#roleVoiceCount").textContent=`${clips.length} uploaded`;
+    list.innerHTML=clips.length?clips.map(clip=>`
+      <div class="voice-clip-row">
+        <span title="${esc(clip.name)}">Ch. ${clip.chapter} · ${clip.phase==="trial"?"trial":"pretrial"} · ${esc(clip.name)}</span>
+        <button type="button" class="danger-text" data-remove-voice="${esc(clip.id)}">× Remove</button>
+      </div>`).join(""):`<div class="muted tiny">No custom uploads for this character.</div>`;
+    $("#voiceUploadChapter").value=String(state.settings.voiceChapter);
+    $("#uploadVoiceBtn").disabled=!role||!remoteReady;
+    $("#roleVoiceHelp").textContent=!role
+      ? "Save this character once before uploading samples. Maximum 5 MB per file."
+      : !remoteReady
+      ? "Connect to the shared board before uploading."
+      : "Audio is stored on the shared board and is available to everyone. Maximum 5 MB per file.";
+    list.querySelectorAll("[data-remove-voice]").forEach(button=>button.onclick=async()=>{
+      const clip=clips.find(c=>c.id===button.dataset.removeVoice);if(!clip)return;
+      const approved=await appConfirm({
+        kicker:"REMOVE VOICE SAMPLE",title:"Remove this uploaded sample?",
+        text:"The audio file will be deleted from shared storage.",confirmText:"Remove sample",danger:true
+      });
+      if(!approved)return;
+      try{
+        if(clip.path)await remoteSync.removeVoiceClip(clip.path);
+        role.customVoiceClips=role.customVoiceClips.filter(c=>c.id!==clip.id);
+        saveState();renderRoleVoiceEditor(role);render();toast("Voice sample removed.");
+      }catch(error){toast(window.CastSupabaseSync.errorMessage(error))}
+    });
+  }
+
+  $("#uploadVoiceBtn").onclick=async()=>{
+    const role=roleById($("#roleId").value);
+    const file=$("#roleVoiceInput").files?.[0];
+    if(!role)return toast("Save the character before uploading voice samples.");
+    if(!remoteReady)return toast("The shared board is not connected.");
+    if(!file)return toast("Choose an audio file first.");
+    if(file.size>5*1024*1024)return toast("Voice samples must be 5 MB or smaller.");
+    const button=$("#uploadVoiceBtn");button.disabled=true;button.textContent="Uploading…";
+    try{
+      const uploaded=await remoteSync.uploadVoiceClip(role.id,file);
+      role.customVoiceClips.push({
+        id:id(),url:uploaded.url,path:uploaded.path,name:file.name,
+        text:$("#voiceUploadTranscript").value.trim(),
+        chapter:Number($("#voiceUploadChapter").value),phase:$("#voiceUploadPhase").value
+      });
+      $("#roleVoiceInput").value="";
+      $("#voiceUploadTranscript").value="";
+      saveState();renderRoleVoiceEditor(role);render();toast("Voice sample uploaded.");
+    }catch(error){toast(window.CastSupabaseSync.errorMessage(error))}
+    finally{button.textContent="Upload sample";button.disabled=!remoteReady}
+  };
 
   function updateImagePreview(){
     const box=$("#roleImagePreview");
@@ -2008,13 +2601,16 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     if(roleId){
       const r=roleById(roleId);if(!r)return;
       const wasHidden=r.hiddenSpoiler;
+      const followedName=!r.voiceProfile||r.voiceProfile===r.name;
       Object.assign(r,values);
+      if(followedName)r.voiceProfile=name;
       if(hiddenSpoiler&&!wasHidden&&!r.ownerId&&!r.dead)r.revealed=false;
       if(!hiddenSpoiler)r.revealed=true;
     }else{
       state.roles.push({
         id:id(),...values,ownerId:null,dead:false,lastActorName:"",deathTime:null,
-        revealed:!hiddenSpoiler
+        revealed:!hiddenSpoiler,voiceProfile:name,voiceRevealChapter:state.settings.voiceChapter,
+        voiceFinalChapter:null,customVoiceClips:[],personalRecordings:[],practiceLineHistory:[]
       });
     }
 
@@ -2145,6 +2741,31 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     toast(state.settings.gameActive?"Live rules enabled.":"Casting/setup rules enabled.");
   };
 
+  $("#voiceChapterSelect").onchange=e=>{
+    if(activeAudio){activeAudio.pause();resetActiveAudio()}
+    state.settings.voiceChapter=Number(e.target.value)||1;
+    voiceShuffleBags.clear();saveState();render();
+    toast(`Voice samples set to Chapter ${state.settings.voiceChapter}.`);
+  };
+
+  $("#voiceTrialToggle").onchange=e=>{
+    if(activeAudio){activeAudio.pause();resetActiveAudio()}
+    state.settings.voiceInTrial=e.target.checked;
+    voiceShuffleBags.clear();saveState();render();
+    toast(state.settings.voiceInTrial
+      ? `Trial samples enabled for Chapter ${state.settings.voiceChapter}.`
+      : "Using spoiler-safe samples from before the current trial.");
+  };
+
+  $("#junkoMukuroToggle").onchange=e=>{
+    if(activeAudio){activeAudio.pause();resetActiveAudio()}
+    state.secretSettings.junkoMukuroRevealed=e.target.checked;
+    const role=state.roles.find(r=>r.specialRole==="junko-disguise");
+    applyJunkoIdentity(role,e.target.checked);
+    voiceShuffleBags.clear();saveState();render();
+    toast(e.target.checked?"The original Junko card now shows Mukuro’s true identity.":"The original disguise identity has been restored.");
+  };
+
   $("#expandAllBtn").onclick=()=>{
     state.roles.filter(r=>!r.dead&&!r.ownerId&&(!r.hiddenSpoiler||r.revealed)).forEach(r=>expanded.add(r.id));
     render();
@@ -2191,7 +2812,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   $("#exportBtn").onclick=()=>{
     const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);
-    a.download="danganronpa-cast-state-v5.json";a.click();
+    a.download="danganronpa-cast-state-v6.json";a.click();
     setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   };
 

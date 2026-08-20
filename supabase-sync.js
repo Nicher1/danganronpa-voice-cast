@@ -112,6 +112,48 @@
       return data;
     }
 
+    async uploadVoiceClip(roleId, file) {
+      const safeName = String(file?.name || "sample")
+        .normalize("NFKD")
+        .replace(/[^a-zA-Z0-9._-]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "sample";
+      const unique = window.crypto?.randomUUID
+        ? window.crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const path = `${this.slug}/${roleId}/${unique}-${safeName}`;
+      const { error } = await this.client.storage
+        .from("voice-clips")
+        .upload(path, file, { contentType: file.type || "audio/mpeg", upsert: false });
+      if (error) throw error;
+      const { data } = this.client.storage.from("voice-clips").getPublicUrl(path);
+      if (!data?.publicUrl) throw new Error("The uploaded voice sample has no public URL.");
+      return { path, url: data.publicUrl };
+    }
+
+    async removeVoiceClip(path) {
+      const { error } = await this.client.storage.from("voice-clips").remove([path]);
+      if (error) throw error;
+      return true;
+    }
+
+    async uploadPracticeRecording(actorId, roleId, blob, extension = "webm") {
+      const unique = window.crypto?.randomUUID
+        ? window.crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const path = `${this.slug}/personal/${actorId}/${roleId}/${unique}.${extension}`;
+      const { error } = await this.client.storage
+        .from("voice-clips")
+        .upload(path, blob, { contentType: blob.type || "audio/webm", upsert: false });
+      if (error) throw error;
+      const { data } = this.client.storage.from("voice-clips").getPublicUrl(path);
+      if (!data?.publicUrl) throw new Error("The saved recording has no public URL.");
+      return { path, url: data.publicUrl };
+    }
+
+    async removePracticeRecording(path) {
+      return this.removeVoiceClip(path);
+    }
+
     subscribe(fullState, onBoard, onStatus) {
       if (this.channel) this.client.removeChannel(this.channel);
       const table = fullState ? "cast_boards" : "cast_public_boards";
