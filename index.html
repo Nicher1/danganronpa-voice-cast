@@ -149,6 +149,10 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .badge.host{color:#ffd8e9;border-color:rgba(245,64,148,.46);background:var(--pink-soft)}
 .badge.player{color:#d8efff;border-color:rgba(112,184,255,.38);background:var(--blue-soft)}
 .badge.viewer{color:#d8dce5;background:rgba(180,190,214,.07)}
+.badge.sync{color:#d8dce5;background:rgba(180,190,214,.07)}
+.badge.sync.live{color:#c9ffe3;border-color:rgba(72,225,144,.4);background:rgba(72,225,144,.1)}
+.badge.sync.working{color:#ffe7ae;border-color:rgba(255,193,77,.42);background:rgba(255,193,77,.1)}
+.badge.sync.offline{color:#ffd3d7;border-color:rgba(255,90,100,.42);background:rgba(255,90,100,.1)}
 .app-shell{max-width:1650px;margin:auto;padding:14px 30px 46px}
 .tabs{
   display:flex;gap:8px;
@@ -334,6 +338,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   padding:.18rem .36rem;
   border-radius:999px;
 }
+.actor-meta > span.death-counter{color:#ffb8bc;border-color:rgba(255,77,87,.23);background:var(--red-soft)}
 .actor-actions{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}
 .icon-btn{
   padding:.33rem .46rem;
@@ -344,6 +349,37 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 }
 .icon-btn:hover{background:var(--panel-soft);color:white;transform:none}
 .actor-slots{display:flex;flex-direction:column;gap:8px;min-height:126px}
+.actor-history{
+  margin-top:11px;
+  padding:9px 10px;
+  border:1px dashed #3b4356;
+  border-radius:11px;
+  background:rgba(9,10,14,.24);
+  transition:.14s border-color,.14s background,.14s box-shadow;
+}
+.actor-history.dragover{
+  border-color:var(--gold);
+  background:var(--gold-soft);
+  box-shadow:0 0 0 2px rgba(244,204,101,.1);
+}
+.actor-history-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.actor-history-kicker{
+  color:var(--gold);
+  font-size:.59rem;
+  font-weight:950;
+  letter-spacing:.12em;
+}
+.actor-history-edit{
+  padding:.18rem .38rem;
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  font-size:.64rem;
+}
+.actor-history-edit:hover{color:white;background:var(--panel-soft);transform:none}
+.actor-history-list{margin-top:5px;color:#d5dae4;font-size:.72rem;line-height:1.45;overflow-wrap:anywhere}
+.actor-history-list.empty{color:var(--muted2);font-style:italic}
+.actor-history-hint{margin-top:5px;color:var(--muted2);font-size:.61rem;line-height:1.35}
 .token-badge{
   border:1px solid rgba(244,204,101,.42)!important;
   background:var(--gold-soft)!important;
@@ -503,12 +539,13 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 }
 .modal-head h3{margin:3px 0 0;font-size:1.35rem;letter-spacing:-.025em}
 .modal label{display:block;color:#ccd2de;font-size:.78rem;font-weight:800;margin:11px 0}
-.modal input{
+.modal input,.modal textarea{
   display:block;width:100%;margin-top:5px;border:1px solid var(--line);
   background:#0e1117;color:white;border-radius:10px;padding:11px 12px;outline:none;
   transition:border-color .14s,box-shadow .14s
 }
-.modal input:focus{border-color:var(--pink-hot);box-shadow:0 0 0 3px rgba(245,64,148,.11)}
+.modal textarea{resize:vertical;min-height:86px}
+.modal input:focus,.modal textarea:focus{border-color:var(--pink-hot);box-shadow:0 0 0 3px rgba(245,64,148,.11)}
 .check-row{
   display:grid!important;grid-template-columns:auto 1fr;gap:10px;align-items:flex-start;
   border:1px solid var(--line);background:var(--panel-raised);padding:10px;border-radius:11px
@@ -571,6 +608,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   border-color:transparent!important;
   box-shadow:0 8px 24px rgba(255,77,87,.18)!important;
 }
+.auth-error{min-height:1.25em;color:#ff9ca5;font-size:.76rem}
 
 </style>
 </head>
@@ -590,6 +628,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
     <div class="top-actions">
       <span id="modeBadge" class="badge">HOST</span>
+      <span id="syncStatus" class="badge sync working">CONNECTING</span>
 
       <button id="previewPlayerBtn" class="ghost host-only">Preview Player</button>
       <button id="previewViewerBtn" class="ghost host-only">Preview Viewer</button>
@@ -597,6 +636,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
       <button id="viewerLinkBtn" class="ghost host-only">Copy viewer link</button>
 
       <button id="switchActorBtn" class="ghost player-only">Switch actor</button>
+      <button id="editMyActorBtn" class="ghost player-only">Set password</button>
       <button id="logoutBtn" class="ghost player-only">Log out</button>
 
       <button id="exportBtn" class="ghost host-only">Export</button>
@@ -743,7 +783,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
       <input id="actorId" type="hidden">
 
       <label>Name
-        <input id="actorName" required placeholder="Niklas">
+        <input id="actorName" required placeholder="Your Name">
       </label>
 
       <label>Password <span class="muted">(optional)</span>
@@ -752,6 +792,14 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
       <p id="actorPasswordHelp" class="muted tiny">
         The password is used to access this actor profile in Player mode. The host can always override it.
+      </p>
+
+      <label class="host-only">Voice history
+        <textarea id="actorHistory" placeholder="Monokuma, Makoto Naegi, Kyoko Kirigiri"></textarea>
+      </label>
+
+      <p class="muted tiny host-only">
+        Comma-separated character names. Duplicates are removed automatically.
       </p>
 
       <div class="modal-actions">
@@ -776,6 +824,28 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
           <input id="loginPassword" type="password" autocomplete="current-password">
         </label>
         <button id="loginConfirmBtn" type="button" class="primary">Log in</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="hostAuthDialog" class="modal">
+    <form id="hostAuthForm" class="modal-card compact-modal">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">SHARED BOARD</div>
+          <h3 id="hostAuthTitle">Host login</h3>
+        </div>
+      </div>
+      <p id="hostAuthHelp" class="muted"></p>
+      <label id="hostSetupCodeWrap" class="hidden">One-time setup code
+        <input id="hostSetupCode" autocomplete="one-time-code">
+      </label>
+      <label><span id="hostPasswordLabel">Host password</span>
+        <input id="hostPassword" type="password" autocomplete="current-password" required minlength="6">
+      </label>
+      <p id="hostAuthError" class="auth-error" role="alert"></p>
+      <div class="modal-actions">
+        <button id="hostAuthSubmit" type="submit" class="primary">Connect shared board</button>
       </div>
     </form>
   </dialog>
@@ -831,9 +901,12 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
   <div id="toast" class="toast" aria-live="polite"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-sync.js"></script>
   <script>
 
-(() => {
+(async () => {
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const params = new URLSearchParams(location.search);
@@ -871,17 +944,47 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     };
   }
 
+  function historyKey(name) {
+    return String(name || "").trim().toLocaleLowerCase();
+  }
+
+  function normaliseHistory(values) {
+    const result=[];
+    const seen=new Set();
+    (Array.isArray(values)?values:[]).forEach(value=>{
+      const name=String(value || "").trim();
+      const key=historyKey(name);
+      if(!name||seen.has(key))return;
+      seen.add(key);result.push(name);
+    });
+    return result;
+  }
+
+  function parseHistory(text) {
+    return normaliseHistory(String(text || "").split(/[\n,]+/));
+  }
+
+  function addActorHistory(actor,characterName) {
+    if(!actor)return false;
+    actor.history=normaliseHistory(actor.history);
+    const name=String(characterName || "").trim();
+    const key=historyKey(name);
+    if(!name||actor.history.some(item=>historyKey(item)===key))return false;
+    actor.history.push(name);
+    return true;
+  }
+
   function defaultState() {
     return {
-      version:4,
+      version:5,
       settings:{ maxPerActor:3, gameActive:true },
       actors:[
-        {id:id(),name:"Bossu Nicher",passwordHash:"",lockedRoleId:null,replacementToken:false},
-        {id:id(),name:"Milotic - Fu Xuan",passwordHash:"",lockedRoleId:null,replacementToken:false},
-        {id:id(),name:"Witch Bitch",passwordHash:"",lockedRoleId:null,replacementToken:false},
-        {id:id(),name:"MDicious",passwordHash:"",lockedRoleId:null,replacementToken:false},
-        {id:id(),name:"Angel",passwordHash:"",lockedRoleId:null,replacementToken:false},
-        {id:id(),name:"Taiga",passwordHash:"",lockedRoleId:null,replacementToken:false}
+        {id:id(),name:"Nicher",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"Fae",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"Fall",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"MD",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"Angel",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"Reika",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0}
       ],
       roles:[
         mkRole("Monokuma","Headmaster",IMG.monokuma),
@@ -915,6 +1018,13 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   let choiceResolver = null;
   let actionConfirmResolver = null;
   let activeActorId = mode === "player" ? sessionStorage.getItem(SESSION_ACTOR_KEY) : null;
+  let remoteSync = null;
+  let remoteReady = false;
+  let remoteRevision = 0;
+  let remoteSaveQueue = Promise.resolve();
+  let hostAuthSetup = false;
+  let hostAuthResolver = null;
+  let applyingRemoteState = false;
 
   const $ = sel => document.querySelector(sel);
   const $$ = sel => [...document.querySelectorAll(sel)];
@@ -924,14 +1034,26 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   $("#modeBadge").classList.add(mode);
 
   function normaliseState(s) {
-    s.version = 4;
+    const previousVersion=Number(s.version)||0;
+    s.version = 5;
     s.settings ||= {};
     if (!Number.isFinite(s.settings.maxPerActor)) s.settings.maxPerActor = 3;
     if (typeof s.settings.gameActive !== "boolean") s.settings.gameActive = true;
     s.actors ||= [];
     s.roles ||= [];
+    const actorNameMigrations={
+      "Bossu Nicher":"Nicher",
+      "Milotic - Fu Xuan":"Fae",
+      "Witch Bitch":"Fall",
+      "MDicious":"MD",
+      "Taiga":"Reika"
+    };
     s.actors.forEach(a => {
-      a.passwordHash ||= "";
+      if(previousVersion<5&&actorNameMigrations[a.name])a.name=actorNameMigrations[a.name];
+      a.hasPassword = typeof a.hasPassword === "boolean" ? a.hasPassword : !!a.passwordHash;
+      a.history = normaliseHistory(a.history);
+      if(!Number.isFinite(a.deathCount)||a.deathCount<0)a.deathCount=0;
+      a.deathCount=Math.floor(a.deathCount);
       if (typeof a.replacementToken !== "boolean") a.replacementToken = false;
       if (!("lockedRoleId" in a)) a.lockedRoleId = null;
     });
@@ -942,6 +1064,9 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
       r.image ||= "";
       r.modifier ||= "";
       r.lastActorName ||= "";
+    });
+    s.roles.forEach(r=>{
+      if(!r.dead&&r.ownerId)addActorHistory(s.actors.find(a=>a.id===r.ownerId),r.name);
     });
     return s;
   }
@@ -954,11 +1079,149 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     return defaultState();
   }
 
-  function saveState() {
+  function cacheState() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (_) {
       alert("Browser storage is full. Use smaller images or export the board.");
+    }
+  }
+
+  function remoteSafeState(value=state) {
+    const copy=JSON.parse(JSON.stringify(value));
+    (copy.actors||[]).forEach(actor=>delete actor.passwordHash);
+    return copy;
+  }
+
+  function setSyncStatus(text,tone="working") {
+    const badge=$("#syncStatus");
+    badge.textContent=text;
+    badge.className=`badge sync ${tone}`;
+  }
+
+  function applyRemoteBoard(row,{renderNow=true}={}) {
+    if(!row?.state)return;
+    applyingRemoteState=true;
+    state=normaliseState(row.state);
+    remoteRevision=Number(row.revision)||0;
+    cacheState();
+    applyingRemoteState=false;
+    if(renderNow)render();
+  }
+
+  function saveState() {
+    cacheState();
+    if(!remoteReady||applyingRemoteState||mode==="viewer")return;
+    const snapshot=remoteSafeState();
+    remoteSaveQueue=remoteSaveQueue.then(async()=>{
+      setSyncStatus("SAVING","working");
+      try{
+        const result=await remoteSync.saveBoard(snapshot,remoteRevision);
+        if(result?.revision)remoteRevision=Number(result.revision);
+        setSyncStatus("LIVE","live");
+      }catch(error){
+        const message=window.CastSupabaseSync.errorMessage(error);
+        const latest=await remoteSync.refresh(mode==="host").catch(()=>null);
+        if(latest?.state)applyRemoteBoard(latest);
+        setSyncStatus("SYNC ERROR","offline");
+        toast(message.includes("REVISION_CONFLICT")
+          ? "Someone else changed the board first. The newest shared version was loaded; please retry your action."
+          : "Could not save to the shared board. Your local backup is still intact.");
+      }
+    });
+  }
+
+  function requestHostAuth(setup) {
+    hostAuthSetup=setup;
+    $("#hostAuthTitle").textContent=setup?"Set up the shared board":"Host login";
+    $("#hostAuthHelp").textContent=setup
+      ? "Enter the one-time setup code, then choose the host password you will use on other devices. Your current browser board will become the shared board."
+      : "Enter your host password to unlock host controls on this device.";
+    $("#hostSetupCodeWrap").classList.toggle("hidden",!setup);
+    $("#hostSetupCode").required=setup;
+    $("#hostSetupCode").value="";
+    $("#hostPasswordLabel").textContent=setup?"Create host password":"Host password";
+    $("#hostPassword").value="";
+    $("#hostPassword").autocomplete=setup?"new-password":"current-password";
+    $("#hostAuthError").textContent="";
+    $("#hostAuthSubmit").disabled=false;
+    $("#hostAuthDialog").showModal();
+    setTimeout(()=>$(setup?"#hostSetupCode":"#hostPassword").focus(),40);
+    return new Promise(resolve=>{hostAuthResolver=resolve});
+  }
+
+  $("#hostAuthForm").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const button=$("#hostAuthSubmit");
+    const password=$("#hostPassword").value;
+    button.disabled=true;
+    $("#hostAuthError").textContent="";
+    try{
+      if(hostAuthSetup){
+        const result=await remoteSync.initializeBoard(
+          $("#hostSetupCode").value.trim(),
+          password,
+          remoteSafeState(state)
+        );
+        applyRemoteBoard(result,{renderNow:false});
+      }else{
+        await remoteSync.loginHost(password);
+      }
+      $("#hostAuthDialog").close();
+      const resolve=hostAuthResolver;hostAuthResolver=null;
+      if(resolve)resolve(true);
+    }catch(error){
+      $("#hostAuthError").textContent=window.CastSupabaseSync.errorMessage(error);
+      button.disabled=false;
+    }
+  });
+
+  async function initializeSharedBoard() {
+    setSyncStatus("CONNECTING","working");
+    try{
+      remoteSync=new window.CastSupabaseSync(window.CAST_SUPABASE_CONFIG);
+      if(mode!=="viewer")await remoteSync.ensureAnonymousUser();
+
+      let board=await remoteSync.getBoard();
+      if(!board)throw new Error("The Supabase database schema has not been installed yet.");
+
+      if(!board.initialized){
+        if(mode!=="host"){
+          setSyncStatus("WAITING FOR HOST","working");
+          return;
+        }
+        await requestHostAuth(true);
+        board=await remoteSync.getBoard();
+      }
+
+      if(mode==="host"){
+        if(!await remoteSync.isHost())await requestHostAuth(false);
+        board=await remoteSync.getBoard(true);
+      }
+
+      applyRemoteBoard(board,{renderNow:false});
+
+      remoteReady=mode!=="viewer";
+      remoteSync.subscribe(
+        mode==="host",
+        incoming=>{
+          const incomingRevision=Number(incoming?.revision)||0;
+          if(incoming?.state&&incomingRevision>remoteRevision){
+            applyRemoteBoard(incoming);
+            setSyncStatus("LIVE","live");
+          }
+        },
+        status=>{
+          if(status==="SUBSCRIBED")setSyncStatus("LIVE","live");
+          else if(status==="CHANNEL_ERROR"||status==="TIMED_OUT")setSyncStatus("RECONNECTING","working");
+        }
+      );
+      setSyncStatus("LIVE","live");
+    }catch(error){
+      remoteReady=false;
+      setSyncStatus("OFFLINE BACKUP","offline");
+      console.warn("Shared board unavailable:",window.CastSupabaseSync?.errorMessage(error)||error);
+      toast("Shared board is not connected yet. This browser's backup is still available.");
     }
   }
 
@@ -1054,9 +1317,13 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     const actor=activeActor();
     if(actor){
       $("#sessionLine").innerHTML=`Logged in as <strong>${esc(actor.name)}</strong>${actor.replacementToken ? ' · <span class="token">★ replacement token ready</span>' : ""}`;
+      $("#editMyActorBtn").disabled=false;
+      $("#editMyActorBtn").textContent=actor.hasPassword?"Change password":"Set password";
       $("#logoutBtn").disabled=false;
     } else {
       $("#sessionLine").innerHTML='You are not logged in to an actor yet. <strong>Select or create your actor.</strong>';
+      $("#editMyActorBtn").disabled=true;
+      $("#editMyActorBtn").textContent="Set password";
       $("#logoutBtn").disabled=true;
     }
   }
@@ -1153,7 +1420,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     if(draggable){
       el.addEventListener("dragstart",e=>{
         if(e.target.closest("button")){e.preventDefault();return}
-        e.dataTransfer.effectAllowed="move";
+        e.dataTransfer.effectAllowed=mode==="host"?"copyMove":"move";
         e.dataTransfer.setData("text/plain",r.id);
       });
     }
@@ -1231,13 +1498,22 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
             <div class="actor-meta">
               <span>${assigned.length}/${state.settings.maxPerActor} characters</span>
               <span>${actor.lockedRoleId?"🔒 locked":"no locked character"}</span>
-              ${actor.passwordHash?`<span>🔑 password</span>`:""}
+              <span class="death-counter">☠ ${actor.deathCount} ${actor.deathCount===1?"death":"deaths"}</span>
+              ${actor.hasPassword?`<span>🔑 password</span>`:""}
               ${actor.replacementToken?`<span class="token-badge">★ REPLACEMENT</span>`:""}
             </div>
           </div>
           <div class="actor-actions">${actions}</div>
         </div>
         <div class="actor-slots"></div>
+        <div class="actor-history">
+          <div class="actor-history-head">
+            <span class="actor-history-kicker">VOICE HISTORY</span>
+            ${mode==="host"?`<button type="button" class="actor-history-edit" data-action="edit-history">✎ Edit</button>`:""}
+          </div>
+          <div class="actor-history-list ${actor.history.length?"":"empty"}">${actor.history.length?actor.history.map(esc).join(", "):"No previous characters recorded."}</div>
+          ${mode==="host"?`<div class="actor-history-hint">Drop a character here to record it without assigning it.</div>`:""}
+        </div>
       `;
 
       const slots=card.querySelector(".actor-slots");
@@ -1245,6 +1521,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
       assigned.forEach(r=>slots.appendChild(roleCard(r,{assigned:true,locked:actor.lockedRoleId===r.id})));
 
       if(mode!=="viewer") makeDropZone(card,actor.id,"actor");
+      if(mode==="host")makeHistoryDropZone(card.querySelector(".actor-history"),actor);
 
       if(mode==="host"){
         card.querySelector('[data-action="choose-lock"]').onclick=()=>chooseLockedRole(actor.id,true);
@@ -1253,6 +1530,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
           toast(actor.replacementToken?`Replacement token granted to ${actor.name}.`:`Replacement token removed from ${actor.name}.`);
         };
         card.querySelector('[data-action="edit-actor"]').onclick=()=>openActorDialog(actor);
+        card.querySelector('[data-action="edit-history"]').onclick=e=>{e.stopPropagation();openActorDialog(actor)};
         card.querySelector('[data-action="delete-actor"]').onclick=()=>deleteActor(actor.id);
       }else if(mode==="player"){
         card.querySelector('[data-action="login-actor"]')?.addEventListener("click",()=>beginLogin(actor.id));
@@ -1309,6 +1587,25 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
       e.preventDefault();el.classList.remove("dragover");
       const roleId=e.dataTransfer.getData("text/plain");
       if(roleId) await moveRole(roleId,newOwnerId,zone);
+    };
+  }
+
+  function makeHistoryDropZone(el,actor){
+    el.ondragover=e=>{
+      e.preventDefault();e.stopPropagation();e.dataTransfer.dropEffect="copy";
+      el.closest(".actor-card")?.classList.remove("dragover");el.classList.add("dragover");
+    };
+    el.ondragleave=e=>{
+      if(!el.contains(e.relatedTarget))el.classList.remove("dragover");
+    };
+    el.ondrop=e=>{
+      e.preventDefault();e.stopPropagation();el.classList.remove("dragover");
+      el.closest(".actor-card")?.classList.remove("dragover");
+      const role=roleById(e.dataTransfer.getData("text/plain"));
+      if(!role)return;
+      const added=addActorHistory(actor,role.name);
+      if(added){saveState();render();toast(`${role.name} added to ${actor.name}’s voice history.`)}
+      else toast(`${role.name} is already in ${actor.name}’s voice history.`);
     };
   }
 
@@ -1370,6 +1667,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     if(zone==="spoiler" && mode!=="host") return;
 
     r.ownerId=newOwnerId;
+    if(newActor)addActorHistory(newActor,r.name);
 
     if(removedLocked){
       oldActor.lockedRoleId=null;
@@ -1501,6 +1799,11 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     const owner=ownerId?actorById(ownerId):null;
     const wasLocked=!!owner&&owner.lockedRoleId===r.id;
 
+    if(owner){
+      owner.deathCount=(Number.isFinite(owner.deathCount)?owner.deathCount:0)+1;
+      addActorHistory(owner,r.name);
+    }
+
     r.dead=true;
     r.lastActorName=owner?owner.name:"None";
     r.deathTime=Date.now();
@@ -1580,12 +1883,17 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     $("#actorId").value=actor?.id||"";
     $("#actorName").value=actor?.name||"";
     $("#actorPassword").value="";
-    $("#actorDialogTitle").textContent=actor?"Edit voice actor":"Add voice actor";
-    $("#actorPasswordHelp").textContent=actor?.passwordHash
-      ?"Enter a new password to change it. Leave the field blank to keep the current password."
-      :"Password is optional. If left blank, this profile can be opened without a password.";
+    $("#actorHistory").value=(actor?.history||[]).join(", ");
+    $("#actorDialogTitle").textContent=ownEdit?(actor?"Edit your actor":"Create your actor"):(actor?"Edit voice actor":"Add voice actor");
+    $("#actorPasswordHelp").textContent=ownEdit
+      ? actor?.hasPassword
+        ? "Set a new password to change yours. Leave it blank to keep your current password."
+        : "Set your own password here, or leave it blank to keep this actor open."
+      : actor?.hasPassword
+        ? "Enter a new password to change it. Leave the field blank to keep the current password."
+        : "Password is optional. If left blank, this profile can be opened without a password.";
     $("#actorDialog").showModal();
-    setTimeout(()=>$("#actorName").focus(),40);
+    setTimeout(()=>$(ownEdit&&actor?"#actorPassword":"#actorName").focus(),40);
   }
 
   $("#actorForm").addEventListener("submit",async e=>{
@@ -1599,13 +1907,36 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
       const actor=actorById(actorId);if(!actor)return;
       if(mode==="player"&&actor.id!==activeActorId)return;
       actor.name=name;
-      if(password)actor.passwordHash=await hashPassword(password);
+      if(password){
+        try{
+          if(remoteReady){
+            const result=await remoteSync.setActorPassword(actor.id,password);
+            if(result?.revision)remoteRevision=Number(result.revision);
+            actor.hasPassword=true;
+          }else{
+            actor.passwordHash=await hashPassword(password);
+            actor.hasPassword=true;
+          }
+        }catch(error){
+          toast(window.CastSupabaseSync.errorMessage(error));
+          return;
+        }
+      }
+      if(mode==="host")actor.history=parseHistory($("#actorHistory").value);
     }else{
       const newActor={
         id:id(),name,
-        passwordHash:password?await hashPassword(password):"",
-        lockedRoleId:null,replacementToken:false
+        hasPassword:!!password,
+        lockedRoleId:null,replacementToken:false,
+        history:mode==="host"?parseHistory($("#actorHistory").value):[],deathCount:0
       };
+      try{
+        if(remoteReady)await remoteSync.registerActor(newActor.id,password);
+        else if(password)newActor.passwordHash=await hashPassword(password);
+      }catch(error){
+        toast(window.CastSupabaseSync.errorMessage(error));
+        return;
+      }
       state.actors.push(newActor);
       if(mode==="player"){
         activeActorId=newActor.id;
@@ -1726,10 +2057,15 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     state.actors.forEach(actor=>{
       const row=document.createElement("button");
       row.type="button";row.className="login-row";
-      row.innerHTML=`<div><strong>${esc(actor.name)}</strong><span>${actor.passwordHash?"🔑 Password required":"No password"}</span></div><span>Select →</span>`;
+      row.innerHTML=`<div><strong>${esc(actor.name)}</strong><span>${actor.hasPassword?"🔑 Password required":"No password"}</span></div><span>Select →</span>`;
       row.onclick=()=>selectLoginActor(actor.id);
       list.appendChild(row);
     });
+    const createRow=document.createElement("button");
+    createRow.type="button";createRow.className="login-row";
+    createRow.innerHTML='<div><strong>＋ Create new actor</strong><span>Choose a name and optional password</span></div><span>Create →</span>';
+    createRow.onclick=()=>{$("#loginDialog").close();openActorDialog(null,true)};
+    list.appendChild(createRow);
     $("#passwordArea").classList.add("hidden");
     $("#loginPassword").value="";
     $("#loginDialog").showModal();
@@ -1739,8 +2075,13 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   async function selectLoginActor(actorId){
     const actor=actorById(actorId);if(!actor)return;
     pendingLoginActorId=actorId;
-    if(!actor.passwordHash){
-      completeLogin(actorId);
+    if(!actor.hasPassword){
+      try{
+        if(remoteReady)await remoteSync.claimActor(actorId,"");
+        completeLogin(actorId);
+      }catch(error){
+        toast(window.CastSupabaseSync.errorMessage(error));
+      }
       return;
     }
     $("#passwordArea").classList.remove("hidden");
@@ -1751,13 +2092,21 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
   $("#loginConfirmBtn").onclick=async()=>{
     const actor=actorById(pendingLoginActorId);if(!actor)return;
-    const hash=await hashPassword($("#loginPassword").value);
-    if(hash!==actor.passwordHash){
-      toast("Incorrect password.");
+    const password=$("#loginPassword").value;
+    try{
+      if(remoteReady){
+        await remoteSync.claimActor(actor.id,password);
+      }else if(actor.passwordHash){
+        const hash=await hashPassword(password);
+        if(hash!==actor.passwordHash)throw new Error("Incorrect actor password");
+      }else{
+        throw new Error("The shared login service is unavailable.");
+      }
+      completeLogin(actor.id);
+    }catch(error){
+      toast(window.CastSupabaseSync.errorMessage(error));
       $("#loginPassword").select();
-      return;
     }
-    completeLogin(actor.id);
   };
 
   $("#loginForm").addEventListener("submit",e=>{e.preventDefault();$("#loginConfirmBtn").click()});
@@ -1803,6 +2152,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   $("#collapseAllBtn").onclick=()=>{expanded.clear();render()};
 
   $("#switchActorBtn").onclick=()=>beginLogin();
+  $("#editMyActorBtn").onclick=()=>{const actor=activeActor();if(actor)openActorDialog(actor,true)};
   $("#logoutBtn").onclick=logout;
 
   $$(".tab").forEach(btn=>{
@@ -1841,7 +2191,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   $("#exportBtn").onclick=()=>{
     const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);
-    a.download="danganronpa-cast-state-v4.json";a.click();
+    a.download="danganronpa-cast-state-v5.json";a.click();
     setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   };
 
@@ -1855,8 +2205,11 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     finally{e.target.value=""}
   });
 
-  // If a player arrives without a selected actor, open the selector automatically.
   render();
+  await initializeSharedBoard();
+  render();
+
+  // If a player arrives without a selected actor, open the selector automatically.
   if(mode==="player"&&!activeActorId){
     setTimeout(()=>beginLogin(),120);
   }
