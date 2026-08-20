@@ -405,6 +405,18 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 }
 .host-mode .role-card[draggable=true],.player-mode .role-card[draggable=true]{cursor:grab}
 .role-card[draggable=true]:active{cursor:grabbing}
+.mobile-drag-source{opacity:.5;transform:scale(.98)}
+.mobile-drag-ghost{
+  position:fixed;z-index:9999;pointer-events:none;
+  max-width:min(240px,72vw);padding:9px 13px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  border:1px solid var(--pink-hot);border-radius:12px;
+  background:var(--panel-raised);color:white;
+  box-shadow:0 14px 34px rgba(0,0,0,.48),0 0 0 2px rgba(245,64,148,.12);
+  font-size:.79rem;font-weight:950;
+  transform:translate(-50%,-115%);
+}
+body.mobile-dragging{user-select:none}
 .role-card:hover{
   border-color:#4b556d;
   background:
@@ -1565,11 +1577,14 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
       banner.textContent=state.settings.gameActive ? "Game in progress." : "Casting/setup mode.";
     }
 
-    $("#libraryHelp").textContent = mode==="host"
+    const touchHint=window.matchMedia?.("(pointer: coarse)").matches
+      ? " On a phone, press and hold a character, then drag it."
+      : "";
+    $("#libraryHelp").textContent = (mode==="host"
       ? "Drag characters between the Library and actors. Click an available card for details."
       : mode==="player"
       ? "You can claim characters from here for your own actor. You can return your own characters here."
-      : "Characters that have not been claimed yet.";
+      : "Characters that have not been claimed yet.")+((mode==="viewer")?"":touchHint);
   }
 
   function imageMarkup(r,cls,placeholder="IMG"){
@@ -1698,12 +1713,20 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   }
 
   function resetActiveAudio(){
-    if(activeVoiceButton){activeVoiceButton.classList.remove("playing","error");activeVoiceButton.textContent=activeVoiceButton.dataset.idleLabel||"▶"}
+    if(activeVoiceButton){
+      activeVoiceButton.classList.remove("playing","error");
+      activeVoiceButton.textContent=activeVoiceButton.dataset.idleLabel||"▶";
+      activeVoiceButton.title=activeVoiceButton.dataset.idleTitle||"Play voice sample";
+      activeVoiceButton.setAttribute("aria-label",activeVoiceButton.dataset.idleAria||"Play voice sample");
+    }
     activeAudio=null;activeVoiceButton=null;
   }
 
   async function playUrlPool(urls,key,button){
     if(!urls.length)return;
+    if(activeAudio&&activeVoiceButton===button){
+      activeAudio.pause();resetActiveAudio();return;
+    }
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
 
     let stateBag=voiceShuffleBags.get(key);
@@ -1717,7 +1740,11 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     const audio=new Audio(url);
     activeAudio=audio;activeVoiceButton=button;
     button.dataset.idleLabel=button.textContent;
+    button.dataset.idleTitle=button.title;
+    button.dataset.idleAria=button.getAttribute("aria-label")||button.title;
     button.classList.add("playing");button.textContent="■";
+    button.title="Stop this voice sample";
+    button.setAttribute("aria-label","Stop this voice sample");
     const finish=()=>{if(activeAudio===audio)resetActiveAudio()};
     audio.addEventListener("ended",finish,{once:true});
     audio.addEventListener("error",()=>{
@@ -1944,6 +1971,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
         e.dataTransfer.effectAllowed=mode==="host"?"copyMove":"move";
         e.dataTransfer.setData("text/plain",r.id);
       });
+      enableTouchDrag(el,r);
     }
 
     el.querySelector('[data-action="play-voice"]')?.addEventListener("click",e=>{
@@ -2112,6 +2140,9 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
   function makeDropZone(el,newOwnerId,zone){
     if(mode==="viewer") return;
+    el.dataset.mobileDropZone=zone;
+    if(newOwnerId)el.dataset.mobileActorId=newOwnerId;
+    else delete el.dataset.mobileActorId;
     el.ondragover=e=>{
       e.preventDefault();e.dataTransfer.dropEffect="move";el.classList.add("dragover");
     };
@@ -2126,6 +2157,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   }
 
   function makeHistoryDropZone(el,actor){
+    el.dataset.mobileHistoryActorId=actor.id;
     el.ondragover=e=>{
       e.preventDefault();e.stopPropagation();e.dataTransfer.dropEffect="copy";
       el.closest(".actor-card")?.classList.remove("dragover");el.classList.add("dragover");
@@ -2136,12 +2168,107 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
     el.ondrop=e=>{
       e.preventDefault();e.stopPropagation();el.classList.remove("dragover");
       el.closest(".actor-card")?.classList.remove("dragover");
-      const role=roleById(e.dataTransfer.getData("text/plain"));
-      if(!role)return;
-      const added=addActorHistory(actor,role.name);
-      if(added){saveState();render();toast(`${role.name} added to ${actor.name}’s voice history.`)}
-      else toast(`${role.name} is already in ${actor.name}’s voice history.`);
+      addRoleToActorHistory(roleById(e.dataTransfer.getData("text/plain")),actor);
     };
+  }
+
+  function addRoleToActorHistory(role,actor){
+    if(!role||!actor)return;
+    const added=addActorHistory(actor,role.name);
+    if(added){saveState();render();toast(`${role.name} added to ${actor.name}’s voice history.`)}
+    else toast(`${role.name} is already in ${actor.name}’s voice history.`);
+  }
+
+  function enableTouchDrag(el,role){
+    let holdTimer=null;
+    let active=false;
+    let startX=0;
+    let startY=0;
+    let ghost=null;
+    let dropTarget=null;
+
+    const removeDropHighlight=()=>{
+      dropTarget?.classList.remove("dragover");
+      dropTarget=null;
+    };
+    const clearHold=()=>{
+      clearTimeout(holdTimer);
+      holdTimer=null;
+    };
+    const cleanUp=()=>{
+      clearHold();removeDropHighlight();
+      ghost?.remove();ghost=null;
+      el.classList.remove("mobile-drag-source");
+      document.body.classList.remove("mobile-dragging");
+      active=false;
+    };
+    const updateDragPosition=(x,y)=>{
+      if(!ghost)return;
+      ghost.style.left=`${x}px`;
+      ghost.style.top=`${y}px`;
+
+      if(y<64)window.scrollBy(0,-12);
+      else if(y>window.innerHeight-64)window.scrollBy(0,12);
+
+      removeDropHighlight();
+      const hit=document.elementFromPoint(x,y);
+      const history=hit?.closest("[data-mobile-history-actor-id]");
+      dropTarget=history||hit?.closest("[data-mobile-drop-zone]")||null;
+      dropTarget?.classList.add("dragover");
+    };
+    const touchPoint=e=>e.touches[0]||e.changedTouches[0];
+
+    el.addEventListener("touchstart",e=>{
+      if(e.touches.length!==1||e.target.closest("button"))return;
+      const point=touchPoint(e);
+      startX=point.clientX;startY=point.clientY;
+      clearHold();
+      holdTimer=setTimeout(()=>{
+        if(!canDragRole(role))return;
+        active=true;
+        el.classList.add("mobile-drag-source");
+        document.body.classList.add("mobile-dragging");
+        ghost=document.createElement("div");
+        ghost.className="mobile-drag-ghost";
+        ghost.textContent=role.name;
+        document.body.appendChild(ghost);
+        navigator.vibrate?.(20);
+        updateDragPosition(startX,startY);
+      },350);
+    },{passive:true});
+
+    el.addEventListener("touchmove",e=>{
+      const point=touchPoint(e);
+      if(!point)return;
+      if(!active){
+        if(Math.hypot(point.clientX-startX,point.clientY-startY)>12)clearHold();
+        return;
+      }
+      e.preventDefault();
+      updateDragPosition(point.clientX,point.clientY);
+    },{passive:false});
+
+    el.addEventListener("touchend",async e=>{
+      clearHold();
+      if(!active)return;
+      e.preventDefault();
+      const target=dropTarget;
+      cleanUp();
+      el.dataset.suppressTouchClick="1";
+      setTimeout(()=>delete el.dataset.suppressTouchClick,700);
+
+      const historyActorId=target?.dataset.mobileHistoryActorId;
+      if(historyActorId){addRoleToActorHistory(role,actorById(historyActorId));return}
+      const zone=target?.dataset.mobileDropZone;
+      if(zone)await moveRole(role.id,target.dataset.mobileActorId||null,zone);
+    },{passive:false});
+
+    el.addEventListener("touchcancel",cleanUp,{passive:true});
+    el.addEventListener("contextmenu",e=>{if(active||holdTimer)e.preventDefault()});
+    el.addEventListener("click",e=>{
+      if(!el.dataset.suppressTouchClick)return;
+      e.preventDefault();e.stopImmediatePropagation();
+    },true);
   }
 
   function moveDenied(text){toast(text);return false}
