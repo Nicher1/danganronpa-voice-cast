@@ -670,6 +670,66 @@ body.mobile-dragging{user-select:none}
 .practice-timer{text-align:center;color:var(--muted);font-variant-numeric:tabular-nums;font-size:.76rem;margin-top:8px}
 .practice-preview{width:100%;margin-top:10px;height:40px}
 .practice-status{min-height:1.2em;color:var(--muted);font-size:.72rem;text-align:center;margin-top:7px}
+.prediction-dock{
+  display:grid;grid-template-columns:minmax(180px,1fr) minmax(180px,1fr);gap:10px;
+  margin:0 0 14px;padding:12px;border:1px solid rgba(112,184,255,.24);border-radius:14px;
+  background:linear-gradient(135deg,rgba(112,184,255,.07),rgba(245,64,148,.035)),var(--panel);
+  box-shadow:var(--shadow-small)
+}
+.prediction-dock-head{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.prediction-dock-title{font-weight:950}.prediction-dock-help{color:var(--muted);font-size:.7rem;margin-top:2px}
+.prediction-token{
+  width:100%;justify-content:flex-start;text-align:left;padding:10px 12px;border-color:rgba(255,255,255,.1);
+  background:rgba(255,255,255,.025)
+}
+.prediction-token strong{display:block}.prediction-token small{display:block;color:var(--muted);font-weight:500;margin-top:2px}
+.prediction-token.victim{box-shadow:inset 3px 0 var(--blue)}
+.prediction-token.blackened{box-shadow:inset 3px 0 var(--pink)}
+.prediction-token.selected{border-color:white;background:var(--panel-hover)}
+.prediction-token.locked{opacity:.72;cursor:not-allowed}
+.prediction-slot{display:grid;grid-template-columns:1fr auto;gap:6px}.prediction-clear{width:38px;padding:0}.prediction-clear:disabled{display:none}
+.prediction-markers{display:flex;flex-wrap:wrap;gap:4px;padding:0 10px 8px}
+.prediction-chip{
+  display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:.24rem .45rem;border-radius:999px;
+  border:1px solid var(--line);font-size:.58rem;font-weight:900;line-height:1.25
+}
+.prediction-chip.victim{color:#d9edff;border-color:rgba(112,184,255,.36);background:var(--blue-soft)}
+.prediction-chip.blackened{color:#ffd9e8;border-color:rgba(245,64,148,.36);background:var(--pink-soft)}
+.prediction-chip.correct{box-shadow:inset 0 0 0 1px rgba(98,214,164,.55)}
+.role-card.prediction-target{border-color:white;box-shadow:0 0 0 2px rgba(112,184,255,.14)}
+.stats-hero{padding:22px;margin-bottom:14px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px}
+.stats-card{padding:15px}
+.stats-name{font-size:1rem;font-weight:950;padding-bottom:9px;border-bottom:1px solid var(--line)}
+.stats-total{font-size:1.7rem;font-weight:950;letter-spacing:-.04em;margin-top:12px}
+.stats-total span{display:block;font-size:.63rem;letter-spacing:.11em;color:var(--muted);text-transform:uppercase}
+.stats-breakdown{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:12px}
+.stats-breakdown div{padding:8px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.018);font-size:.67rem;color:var(--muted)}
+.stats-breakdown strong{display:block;color:white;font-size:1rem;margin-top:2px}
+.population-panel{padding:18px;overflow:hidden}
+.population-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+.population-chart{display:flex;align-items:flex-end;gap:10px;min-height:310px;overflow-x:auto;padding:8px 4px 0}
+.population-column{flex:1 0 112px;display:flex;flex-direction:column;justify-content:flex-end;min-height:290px}
+.population-bar-wrap{height:210px;display:flex;align-items:flex-end;justify-content:center}
+.population-bar{width:70px;display:flex;flex-direction:column-reverse;border-radius:9px 9px 5px 5px;overflow:hidden;border:1px solid var(--line);background:rgba(255,255,255,.018)}
+.population-segment{min-height:0;display:flex;align-items:center;justify-content:center;font-size:.67rem;font-weight:950;color:#0b0d12;transition:height .18s}
+.population-segment.dead{background:var(--red);order:0}.population-segment.alive{background:var(--blue);order:1}.population-segment.unknown{background:#a7afbd;order:2}
+.population-empty{height:210px;width:70px;border:1px dashed var(--line);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--muted2);font-size:.7rem}
+.population-label{text-align:center;font-weight:950;margin-top:8px}
+.population-controls{display:grid;gap:4px;margin-top:8px}
+.population-stepper{display:grid;grid-template-columns:1fr 28px 28px;gap:3px;align-items:center;font-size:.61rem;color:var(--muted)}
+.population-stepper button{padding:0;width:28px;height:26px;border-radius:7px}
+.population-actions{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}.population-actions button{flex:1;padding:.35rem;font-size:.6rem}
+.population-legend{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.72rem}
+.legend-swatch{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}.legend-swatch.alive{background:var(--blue)}.legend-swatch.dead{background:var(--red)}.legend-swatch.unknown{background:#a7afbd}
+.chapter-result-line{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.result-badge{padding:.27rem .46rem;border-radius:999px;border:1px solid var(--line);font-size:.61rem;font-weight:900}
+.result-badge.victim{color:#d9edff;border-color:rgba(112,184,255,.36)}.result-badge.blackened{color:#ffd9e8;border-color:rgba(245,64,148,.36)}
+@media(max-width:620px){
+  .prediction-dock{grid-template-columns:1fr}.prediction-dock-head{align-items:flex-start;flex-direction:column}
+  .stats-breakdown{grid-template-columns:1fr 1fr}.stats-breakdown div:last-child{grid-column:1/-1}
+  .population-header{flex-direction:column}
+}
 
 </style>
 </head>
@@ -708,8 +768,9 @@ body.mobile-dragging{user-select:none}
 
   <main class="app-shell">
     <nav class="tabs">
-      <button class="tab active" data-tab="casting"><span class="tab-icon">◆</span> Casting</button>
+      <button class="tab active" data-tab="casting"><span class="tab-icon">◆</span> Assignments</button>
       <button class="tab" data-tab="memorial"><span class="tab-icon">☠</span> Memorial <span id="deadCount" class="counter">0</span></button>
+      <button class="tab" data-tab="statistics"><span class="tab-icon">▥</span> Statistics</button>
     </nav>
 
     <section id="castingTab" class="tab-panel active">
@@ -741,7 +802,7 @@ body.mobile-dragging{user-select:none}
           <label class="toggle-wrap compact-toggle">
             <input id="voiceTrialToggle" type="checkbox">
             <span class="toggle"></span>
-            <span><strong>In trial</strong><small>Add this chapter’s trial highlights</small></span>
+            <span><strong>Trial ongoing</strong><small>Lock predictions and add this chapter’s Trial lines</small></span>
           </label>
         </div>
 
@@ -751,6 +812,7 @@ body.mobile-dragging{user-select:none}
       </div>
 
       <div id="playRuleBanner" class="rule-banner"></div>
+      <section id="predictionDock" class="prediction-dock player-only hidden" aria-label="Chapter predictions"></section>
 
       <div class="casting-layout">
         <aside class="role-pool panel">
@@ -806,6 +868,30 @@ body.mobile-dragging{user-select:none}
         </div>
       </div>
       <div id="graveyard" class="graveyard-grid"></div>
+    </section>
+
+    <section id="statisticsTab" class="tab-panel">
+      <div class="stats-hero panel">
+        <div class="section-kicker">PLAYER RECORDS</div>
+        <h2>Statistics</h2>
+        <p class="muted small">Correct Victim and Blackened predictions are counted separately. Deaths remain a historical voice-cast statistic.</p>
+      </div>
+      <div id="statsGrid" class="stats-grid"></div>
+      <section class="population-panel panel">
+        <div class="population-header">
+          <div>
+            <div class="section-kicker">KNOWN POPULATION</div>
+            <h2>Chapter progression</h2>
+            <p class="muted small">Each chapter shows what the players know at the end of that chapter.</p>
+          </div>
+          <div class="population-legend" aria-label="Population legend">
+            <span><i class="legend-swatch alive"></i>Alive</span>
+            <span><i class="legend-swatch dead"></i>Dead</span>
+            <span><i class="legend-swatch unknown"></i>Unknown</span>
+          </div>
+        </div>
+        <div id="populationChart" class="population-chart"></div>
+      </section>
     </section>
   </main>
 
@@ -1086,7 +1172,7 @@ body.mobile-dragging{user-select:none}
   function mkRole(name, title, image = "", hiddenSpoiler = false, extra = {}) {
     return {
       id:id(), name, title, modifier:"", image,
-      ownerId:null, dead:false, lastActorName:"", deathTime:null,
+      ownerId:null, dead:false, lastActorName:"", deathTime:null,deathChapter:null,deathActorId:null,deathRecorded:false,
       hiddenSpoiler, revealed:!hiddenSpoiler,
       voiceProfile:name,voiceRevealChapter:1,voiceFinalChapter:null,customVoiceClips:[],
       personalRecordings:[],practiceLineHistory:[],
@@ -1121,6 +1207,26 @@ body.mobile-dragging{user-select:none}
     "Sakura Ogami":4
   };
 
+  const POPULATION_KEYS=["start","1","2","3","4","5","6"];
+  const POPULATION_PRESETS={
+    start:{alive:15,dead:0,unknown:0},
+    "1":{alive:12,dead:3,unknown:0},
+    "2":{alive:10,dead:5,unknown:0},
+    "3":{alive:7,dead:8,unknown:0},
+    "4":{alive:6,dead:9,unknown:1},
+    "5":{alive:6,dead:10,unknown:0},
+    "6":{alive:6,dead:10,unknown:0}
+  };
+
+  function initialPopulationGraph(chapter=2) {
+    const result={};
+    POPULATION_KEYS.forEach(key=>{
+      const completed=key==="start" || Number(key)<chapter;
+      result[key]=completed?{...POPULATION_PRESETS[key],revealed:true}:{alive:0,dead:0,unknown:0,revealed:false};
+    });
+    return result;
+  }
+
   function addActorHistory(actor,characterName) {
     if(!actor)return false;
     actor.history=normaliseHistory(actor.history);
@@ -1133,9 +1239,12 @@ body.mobile-dragging{user-select:none}
 
   function defaultState() {
     return {
-      version:6,
-      settings:{ maxPerActor:3, gameActive:true, voiceChapter:2, voiceInTrial:false },
-      secretSettings:{ junkoMukuroRevealed:false },
+      version:7,
+      settings:{ maxPerActor:3, gameActive:true, voiceChapter:2, voiceInTrial:false, trialByChapter:{"2":false}, trialEnteredByChapter:{"2":false} },
+      secretSettings:{ junkoMukuroRevealed:false, populationPresets:POPULATION_PRESETS },
+      predictions:{},
+      chapterResults:{},
+      populationGraph:initialPopulationGraph(2),
       actors:[
         {id:id(),name:"Nicher",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
         {id:id(),name:"Fae",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
@@ -1175,6 +1284,7 @@ body.mobile-dragging{user-select:none}
   let confirmResolver = null;
   let choiceResolver = null;
   let actionConfirmResolver = null;
+  let selectedPredictionKind = null;
   let activeActorId = mode === "player" ? sessionStorage.getItem(SESSION_ACTOR_KEY) : null;
   let remoteSync = null;
   let remoteReady = false;
@@ -1203,15 +1313,27 @@ body.mobile-dragging{user-select:none}
 
   function normaliseState(s) {
     const previousVersion=Number(s.version)||0;
-    s.version = 6;
+    s.version = 7;
     s.settings ||= {};
     if (!Number.isFinite(s.settings.maxPerActor)) s.settings.maxPerActor = 3;
     if (typeof s.settings.gameActive !== "boolean") s.settings.gameActive = true;
     if (!Number.isFinite(s.settings.voiceChapter)) s.settings.voiceChapter = 2;
     s.settings.voiceChapter=Math.max(1,Math.min(6,Math.floor(s.settings.voiceChapter)));
     if (typeof s.settings.voiceInTrial !== "boolean") s.settings.voiceInTrial = false;
+    if(!s.settings.trialByChapter||typeof s.settings.trialByChapter!=="object")s.settings.trialByChapter={};
+    if(!s.settings.trialEnteredByChapter||typeof s.settings.trialEnteredByChapter!=="object")s.settings.trialEnteredByChapter={};
+    const currentChapterKey=String(s.settings.voiceChapter);
+    if(typeof s.settings.trialByChapter[currentChapterKey]!=="boolean"){
+      s.settings.trialByChapter[currentChapterKey]=s.settings.voiceInTrial;
+    }
+    s.settings.voiceInTrial=!!s.settings.trialByChapter[currentChapterKey];
+    if(typeof s.settings.trialEnteredByChapter[currentChapterKey]!=="boolean"){
+      s.settings.trialEnteredByChapter[currentChapterKey]=s.settings.voiceInTrial;
+    }
     s.secretSettings ||= {};
     if (typeof s.secretSettings.junkoMukuroRevealed !== "boolean") s.secretSettings.junkoMukuroRevealed = false;
+    if(mode==="host")s.secretSettings.populationPresets=POPULATION_PRESETS;
+    else delete s.secretSettings.populationPresets;
     s.actors ||= [];
     s.roles ||= [];
     const actorNameMigrations={
@@ -1229,6 +1351,45 @@ body.mobile-dragging{user-select:none}
       a.deathCount=Math.floor(a.deathCount);
       if (typeof a.replacementToken !== "boolean") a.replacementToken = false;
       if (!("lockedRoleId" in a)) a.lockedRoleId = null;
+    });
+    if(!s.predictions||typeof s.predictions!=="object"||Array.isArray(s.predictions))s.predictions={};
+    Object.keys(s.predictions).forEach(actorId=>{
+      if(!s.actors.some(actor=>actor.id===actorId)){delete s.predictions[actorId];return}
+      const byChapter=s.predictions[actorId];
+      if(!byChapter||typeof byChapter!=="object"||Array.isArray(byChapter)){s.predictions[actorId]={};return}
+      Object.keys(byChapter).forEach(chapter=>{
+        const number=Math.max(1,Math.min(6,Number(chapter)||1));
+        const entry=byChapter[chapter]||{};
+        const clean={
+          victimRoleId:String(entry.victimRoleId||entry.victimCharacterId||""),
+          blackenedRoleId:String(entry.blackenedRoleId||entry.blackenedCharacterId||""),
+          locked:!!entry.locked
+        };
+        if(String(number)!==String(chapter))delete byChapter[chapter];
+        byChapter[String(number)]=clean;
+      });
+    });
+    if(!s.chapterResults||typeof s.chapterResults!=="object"||Array.isArray(s.chapterResults))s.chapterResults={};
+    Object.keys(s.chapterResults).forEach(chapter=>{
+      const result=s.chapterResults[chapter]||{};
+      s.chapterResults[chapter]={
+        victimRoleId:String(result.victimRoleId||""),
+        blackenedRoleId:String(result.blackenedRoleId||""),
+        victimCorrectActorIds:[...new Set(Array.isArray(result.victimCorrectActorIds)?result.victimCorrectActorIds.map(String):[])],
+        blackenedCorrectActorIds:[...new Set(Array.isArray(result.blackenedCorrectActorIds)?result.blackenedCorrectActorIds.map(String):[])]
+      };
+    });
+    if(!s.populationGraph||typeof s.populationGraph!=="object"||Array.isArray(s.populationGraph)){
+      s.populationGraph=initialPopulationGraph(s.settings.voiceChapter);
+    }
+    POPULATION_KEYS.forEach(key=>{
+      const item=s.populationGraph[key];
+      if(!item||typeof item!=="object"){
+        s.populationGraph[key]={alive:0,dead:0,unknown:0,revealed:key==="start"};
+        return;
+      }
+      ["alive","dead","unknown"].forEach(field=>item[field]=Math.max(0,Math.floor(Number(item[field])||0)));
+      item.revealed=!!item.revealed;
     });
     s.roles.forEach(r => {
       if (typeof r.hiddenSpoiler !== "boolean") r.hiddenSpoiler = false;
@@ -1260,6 +1421,12 @@ body.mobile-dragging{user-select:none}
         r.voiceFinalChapter=LEGACY_DEATH_CHAPTERS[r.name]||Math.max(1,s.settings.voiceChapter-1);
       }
       if(!r.voiceProfile&&r.name!=="Narrator")r.voiceProfile=r.name;
+      if(r.dead&&!Number.isFinite(r.deathChapter))r.deathChapter=r.voiceFinalChapter||LEGACY_DEATH_CHAPTERS[r.name]||s.settings.voiceChapter;
+      if(!r.deathActorId&&r.lastActorName){
+        const historicalActor=s.actors.find(actor=>actor.name===r.lastActorName);
+        if(historicalActor)r.deathActorId=historicalActor.id;
+      }
+      if(typeof r.deathRecorded!=="boolean")r.deathRecorded=!!r.dead||!!r.deathActorId;
     });
 
     if(mode==="host"){
@@ -1461,6 +1628,88 @@ body.mobile-dragging{user-select:none}
   function rolesForActor(actorId){ return state.roles.filter(r=>!r.dead && r.ownerId===actorId); }
   function lockedOwnerOf(roleId){ return state.actors.find(a=>a.lockedRoleId===roleId) || null; }
   function activeActor(){ return actorById(activeActorId); }
+  function chapterKey(chapter=state.settings.voiceChapter){return String(Math.max(1,Math.min(6,Number(chapter)||1)))}
+  function predictionForActor(actorId,chapter=state.settings.voiceChapter,create=false){
+    const key=chapterKey(chapter);
+    if(create){
+      state.predictions[actorId]||={};
+      state.predictions[actorId][key]||={victimRoleId:"",blackenedRoleId:"",locked:false};
+    }
+    return state.predictions?.[actorId]?.[key]||null;
+  }
+  function resultForChapter(chapter=state.settings.voiceChapter,create=false){
+    const key=chapterKey(chapter);
+    if(create){
+      state.chapterResults[key]||={victimRoleId:"",blackenedRoleId:"",victimCorrectActorIds:[],blackenedCorrectActorIds:[]};
+    }
+    return state.chapterResults?.[key]||null;
+  }
+  function predictionField(kind){return kind==="victim"?"victimRoleId":"blackenedRoleId"}
+  function correctField(kind){return kind==="victim"?"victimCorrectActorIds":"blackenedCorrectActorIds"}
+  function eligiblePredictionRole(role){
+    return !!role&&!role.dead&&currentRoleVisible(role)&&(!role.hiddenSpoiler||role.revealed)&&role.name!=="Narrator";
+  }
+  function canEditPrediction(actorId,kind,chapter=state.settings.voiceChapter){
+    if(mode!=="player"||actorId!==activeActorId)return false;
+    const key=chapterKey(chapter);
+    const prediction=predictionForActor(actorId,key,false);
+    const result=resultForChapter(key,false);
+    return !state.settings.trialByChapter[key]&&!state.settings.trialEnteredByChapter[key]&&!prediction?.locked&&!result?.[predictionField(kind)];
+  }
+  function setPrediction(kind,roleId){
+    const actor=activeActor();
+    const role=roleId?roleById(roleId):null;
+    if(!actor||!canEditPrediction(actor.id,kind))return toast("This prediction is locked for the chapter.");
+    if(roleId&&!eligiblePredictionRole(role))return toast("Choose a living, revealed character.");
+    const prediction=predictionForActor(actor.id,state.settings.voiceChapter,true);
+    prediction[predictionField(kind)]=roleId||"";
+    selectedPredictionKind=null;
+    saveState();render();
+    toast(role?`${kind==="victim"?"Victim":"Blackened"} prediction set to ${role.name}.`:`${kind==="victim"?"Victim":"Blackened"} prediction cleared.`);
+  }
+  function lockChapterPredictions(chapter=state.settings.voiceChapter){
+    state.actors.forEach(actor=>predictionForActor(actor.id,chapter,true).locked=true);
+  }
+  function recalculateResult(kind,chapter=state.settings.voiceChapter){
+    const result=resultForChapter(chapter,true);
+    const roleId=result[predictionField(kind)];
+    result[correctField(kind)]=roleId?state.actors
+      .filter(actor=>predictionForActor(actor.id,chapter,false)?.[predictionField(kind)]===roleId)
+      .map(actor=>actor.id):[];
+  }
+  function setChapterResult(kind,roleId,chapter=state.settings.voiceChapter){
+    if(mode!=="host")return false;
+    if(kind==="blackened"&&roleId&&!state.settings.trialEnteredByChapter[chapterKey(chapter)]){
+      toast(`Start the Chapter ${chapterKey(chapter)} Trial before setting the Blackened.`);return false;
+    }
+    const result=resultForChapter(chapter,true);
+    result[predictionField(kind)]=roleId||"";
+    recalculateResult(kind,chapter);
+    return true;
+  }
+  function predictionCountsForActor(actorId){
+    let victim=0,blackened=0;
+    Object.values(state.chapterResults||{}).forEach(result=>{
+      if(result.victimCorrectActorIds?.includes(actorId))victim++;
+      if(result.blackenedCorrectActorIds?.includes(actorId))blackened++;
+    });
+    return {victim,blackened,total:victim+blackened};
+  }
+  function predictionMarkers(role,{memorial=false}={}){
+    const matches=[];
+    const chapters=memorial?Object.keys(state.predictions||{}).flatMap(actorId=>Object.keys(state.predictions[actorId]||{})):[chapterKey()];
+    [...new Set(chapters)].sort((a,b)=>Number(a)-Number(b)).forEach(chapter=>{
+      ["victim","blackened"].forEach(kind=>{
+        const actorIds=state.actors.filter(actor=>predictionForActor(actor.id,chapter,false)?.[predictionField(kind)]===role.id).map(actor=>actor.id);
+        if(!actorIds.length)return;
+        const result=resultForChapter(chapter,false);
+        const correct=result?.[predictionField(kind)]===role.id;
+        const names=actorIds.map(actorId=>actorById(actorId)?.name).filter(Boolean).join(", ");
+        matches.push(`<span class="prediction-chip ${kind} ${correct?"correct":""}" title="${esc(names)}">${memorial?`CH${chapter} · `:""}${kind==="victim"?"Victim":"Blackened"}: ${esc(names)}</span>`);
+      });
+    });
+    return matches.length?`<div class="prediction-markers">${matches.join("")}</div>`:"";
+  }
 
   function toast(text){
     const el=$("#toast");
@@ -1526,10 +1775,12 @@ body.mobile-dragging{user-select:none}
 
     renderSession();
     renderRules();
+    renderPredictionDock();
     renderPool(free);
     renderSpoilers(spoilers);
     renderActors();
     renderGraveyard(dead);
+    renderStatistics();
   }
 
   function renderSession(){
@@ -1759,6 +2010,106 @@ body.mobile-dragging{user-select:none}
     }
   }
 
+  function renderPredictionDock(){
+    const dock=$("#predictionDock");
+    if(mode!=="player"||!activeActor()){
+      dock.classList.add("hidden");dock.innerHTML="";return;
+    }
+    const actor=activeActor();
+    const chapter=chapterKey();
+    const prediction=predictionForActor(actor.id,chapter,true);
+    const trial=!!state.settings.trialByChapter[chapter];
+    const chapterLocked=trial||!!state.settings.trialEnteredByChapter[chapter]||prediction.locked;
+    dock.classList.remove("hidden");
+    const token=(kind,label)=>{
+      const field=predictionField(kind);
+      const role=roleById(prediction[field]);
+      const editable=canEditPrediction(actor.id,kind,chapter);
+      return `<div class="prediction-slot">
+        <button type="button" draggable="${editable}" class="prediction-token ${kind} ${selectedPredictionKind===kind?"selected":""} ${editable?"":"locked"}" data-prediction-token="${kind}">
+          <span><strong>${label}</strong><small>${role?esc(role.name):(editable?"Choose a character":"No prediction placed")}</small></span>
+        </button>
+        <button type="button" class="prediction-clear" data-clear-prediction="${kind}" title="Clear ${label}" ${editable&&role?"":"disabled"}>×</button>
+      </div>`;
+    };
+    dock.innerHTML=`
+      <div class="prediction-dock-head">
+        <div><div class="prediction-dock-title">Chapter ${chapter} predictions · ${esc(actor.name)}</div><div class="prediction-dock-help">${chapterLocked?"Locked when the Trial began.":"Tap or drag a token, then choose a living character."}</div></div>
+        <span class="badge ${chapterLocked?"host":"player"}">${chapterLocked?(trial?"TRIAL · LOCKED":"CHAPTER · LOCKED"):"PRE-TRIAL · EDITABLE"}</span>
+      </div>
+      ${token("victim","Victim prediction")}${token("blackened","Blackened prediction")}`;
+    dock.querySelectorAll("[data-prediction-token]").forEach(button=>{
+      const kind=button.dataset.predictionToken;
+      button.onclick=()=>{
+        if(!canEditPrediction(actor.id,kind))return toast("This prediction is locked for the chapter.");
+        selectedPredictionKind=selectedPredictionKind===kind?null:kind;render();
+      };
+      button.ondragstart=e=>{
+        if(!canEditPrediction(actor.id,kind)){e.preventDefault();return}
+        selectedPredictionKind=kind;
+        e.dataTransfer.effectAllowed="move";
+        e.dataTransfer.setData("text/plain",`prediction:${kind}`);
+      };
+      button.ondragend=()=>{selectedPredictionKind=null;render()};
+    });
+    dock.querySelectorAll("[data-clear-prediction]").forEach(button=>button.onclick=()=>setPrediction(button.dataset.clearPrediction,""));
+  }
+
+  function renderStatistics(){
+    const grid=$("#statsGrid");
+    grid.innerHTML="";
+    if(!state.actors.length){grid.innerHTML='<div class="panel empty-slot">No actors yet.</div>'}
+    state.actors.forEach(actor=>{
+      const counts=predictionCountsForActor(actor.id);
+      const card=document.createElement("article");
+      card.className="stats-card panel";
+      card.innerHTML=`<div class="stats-name">${esc(actor.name)}</div>
+        <div class="stats-total"><span>Correct guesses</span>${counts.total}</div>
+        <div class="stats-breakdown">
+          <div>Victim guesses<strong>${counts.victim}</strong></div>
+          <div>Blackened guesses<strong>${counts.blackened}</strong></div>
+          <div>Deaths<strong>${actor.deathCount||0}</strong></div>
+        </div>`;
+      grid.appendChild(card);
+    });
+    renderPopulationChart();
+  }
+
+  function renderPopulationChart(){
+    const chart=$("#populationChart");
+    chart.innerHTML="";
+    const labels={start:"Start","1":"CH1","2":"CH2","3":"CH3","4":"CH4","5":"CH5","6":"CH6"};
+    const visibleItems=POPULATION_KEYS.map(key=>state.populationGraph[key]).filter(item=>mode==="host"||item.revealed);
+    const maximum=Math.max(16,...visibleItems.map(item=>item.alive+item.dead+item.unknown));
+    POPULATION_KEYS.forEach(key=>{
+      const item=state.populationGraph[key];
+      const total=item.alive+item.dead+item.unknown;
+      const column=document.createElement("div");
+      column.className="population-column";
+      const segment=(field,label)=>item[field]?`<div class="population-segment ${field}" style="height:${Math.max(18,item[field]/maximum*210)}px" title="${label}: ${item[field]}">${item[field]}</div>`:"";
+      const controls=mode==="host"?`<div class="population-controls">
+        ${["alive","dead","unknown"].map(field=>`<div class="population-stepper"><span>${field[0].toUpperCase()+field.slice(1)} ${item[field]}</span><button type="button" data-pop-step="${key}|${field}|-1" ${item[field]===0?"disabled":""}>−</button><button type="button" data-pop-step="${key}|${field}|1">+</button></div>`).join("")}
+        <div class="population-actions"><button type="button" data-pop-preset="${key}">Apply preset</button><button type="button" data-pop-reveal="${key}">${item.revealed?"Hide":"Reveal"}</button></div>
+      </div>`:"";
+      column.innerHTML=`<div class="population-bar-wrap">${item.revealed||mode==="host"?(total?`<div class="population-bar">${segment("dead","Dead")}${segment("alive","Alive")}${segment("unknown","Unknown")}</div>`:'<div class="population-empty">No values</div>'):'<div class="population-empty">Unrevealed</div>'}</div><div class="population-label">${labels[key]}</div>${controls}`;
+      chart.appendChild(column);
+    });
+    if(mode==="host"){
+      chart.querySelectorAll("[data-pop-step]").forEach(button=>button.onclick=()=>{
+        const [key,field,delta]=button.dataset.popStep.split("|");
+        const item=state.populationGraph[key];
+        item[field]=Math.max(0,item[field]+Number(delta));item.revealed=true;saveState();render();
+      });
+      chart.querySelectorAll("[data-pop-preset]").forEach(button=>button.onclick=()=>{
+        const key=button.dataset.popPreset;
+        Object.assign(state.populationGraph[key],POPULATION_PRESETS[key],{revealed:true});saveState();render();toast(`${key==="start"?"Start":`CH${key}`} preset applied.`);
+      });
+      chart.querySelectorAll("[data-pop-reveal]").forEach(button=>button.onclick=()=>{
+        const item=state.populationGraph[button.dataset.popReveal];item.revealed=!item.revealed;saveState();render();
+      });
+    }
+  }
+
   async function playVoiceSample(r,button){
     const pool=voicePoolForRole(r);
     if(!pool.clips.length){toast("No spoiler-safe sample is available for this chapter yet.");return}
@@ -1952,6 +2303,7 @@ body.mobile-dragging{user-select:none}
           ${canExpand?`<span class="role-chevron">${isExpanded?"▲":"▼"}</span>`:""}
         </div>
       </div>
+      ${predictionMarkers(r)}
       ${canExpand?`
         <div class="role-expanded">
           ${r.image?`<img class="role-image" src="${esc(r.image)}" alt="" referrerpolicy="no-referrer">`:`<div class="role-image placeholder">No image yet</div>`}
@@ -1974,6 +2326,19 @@ body.mobile-dragging{user-select:none}
       enableTouchDrag(el,r);
     }
 
+    el.addEventListener("dragover",e=>{
+      if(!selectedPredictionKind)return;
+      e.preventDefault();e.stopPropagation();e.dataTransfer.dropEffect="move";el.classList.add("prediction-target");
+    });
+    el.addEventListener("dragleave",e=>{
+      if(!el.contains(e.relatedTarget))el.classList.remove("prediction-target");
+    });
+    el.addEventListener("drop",e=>{
+      if(!selectedPredictionKind)return;
+      e.preventDefault();e.stopPropagation();el.classList.remove("prediction-target");
+      const kind=selectedPredictionKind;selectedPredictionKind=null;setPrediction(kind,r.id);
+    });
+
     el.querySelector('[data-action="play-voice"]')?.addEventListener("click",e=>{
       e.stopPropagation();playVoiceSample(r,e.currentTarget);
     });
@@ -1995,6 +2360,11 @@ body.mobile-dragging{user-select:none}
           expanded.has(r.id)?expanded.delete(r.id):expanded.add(r.id);
           render();
         }
+      });
+    }else if(mode==="player"){
+      el.addEventListener("click",e=>{
+        if(!selectedPredictionKind||e.target.closest("button"))return;
+        const kind=selectedPredictionKind;selectedPredictionKind=null;setPrediction(kind,r.id);
       });
     }
     return el;
@@ -2110,6 +2480,10 @@ body.mobile-dragging{user-select:none}
     }
 
     deadRoles.slice().sort((a,b)=>(b.deathTime||0)-(a.deathTime||0)).forEach(r=>{
+      const deathChapter=chapterKey(r.deathChapter||r.voiceFinalChapter||state.settings.voiceChapter);
+      const result=resultForChapter(deathChapter,false);
+      const isVictim=result?.victimRoleId===r.id;
+      const isBlackened=result?.blackenedRoleId===r.id;
       const card=document.createElement("article");
       card.className="memorial-card";
       card.innerHTML=`
@@ -2122,17 +2496,31 @@ body.mobile-dragging{user-select:none}
         </div>
         <div class="memorial-title">${esc(r.title||"No title")}</div>
         <div class="last-actor">Last voiced by: <strong>${esc(r.lastActorName||"None")}</strong></div>
+        <div class="chapter-result-line">
+          ${isVictim?`<span class="result-badge victim">CH${deathChapter} Victim</span>`:""}
+          ${isBlackened?`<span class="result-badge blackened">CH${deathChapter} Blackened</span>`:""}
+        </div>
+        ${predictionMarkers(r,{memorial:true})}
         ${r.modifier?`<div class="role-detail">${esc(r.modifier)}</div>`:""}
         ${mode==="host"?`
           <div class="role-actions">
             <button type="button" data-revive="${r.id}">↩ Revive</button>
             <button type="button" data-edit-dead="${r.id}">✎ Edit</button>
+            <button type="button" data-result="victim|${r.id}|${deathChapter}">${isVictim?"Clear Victim":`Set CH${deathChapter} Victim`}</button>
+            <button type="button" data-result="blackened|${r.id}|${deathChapter}">${isBlackened?"Clear Blackened":`Set CH${deathChapter} Blackened`}</button>
           </div>`:""}
       `;
       card.querySelector('[data-action="play-voice"]')?.addEventListener("click",e=>playVoiceSample(r,e.currentTarget));
       if(mode==="host"){
         card.querySelector(`[data-revive="${r.id}"]`).onclick=()=>reviveRole(r.id);
         card.querySelector(`[data-edit-dead="${r.id}"]`).onclick=()=>openRoleDialog(r);
+        card.querySelectorAll("[data-result]").forEach(button=>button.onclick=()=>{
+          const [kind,roleId,chapter]=button.dataset.result.split("|");
+          const current=resultForChapter(chapter,false)?.[predictionField(kind)]||"";
+          if(!setChapterResult(kind,current===roleId?"":roleId,chapter))return;
+          saveState();render();
+          toast(`${kind==="victim"?"Victim":"Blackened"} result ${current===roleId?"cleared":"saved"} for Chapter ${chapter}.`);
+        });
       }
       gy.appendChild(card);
     });
@@ -2461,15 +2849,24 @@ body.mobile-dragging{user-select:none}
     const ownerId=r.ownerId;
     const owner=ownerId?actorById(ownerId):null;
     const wasLocked=!!owner&&owner.lockedRoleId===r.id;
+    const firstRecordedDeath=!r.deathRecorded;
 
-    if(owner){
+    if(owner&&firstRecordedDeath){
       owner.deathCount=(Number.isFinite(owner.deathCount)?owner.deathCount:0)+1;
       addActorHistory(owner,r.name);
     }
 
     r.dead=true;
-    r.voiceFinalChapter=state.settings.voiceChapter;
-    r.lastActorName=owner?owner.name:"None";
+    if(firstRecordedDeath){
+      r.voiceFinalChapter=state.settings.voiceChapter;
+      r.deathChapter=state.settings.voiceChapter;
+      r.deathActorId=owner?.id||null;
+      r.lastActorName=owner?owner.name:"None";
+      r.deathRecorded=true;
+      if(!state.settings.voiceInTrial&&!resultForChapter(state.settings.voiceChapter,false)?.victimRoleId){
+        setChapterResult("victim",r.id,state.settings.voiceChapter);
+      }
+    }
     r.deathTime=Date.now();
     r.ownerId=null;
     if(r.hiddenSpoiler) r.revealed=true; // a dead/revealed spoiler is visible in Memorial
@@ -2492,7 +2889,7 @@ body.mobile-dragging{user-select:none}
   function reviveRole(roleId){
     if(mode!=="host")return;
     const r=roleById(roleId);if(!r)return;
-    r.dead=false;r.ownerId=null;r.deathTime=null;r.voiceFinalChapter=null;
+    r.dead=false;r.ownerId=null;r.deathTime=null;
     saveState();render();toast(`${r.name} is back in the Library.`);
   }
 
@@ -2735,7 +3132,7 @@ body.mobile-dragging{user-select:none}
       if(!hiddenSpoiler)r.revealed=true;
     }else{
       state.roles.push({
-        id:id(),...values,ownerId:null,dead:false,lastActorName:"",deathTime:null,
+        id:id(),...values,ownerId:null,dead:false,lastActorName:"",deathTime:null,deathChapter:null,deathActorId:null,deathRecorded:false,
         revealed:!hiddenSpoiler,voiceProfile:name,voiceRevealChapter:state.settings.voiceChapter,
         voiceFinalChapter:null,customVoiceClips:[],personalRecordings:[],practiceLineHistory:[]
       });
@@ -2871,13 +3268,24 @@ body.mobile-dragging{user-select:none}
   $("#voiceChapterSelect").onchange=e=>{
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
     state.settings.voiceChapter=Number(e.target.value)||1;
+    state.settings.trialByChapter[chapterKey()]=false;
+    if(typeof state.settings.trialEnteredByChapter[chapterKey()]!=="boolean")state.settings.trialEnteredByChapter[chapterKey()]=false;
+    state.settings.voiceInTrial=false;
+    selectedPredictionKind=null;
     voiceShuffleBags.clear();saveState();render();
-    toast(`Voice samples set to Chapter ${state.settings.voiceChapter}.`);
+    toast(`Chapter ${state.settings.voiceChapter} selected. Trial Ongoing reset to off.`);
   };
 
   $("#voiceTrialToggle").onchange=e=>{
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
+    const wasOngoing=!!state.settings.voiceInTrial;
     state.settings.voiceInTrial=e.target.checked;
+    state.settings.trialByChapter[chapterKey()]=state.settings.voiceInTrial;
+    if(!wasOngoing&&state.settings.voiceInTrial){
+      state.settings.trialEnteredByChapter[chapterKey()]=true;
+      lockChapterPredictions();
+    }
+    selectedPredictionKind=null;
     voiceShuffleBags.clear();saveState();render();
     toast(state.settings.voiceInTrial
       ? `Trial samples enabled for Chapter ${state.settings.voiceChapter}.`
@@ -2908,6 +3316,7 @@ body.mobile-dragging{user-select:none}
       $$(".tab").forEach(x=>x.classList.toggle("active",x===btn));
       $("#castingTab").classList.toggle("active",btn.dataset.tab==="casting");
       $("#memorialTab").classList.toggle("active",btn.dataset.tab==="memorial");
+      $("#statisticsTab").classList.toggle("active",btn.dataset.tab==="statistics");
     };
   });
 
@@ -2939,7 +3348,7 @@ body.mobile-dragging{user-select:none}
   $("#exportBtn").onclick=()=>{
     const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);
-    a.download="danganronpa-cast-state-v6.json";a.click();
+    a.download="danganronpa-cast-state-v7.json";a.click();
     setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   };
 

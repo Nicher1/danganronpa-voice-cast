@@ -394,6 +394,14 @@ declare
   is_host boolean;
   board_row public.cast_boards%rowtype;
   merged_state jsonb;
+  merged_predictions jsonb;
+  current_chapter text;
+  trial_ongoing boolean;
+  chapter_result jsonb;
+  incoming_prediction record;
+  incoming_entry jsonb;
+  existing_entry jsonb;
+  merged_entry jsonb;
   public_state jsonb;
 begin
   if auth.uid() is null then raise exception 'Authentication required'; end if;
@@ -416,6 +424,55 @@ begin
   if is_host then
     merged_state := p_state;
   else
+    merged_predictions := coalesce(board_row.state -> 'predictions', '{}'::jsonb);
+    current_chapter := coalesce(board_row.state #>> '{settings,voiceChapter}', '1');
+    trial_ongoing := coalesce(
+      (board_row.state #>> array['settings', 'trialEnteredByChapter', current_chapter])::boolean,
+      (board_row.state #>> array['settings', 'trialByChapter', current_chapter])::boolean,
+      (board_row.state #>> '{settings,voiceInTrial}')::boolean,
+      false
+    );
+    chapter_result := coalesce(board_row.state -> 'chapterResults' -> current_chapter, '{}'::jsonb);
+
+    for incoming_prediction in
+      select item.key, item.value
+      from jsonb_each(coalesce(p_state -> 'predictions', '{}'::jsonb)) as item(key, value)
+      where exists (
+        select 1
+        from public.cast_actor_sessions cas
+        where cas.board_slug = p_slug
+          and cas.actor_id = item.key
+          and cas.user_id = auth.uid()
+      )
+    loop
+      incoming_entry := incoming_prediction.value -> current_chapter;
+      existing_entry := coalesce(merged_predictions -> incoming_prediction.key -> current_chapter, '{}'::jsonb);
+
+      -- Only the current chapter may be edited, and never after its snapshot was
+      -- locked. A resolved token is frozen even before the Trial begins.
+      if incoming_entry is not null
+         and not trial_ongoing
+         and not coalesce((existing_entry ->> 'locked')::boolean, false) then
+        merged_entry := jsonb_build_object(
+          'victimRoleId', case
+            when coalesce(chapter_result ->> 'victimRoleId', '') <> '' then coalesce(existing_entry ->> 'victimRoleId', '')
+            else coalesce(incoming_entry ->> 'victimRoleId', '')
+          end,
+          'blackenedRoleId', case
+            when coalesce(chapter_result ->> 'blackenedRoleId', '') <> '' then coalesce(existing_entry ->> 'blackenedRoleId', '')
+            else coalesce(incoming_entry ->> 'blackenedRoleId', '')
+          end,
+          'locked', false
+        );
+        merged_predictions := jsonb_set(
+          merged_predictions,
+          array[incoming_prediction.key],
+          coalesce(merged_predictions -> incoming_prediction.key, '{}'::jsonb) || jsonb_build_object(current_chapter, merged_entry),
+          true
+        );
+      end if;
+    end loop;
+
     merged_state := jsonb_set(
       jsonb_set(
         coalesce(p_state, '{}'::jsonb),
@@ -439,6 +496,41 @@ begin
       ),
       '{secretSettings}',
       coalesce(board_row.state -> 'secretSettings', '{}'::jsonb),
+      true
+    );
+
+    -- Chapter, Trial, result and graph data are host-controlled. A player may
+    -- only replace prediction records belonging to an actor they control.
+    merged_state := jsonb_set(merged_state, '{settings}', coalesce(board_row.state -> 'settings', '{}'::jsonb), true);
+    merged_state := jsonb_set(merged_state, '{chapterResults}', coalesce(board_row.state -> 'chapterResults', '{}'::jsonb), true);
+    merged_state := jsonb_set(merged_state, '{populationGraph}', coalesce(board_row.state -> 'populationGraph', '{}'::jsonb), true);
+    merged_state := jsonb_set(merged_state, '{predictions}', merged_predictions, true);
+
+    -- Death totals are historical host-owned facts even though players may edit
+    -- their own actor name/password and create a new actor.
+    merged_state := jsonb_set(
+      merged_state,
+      '{actors}',
+      coalesce(
+        (
+          select jsonb_agg(
+            case
+              when existing.actor is null then item.actor || jsonb_build_object('deathCount', 0)
+              else item.actor || jsonb_build_object('deathCount', coalesce(existing.actor -> 'deathCount', '0'::jsonb))
+            end
+            order by item.ordinality
+          )
+          from jsonb_array_elements(coalesce(merged_state -> 'actors', '[]'::jsonb))
+            with ordinality as item(actor, ordinality)
+          left join lateral (
+            select stored.actor
+            from jsonb_array_elements(coalesce(board_row.state -> 'actors', '[]'::jsonb)) as stored(actor)
+            where stored.actor ->> 'id' = item.actor ->> 'id'
+            limit 1
+          ) as existing on true
+        ),
+        '[]'::jsonb
+      ),
       true
     );
   end if;
