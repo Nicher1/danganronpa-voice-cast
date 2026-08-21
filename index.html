@@ -1173,6 +1173,12 @@ body.mobile-dragging{user-select:none}
   const requestedMode = params.get("mode");
   const hostAccess = params.get("host") === "11037" || /\/11037\/?$/.test(location.pathname);
   const mode = hostAccess ? "host" : requestedMode === "viewer" ? "viewer" : "player";
+  if(hostAccess&&params.get("host")==="11037"){
+    const cleanHostUrl=new URL(location.href);
+    cleanHostUrl.pathname=cleanHostUrl.pathname.replace(/\/?$/, "/11037");
+    cleanHostUrl.search="";cleanHostUrl.hash="";
+    history.replaceState(null,"",cleanHostUrl.pathname);
+  }
 
   const IMG = {
     monokuma:"https://static.wikia.nocookie.net/danganronpa/images/9/99/Monokuma_VA_ID.png/revision/latest/scale-to-width-down/75?cb=20170217164015",
