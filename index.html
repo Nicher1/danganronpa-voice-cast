@@ -728,12 +728,15 @@ body.mobile-dragging{user-select:none}
 .result-badge{padding:.27rem .46rem;border-radius:999px;border:1px solid var(--line);font-size:.61rem;font-weight:900}
 .result-badge.victim{color:#d9edff;border-color:rgba(112,184,255,.36)}.result-badge.blackened{color:#ffd9e8;border-color:rgba(245,64,148,.36)}
 .patch-notes{display:grid;gap:10px;margin-top:12px;max-height:min(58vh,520px);overflow:auto;padding-right:3px}
-.patch-note{
-  padding:12px 13px;border:1px solid var(--line);border-radius:12px;
-  background:linear-gradient(135deg,rgba(245,64,148,.055),rgba(112,184,255,.025)),var(--panel-raised)
-}
+.patch-release{overflow:hidden;border:1px solid var(--line);border-radius:13px;background:linear-gradient(135deg,rgba(245,64,148,.04),rgba(112,184,255,.018)),var(--panel-raised)}
+.patch-release summary{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:11px;padding:13px 14px;cursor:pointer;list-style:none}
+.patch-release summary::-webkit-details-marker{display:none}.patch-release summary:hover{background:rgba(255,255,255,.025)}
+.patch-release[open] summary{border-bottom:1px solid var(--line);background:rgba(245,64,148,.035)}
+.patch-release-title strong{display:block;font-size:.84rem}.patch-release-title small{display:block;margin-top:2px;color:var(--muted);font-size:.67rem}
+.patch-chevron{color:var(--muted);font-size:.9rem;transition:transform .18s ease}.patch-release[open] .patch-chevron{transform:rotate(180deg)}
+.patch-release-body{display:grid;padding:0 13px}.patch-note{padding:12px 0;border-bottom:1px solid var(--line)}.patch-note:last-child{border-bottom:0}
 .patch-note h4{margin:0 0 5px;font-size:.9rem}.patch-note p{margin:0;color:var(--muted);font-size:.75rem;line-height:1.5}
-.patch-version{display:inline-block;margin-bottom:6px;color:var(--pink-hot);font-size:.6rem;font-weight:950;letter-spacing:.13em}
+.patch-version{display:inline-flex;align-items:center;justify-content:center;min-width:42px;padding:.3rem .45rem;border-radius:999px;background:rgba(245,64,148,.11);color:var(--pink-hot);font-size:.61rem;font-weight:950;letter-spacing:.1em}
 .game-lock-banner{
   position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;
   margin:0 0 14px;padding:16px 18px;overflow:hidden;border:1px solid #444b5b;border-radius:15px;
@@ -965,14 +968,30 @@ body.mobile-dragging{user-select:none}
         </div>
         <button type="button" class="icon-btn" data-close="patchNotesDialog">×</button>
       </div>
-      <p class="muted small">Major releases, with each entry covering changes since the previous major push.</p>
+      <p class="muted small">Version history. Releases are newest first and collapsed until you open them.</p>
       <div class="patch-notes">
-        <section class="patch-note"><span class="patch-version">MULTI-GAME BOARD · DR2</span><h4>Goodbye Despair is ready behind a progression lock</h4><p>Admin Tools can mark games complete, unlocking the next spoiler-safe board. Every window gets a game picker once DR2 is available, while each game preserves separate assignments, chapters, Trial state, predictions, Memorial, and population history.</p></section>
-        <section class="patch-note"><span class="patch-version">CHAPTER PREDICTIONS</span><h4>Victim and Blackened voting</h4><p>Every actor now receives two predictions per chapter. They can move them freely before the Trial; entering the Trial permanently locks that chapter's choices.</p></section>
-        <section class="patch-note"><span class="patch-version">RESULTS & MEMORIAL</span><h4>Persistent results without double scoring</h4><p>Pre-Trial deaths can establish the Victim, the host can mark the Blackened from Memorial, and prediction markers stay visible after a character dies. Result snapshots prevent duplicate points.</p></section>
-        <section class="patch-note"><span class="patch-version">STATISTICS</span><h4>Actor records and known population</h4><p>The new Statistics tab tracks correct Victim guesses, correct Blackened guesses, and historical character deaths separately. Its host-controlled chart shows Alive at the bottom, Dead above it, and Unknown on top.</p></section>
-        <section class="patch-note"><span class="patch-version">TRIAL & VOICE SAFETY</span><h4>Chapter-aware sample sources</h4><p>The chapter selector tracks the chapter currently being played. Outside a Trial, living characters use the previous chapter's best samples. During a Trial, they use only spoiler-safe pre-trial samples from the current chapter.</p></section>
-        <section class="patch-note"><span class="patch-version">SYNC & ACCESS</span><h4>Shared, role-protected data</h4><p>Predictions, results, graph values, and statistics persist through Supabase. Players can edit only their own current pre-Trial predictions; spectators remain read-only; graph and result controls remain host-only.</p></section>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.7</span><span class="patch-release-title"><strong>Voice safety and version history</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Pre-trial now means pre-trial</h4><p>During the current chapter's Trial, previously revealed living characters use only field dialogue heard before that Trial. Trial testimony is excluded. Outside the Trial, the pool remains the previous chapter's strongest lines, including its completed Trial.</p></section>
+            <section class="patch-note"><h4>Compact versioned patch notes</h4><p>Major changes are grouped into numbered releases, sorted newest first, and collapsed by default so the history stays easy to scan.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.6</span><span class="patch-release-title"><strong>Multi-game board</strong><small>Danganronpa 2 framework</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Goodbye Despair is ready behind a progression lock</h4><p>Admin Tools can mark games complete, unlocking the next spoiler-safe board. Every window gets a game picker once DR2 is available, while each game preserves separate assignments, chapters, Trial state, predictions, Memorial, and population history.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.5</span><span class="patch-release-title"><strong>Chapter play system</strong><small>Predictions, results, statistics, and sync</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Victim and Blackened voting</h4><p>Every actor receives two predictions per chapter. They can move them freely before the Trial; entering the Trial permanently locks that chapter's choices.</p></section>
+            <section class="patch-note"><h4>Persistent results without double scoring</h4><p>Pre-Trial deaths can establish the Victim, the host can mark the Blackened from Memorial, and prediction markers stay visible after a character dies. Result snapshots prevent duplicate points.</p></section>
+            <section class="patch-note"><h4>Actor records and known population</h4><p>The Statistics tab tracks correct Victim guesses, correct Blackened guesses, and historical character deaths separately. Its host-controlled chart shows Alive below Dead, with Unknown on top.</p></section>
+            <section class="patch-note"><h4>Shared, role-protected data</h4><p>Predictions, results, graph values, and statistics persist through Supabase. Players can edit only their own current pre-Trial predictions; spectators remain read-only; graph and result controls remain host-only.</p></section>
+          </div>
+        </details>
       </div>
       <div class="modal-actions"><button type="button" class="primary" data-close="patchNotesDialog">Got it</button></div>
     </div>
@@ -1819,9 +1838,9 @@ body.mobile-dragging{user-select:none}
   function chapterStateKey(chapter=currentSettings().voiceChapter,gameId=activeGameId){return `${gameId}:${chapterKey(chapter)}`}
   function livingVoiceSourceSummary(){
     const current=currentSettings().voiceChapter;
-    if(currentSettings().voiceInTrial)return `Chapter ${current} pre-trial samples (current chapter).`;
+    if(currentSettings().voiceInTrial)return `Chapter ${current} pre-trial field dialogue only (current chapter; Trial testimony excluded).`;
     if(current===1)return "Earliest spoiler-safe Chapter 1 samples (there is no previous chapter).";
-    return `Best samples from Chapter ${current-1} (previous chapter).`;
+    return `Best samples from Chapter ${current-1} (previous chapter, including its completed Trial).`;
   }
   function predictionForActor(actorId,chapter=currentSettings().voiceChapter,create=false){
     const key=chapterStateKey(chapter);
@@ -2130,6 +2149,27 @@ body.mobile-dragging{user-select:none}
     return !currentSettings().gameActive;
   }
 
+  const CURATED_CURRENT_PRETRIAL_CLIPS={
+    "Makoto Naegi":{
+      3:[
+        {id:"Dr1_voice_hca_us.awb.01128",path:"2/2d/Dr1_voice_hca_us.awb.01128.ogg",text:"He's alive again?!"},
+        {id:"Dr1_voice_hca_us.awb.01113",path:"5/5d/Dr1_voice_hca_us.awb.01113.ogg",text:"What are you doing?"},
+        {id:"Dr1_voice_hca_us.awb.01120",path:"2/21/Dr1_voice_hca_us.awb.01120.ogg",text:"Wait, no!"},
+        {id:"Dr1_voice_hca_us.awb.01152",path:"d/d6/Dr1_voice_hca_us.awb.01152.ogg",text:"What the...?"},
+        {id:"Dr1_voice_hca_us.awb.01154",path:"4/45/Dr1_voice_hca_us.awb.01154.ogg",text:"What did you... say?"}
+      ]
+    },
+    "Byakuya Togami":{
+      3:[
+        {id:"Dr1_voice_hca_us.awb.02021",path:"3/3e/Dr1_voice_hca_us.awb.02021.ogg",text:"Such ignorance."},
+        {id:"Dr1_voice_hca_us.awb.01988",path:"4/4c/Dr1_voice_hca_us.awb.01988.ogg",text:"That's enough."},
+        {id:"Dr1_voice_hca_us.awb.01990",path:"f/fd/Dr1_voice_hca_us.awb.01990.ogg",text:"Stop talking."},
+        {id:"Dr1_voice_hca_us.awb.01994",path:"4/48/Dr1_voice_hca_us.awb.01994.ogg",text:"Hm. Interesting."},
+        {id:"Dr1_voice_hca_us.awb.02016",path:"d/d2/Dr1_voice_hca_us.awb.02016.ogg",text:"I don't have time to play with you."}
+      ]
+    }
+  };
+
   function voiceLibraryProfile(r){
     const library=window.CAST_VOICE_LIBRARY;
     if(!library)return null;
@@ -2173,6 +2213,17 @@ body.mobile-dragging{user-select:none}
     }));
   }
 
+  function currentPretrialVoiceItems(r,profile,chapter){
+    const curated=CURATED_CURRENT_PRETRIAL_CLIPS[r.voiceProfile||r.name]?.[chapter];
+    if(curated?.length)return {items:curated,chapterSpecific:true};
+    const revealChapter=Number(r.voiceRevealChapter)||1;
+    if(chapter===revealChapter&&chapter>1){
+      const reveal=voicePackAtChapter(profile,chapter)?.reveal||[];
+      if(reveal.length)return {items:reveal,chapterSpecific:true};
+    }
+    return {items:profile?.pretrial||[],chapterSpecific:false};
+  }
+
   function voicePoolForRole(r){
     const selected=currentSettings().voiceChapter;
     if(!r.dead&&selected<(Number(r.voiceRevealChapter)||1))return {clips:[],label:"Not revealed yet"};
@@ -2183,23 +2234,23 @@ body.mobile-dragging{user-select:none}
     if(r.dead){
       const target=Number(r.voiceFinalChapter)||Math.max(1,selected-1);
       const pack=voicePackForChapter(profile,target);
-      clips=[...(pack?.highlights||[]).map(item=>officialVoiceClip(item,pack?.chapter||target,"trial")),...customVoiceFor(r,target,"trial")];
+      clips=[...(pack?.highlights||[]).map(item=>officialVoiceClip(item,pack?.chapter||target,"trial")),...customVoiceFor(r,target,"trial"),...customVoiceFor(r,target,"pretrial")];
       label=`best samples from Chapter ${pack?.chapter||target}`;
     }else if(currentSettings().voiceInTrial){
-      const pack=voicePackAtChapter(profile,selected);
+      const pretrial=currentPretrialVoiceItems(r,profile,selected);
       clips=[
-        ...(pack?.reveal||[]).map(item=>officialVoiceClip(item,selected,"pretrial")),
+        ...pretrial.items.map(item=>officialVoiceClip(item,selected,"pretrial")),
         ...customVoiceFor(r,selected,"pretrial",true)
       ];
-      label=`spoiler-safe Chapter ${selected} pre-trial samples`;
+      label=pretrial.chapterSpecific?`spoiler-safe Chapter ${selected} pre-trial samples`:`spoiler-safe field samples heard before the Chapter ${selected} Trial`;
     }else if(selected===1){
-      const pack=voicePackAtChapter(profile,1);
-      clips=[...(pack?.reveal||[]).map(item=>officialVoiceClip(item,1,"pretrial")),...customVoiceFor(r,1,"pretrial",true)];
+      const pretrial=currentPretrialVoiceItems(r,profile,1);
+      clips=[...pretrial.items.map(item=>officialVoiceClip(item,1,"pretrial")),...customVoiceFor(r,1,"pretrial",true)];
       label="earliest spoiler-safe Chapter 1 samples";
     }else{
       const target=selected-1;
       const pack=voicePackAtChapter(profile,target);
-      clips=[...(pack?.highlights||[]).map(item=>officialVoiceClip(item,target,"trial")),...customVoiceFor(r,target,"trial",true)];
+      clips=[...(pack?.highlights||[]).map(item=>officialVoiceClip(item,target,"trial")),...customVoiceFor(r,target,"trial",true),...customVoiceFor(r,target,"pretrial",true)];
       label=`best samples from Chapter ${target} (previous chapter)`;
     }
 
