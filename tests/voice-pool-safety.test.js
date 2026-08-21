@@ -53,8 +53,10 @@ assert.ok(poolSource.includes("const target=selected-1"), "Normal playback shoul
 assert.ok(poolSource.includes("pack?.highlights"), "Normal playback should use the previous chapter's highlights");
 
 const versions = [...html.matchAll(/class="patch-version">(v[0-9.]+)/g)].map(match => match[1]);
-assert.deepEqual(versions, ["v0.8", "v0.7", "v0.6", "v0.5"]);
-assert.equal((html.match(/<details class="patch-release">/g) || []).length, 4);
+assert.deepEqual(versions, ["v0.9", "v0.8.1", "v0.8", "v0.7", "v0.6", "v0.5"]);
+assert.equal((html.match(/<details class="patch-release"/g) || []).length, 6);
 assert.equal((html.match(/<details class="patch-release" open>/g) || []).length, 0);
+assert.ok(html.includes("Point calculation for anime guessing"));
+assert.ok(!html.includes("secret point"));
 
 console.log("Voice-pool safety and patch-history checks passed.");

@@ -17,7 +17,7 @@ assert.ok(definitionsMatch, "Game definitions are missing");
 const definitions = vm.runInNewContext(definitionsMatch[1]);
 assert.deepEqual(Array.from(definitions, game => game.id), ["dr1", "dr2", "dr3anime", "v3"]);
 assert.equal(definitions.find(game => game.id === "dr3anime").kind, "anime");
-assert.equal(definitions.find(game => game.id === "dr3anime").maxChapter, 12);
+assert.equal(definitions.find(game => game.id === "dr3anime").maxChapter, 24);
 assert.equal(definitions.find(game => game.id === "v3").kind, "killing");
 
 for (const name of [
@@ -39,16 +39,28 @@ const resultEnd = html.indexOf("function predictionMarkers", resultStart);
 const resultSource = html.slice(resultStart, resultEnd);
 assert.ok(resultSource.includes('kind==="blackened"&&gameDefinition(activeGameId).kind==="anime"'));
 assert.ok(resultSource.includes("result.blackenedCorrectActorIds=[]"));
+assert.ok(resultSource.includes("result.hiddenBlackenedCorrectActorIds=roleId?state.actors"));
+assert.ok(resultSource.includes("if(animeComplete)blackened++"));
+assert.ok(resultSource.includes("else pendingBlackened++"));
 assert.ok(resultSource.includes('if(anime&&kind==="victim"&&roleId)lockChapterPredictions(chapter)'));
 
 const pickerStart = html.indexOf("function renderGamePicker");
 const pickerEnd = html.indexOf("function showGamePicker", pickerStart);
 const pickerSource = html.slice(pickerStart, pickerEnd);
 assert.ok(pickerSource.includes('mode==="host"?GAME_DEFINITIONS:GAME_DEFINITIONS.filter(game=>isGameUnlocked(game.id))'));
-assert.match(html, /NEXT KILLING GAME<\/div><h2>Classified<\/h2>/);
+assert.match(html, /NEXT KILLING GAME<\/div><h2 id="lockedGameTitle">Next game<\/h2>/);
+assert.ok(html.includes('$("#lockedGameTitle").textContent=nextLocked.title'));
+assert.ok(html.includes("const ANIME_WATCH_ORDER"));
+assert.ok(html.includes("function renderAnimeTracker"));
+assert.ok(html.includes('id="animeCandidateGrid"'));
+assert.ok(html.includes("function sortedActorsForBoard"));
+assert.ok(html.includes("activeGameLeaderIds(\"total\")"));
+assert.ok(html.includes("activeGameLeaderIds(\"deaths\")"));
 assert.ok(html.includes("Only unlocked boards appear"));
 assert.ok(html.includes("function renderPredictionChart"));
+assert.ok(html.includes('data-reveal-game="dr3anime"'));
+assert.ok(html.includes('sharedStateVersion<10'));
 assert.ok(sql.includes("'dr1', 'dr2', 'dr3anime', 'v3'"));
-assert.ok(html.includes("version:9"));
+assert.ok(html.includes("version:10"));
 
 console.log("Series progression, anime scoring, V3 roster, and statistics checks passed.");
