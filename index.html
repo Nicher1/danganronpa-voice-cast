@@ -1057,8 +1057,17 @@ body.mobile-dragging{user-select:none}
       </div>
       <p class="muted small">Version history. Releases are newest first and collapsed until you open them.</p>
       <div class="patch-notes">
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.10</span><span class="patch-release-title"><strong>Live presence and leader emblems</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>See who is online</h4><p>An actor box now receives a subtle highlighted border and status dot while that actor’s account is logged in. The highlight clears automatically after logout or disconnection.</p></section>
+            <section class="patch-note"><h4>Hope and despair leader emblems</h4><p>The current game’s strongest predictor receives the Hope’s Peak emblem, while the actor with the most assigned-character deaths carries a Monokuma face. Tied leaders share the relevant emblem.</p></section>
+            <section class="patch-note" data-reveal-game="dr3anime"><h4>Cleaner prediction labels</h4><p>Prediction controls use clearer, neutral labels and explain when their totals are finalized.</p></section>
+            <section class="patch-note"><h4>Always-current pages</h4><p>The site now detects an older cached build and reloads the current release automatically, keeping host, player, and viewer pages consistent after an update.</p></section>
+          </div>
+        </details>
         <details class="patch-release" data-reveal-game="dr3anime">
-          <summary><span class="patch-version">v0.9</span><span class="patch-release-title"><strong>Anime watch board</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">v0.9</span><span class="patch-release-title"><strong>Anime watch board</strong><small>Previous release</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Anime-first layout</h4><p>Danganronpa 3 replaces the voice-casting slots with compact prediction score cards, a current-episode tracker, and a color-coded Future Arc, Despair Arc, and Hope Arc watch-order guide.</p></section>
             <section class="patch-note"><h4>Board leaders</h4><p>The strongest predictor on the active board receives the Hope’s Peak emblem, while the actor with the most assigned-character deaths carries a Monokuma face. Voice-actor cards are ordered by their most recent locked-character activity.</p></section>
@@ -1350,7 +1359,7 @@ body.mobile-dragging{user-select:none}
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.08.22.5";
+  const APP_BUILD = "2026.08.22.6";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";

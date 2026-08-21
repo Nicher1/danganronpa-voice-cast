@@ -53,10 +53,14 @@ assert.ok(poolSource.includes("const target=selected-1"), "Normal playback shoul
 assert.ok(poolSource.includes("pack?.highlights"), "Normal playback should use the previous chapter's highlights");
 
 const versions = [...html.matchAll(/class="patch-version">(v[0-9.]+)/g)].map(match => match[1]);
-assert.deepEqual(versions, ["v0.9", "v0.8.1", "v0.8", "v0.7", "v0.6", "v0.5"]);
-assert.equal((html.match(/<details class="patch-release"/g) || []).length, 6);
+assert.deepEqual(versions, ["v0.10", "v0.9", "v0.8.1", "v0.8", "v0.7", "v0.6", "v0.5"]);
+assert.equal((html.match(/<details class="patch-release"/g) || []).length, 7);
 assert.equal((html.match(/<details class="patch-release" open>/g) || []).length, 0);
 assert.ok(html.includes("Point calculation for anime guessing"));
-assert.ok(!html.includes("secret point"));
+const patchNotes = html.slice(html.indexOf('<dialog id="patchNotesDialog"'), html.indexOf('<dialog id="hostAuthDialog"'));
+assert.doesNotMatch(patchNotes, /secret points?|hidden points?|unscored|decoy/i);
+assert.ok(patchNotes.includes("See who is online"));
+assert.ok(patchNotes.includes("Hope and despair leader emblems"));
+assert.ok(patchNotes.includes('data-reveal-game="dr3anime"><h4>Cleaner prediction labels'));
 
 console.log("Voice-pool safety and patch-history checks passed.");
