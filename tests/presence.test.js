@@ -9,10 +9,10 @@ const trackCalls = [];
 let untrackCalls = 0;
 const channel = {
   state: {},
-  syncHandler: null,
+  presenceHandlers: {},
   statusHandler: null,
   on(type, filter, handler) {
-    if (type === "presence" && filter.event === "sync") this.syncHandler = handler;
+    if (type === "presence") this.presenceHandlers[filter.event] = handler;
     return this;
   },
   subscribe(handler) {
@@ -73,8 +73,16 @@ vm.runInNewContext(source, context, { filename: "supabase-sync.js" });
     one: [{ actor_id: "actor-a" }],
     two: [{ actor_id: "actor-b" }, { actor_id: "actor-a" }]
   };
-  channel.syncHandler();
+  channel.presenceHandlers.sync();
   assert.deepEqual([...onlineActorIds].sort(), ["actor-a", "actor-b"]);
+
+  channel.state.three = [{ actor_id: "actor-c" }];
+  channel.presenceHandlers.join();
+  assert.deepEqual([...onlineActorIds].sort(), ["actor-a", "actor-b", "actor-c"]);
+
+  channel.state = { one: [{ actor_id: "actor-a" }] };
+  channel.presenceHandlers.leave();
+  assert.deepEqual([...onlineActorIds], ["actor-a"]);
 
   await sync.setPresenceActor("actor-c");
   assert.equal(trackCalls.at(-1).actor_id, "actor-c");

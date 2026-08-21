@@ -25,6 +25,7 @@
       this.channel = null;
       this.presenceChannel = null;
       this.presenceActorId = null;
+      this.presenceSubscribed = false;
       this.presenceSessionId = window.crypto?.randomUUID
         ? window.crypto.randomUUID()
         : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -180,20 +181,25 @@
     subscribePresence(actorId, onPresence, onStatus) {
       if (this.presenceChannel) this.client.removeChannel(this.presenceChannel);
       this.presenceActorId = actorId || null;
+      this.presenceSubscribed = false;
+      const emitPresence = () => {
+        const presenceState = this.presenceChannel?.presenceState?.() || {};
+        const actorIds = new Set();
+        Object.values(presenceState).flat().forEach(entry => {
+          if (entry?.actor_id) actorIds.add(String(entry.actor_id));
+        });
+        onPresence?.([...actorIds]);
+      };
       this.presenceChannel = this.client
         .channel(`cast-presence-${this.slug}`, {
           config: { presence: { key: this.presenceSessionId } }
         })
-        .on("presence", { event: "sync" }, () => {
-          const presenceState = this.presenceChannel?.presenceState?.() || {};
-          const actorIds = new Set();
-          Object.values(presenceState).flat().forEach(entry => {
-            if (entry?.actor_id) actorIds.add(String(entry.actor_id));
-          });
-          onPresence?.([...actorIds]);
-        })
+        .on("presence", { event: "sync" }, emitPresence)
+        .on("presence", { event: "join" }, emitPresence)
+        .on("presence", { event: "leave" }, emitPresence)
         .subscribe(async status => {
           onStatus?.(status);
+          this.presenceSubscribed = status === "SUBSCRIBED";
           if (status === "SUBSCRIBED" && this.presenceActorId) {
             await this.presenceChannel.track({
               actor_id: this.presenceActorId,
@@ -205,7 +211,7 @@
 
     async setPresenceActor(actorId) {
       this.presenceActorId = actorId || null;
-      if (!this.presenceChannel) return false;
+      if (!this.presenceChannel || !this.presenceSubscribed) return false;
       if (!this.presenceActorId) {
         await this.presenceChannel.untrack();
         return true;
