@@ -700,7 +700,7 @@ body.mobile-dragging{user-select:none}
 .prediction-chip.correct{box-shadow:inset 0 0 0 1px rgba(98,214,164,.55)}
 .role-card.prediction-target{border-color:white;box-shadow:0 0 0 2px rgba(112,184,255,.14)}
 .stats-hero{padding:22px;margin-bottom:14px}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:12px;margin-bottom:16px}
 .stats-card{padding:15px}
 .stats-name{font-size:1rem;font-weight:950;padding-bottom:9px;border-bottom:1px solid var(--line)}
 .stats-total{font-size:1.7rem;font-weight:950;letter-spacing:-.04em;margin-top:12px}
@@ -708,6 +708,15 @@ body.mobile-dragging{user-select:none}
 .stats-breakdown{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:12px}
 .stats-breakdown div{padding:8px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.018);font-size:.67rem;color:var(--muted)}
 .stats-breakdown strong{display:block;color:white;font-size:1rem;margin-top:2px}
+.stats-game-list{display:grid;gap:7px;margin-top:12px}
+.stats-game-row{display:grid;grid-template-columns:minmax(0,1.35fr) repeat(4,minmax(42px,.55fr));gap:5px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.018)}
+.stats-game-row strong{font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stats-game-metric{text-align:center;color:var(--muted);font-size:.57rem;text-transform:uppercase;letter-spacing:.06em}
+.stats-game-metric b{display:block;color:white;font-size:.88rem;letter-spacing:0;margin-top:2px}.stats-game-row.total{border-color:rgba(245,64,148,.35);background:rgba(245,64,148,.045)}
+.prediction-leaderboard{padding:18px;margin-bottom:16px}.prediction-chart{display:grid;gap:11px;margin-top:16px}
+.prediction-chart-row{display:grid;grid-template-columns:minmax(88px,150px) minmax(180px,1fr) auto;gap:10px;align-items:center}
+.prediction-chart-name{font-size:.74rem;font-weight:950;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.prediction-chart-track{display:flex;height:24px;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:rgba(255,255,255,.018)}
+.prediction-chart-segment{min-width:0;display:flex;align-items:center;justify-content:center;color:#0a0b10;font-size:.62rem;font-weight:950;transition:width .2s}.prediction-chart-segment.victim{background:var(--blue)}.prediction-chart-segment.blackened{background:var(--pink-hot)}.prediction-chart-segment.deaths{background:var(--red)}
+.prediction-chart-total{font-size:.74rem;font-weight:950}.prediction-chart-legend{display:flex;gap:13px;flex-wrap:wrap;color:var(--muted);font-size:.68rem}.prediction-chart-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
 .population-panel{padding:18px;overflow:hidden}
 .population-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
 .population-chart{display:flex;align-items:flex-end;gap:10px;min-height:310px;overflow-x:auto;padding:8px 4px 0}
@@ -764,6 +773,7 @@ body.mobile-dragging{user-select:none}
 @media(max-width:620px){
   .prediction-dock{grid-template-columns:1fr}.prediction-dock-head{align-items:flex-start;flex-direction:column}
   .stats-breakdown{grid-template-columns:1fr 1fr}.stats-breakdown div:last-child{grid-column:1/-1}
+  .stats-game-row{grid-template-columns:minmax(86px,1.2fr) repeat(4,minmax(34px,.55fr));padding:7px 5px}.prediction-chart-row{grid-template-columns:78px minmax(120px,1fr) auto;gap:6px}
   .population-header{flex-direction:column}
   .game-lock-banner,.admin-hero{align-items:flex-start;flex-direction:column}
 }
@@ -809,7 +819,7 @@ body.mobile-dragging{user-select:none}
     <section id="lockedGameBanner" class="game-lock-banner hidden" aria-label="Locked game">
       <div class="game-lock-copy">
         <span class="game-lock-icon">🔒</span>
-        <div><div class="section-kicker">NEXT KILLING GAME</div><h2>Danganronpa 2: Goodbye Despair</h2><p id="lockedGameCopy">Locked until Trigger Happy Havoc is completed.</p></div>
+        <div><div class="section-kicker">NEXT KILLING GAME</div><h2>Classified</h2><p id="lockedGameCopy">The next board remains hidden until the host unlocks it.</p></div>
       </div>
       <button id="lockedGameAdminBtn" class="ghost host-only">Open Admin Tools</button>
     </section>
@@ -836,7 +846,7 @@ body.mobile-dragging{user-select:none}
         </label>
 
         <div class="voice-controls host-only" aria-label="Voice sample controls">
-          <label>Current chapter
+          <label><span id="storyUnitLabel">Current chapter</span>
             <select id="voiceChapterSelect" aria-label="Current story chapter">
               <option value="1">Chapter 1</option>
               <option value="2">Chapter 2</option>
@@ -846,7 +856,7 @@ body.mobile-dragging{user-select:none}
               <option value="6">Chapter 6</option>
             </select>
           </label>
-          <label class="toggle-wrap compact-toggle">
+          <label id="voiceTrialToggleWrap" class="toggle-wrap compact-toggle">
             <input id="voiceTrialToggle" type="checkbox">
             <span class="toggle"></span>
             <span><strong>In Trial</strong><small>Lock predictions; use this chapter’s pre-trial lines</small></span>
@@ -922,15 +932,22 @@ body.mobile-dragging{user-select:none}
       <div class="stats-hero panel">
         <div class="section-kicker">PLAYER RECORDS</div>
         <h2>Statistics</h2>
-        <p class="muted small">Correct Victim and Blackened predictions are counted separately. Deaths remain a historical voice-cast statistic.</p>
+        <p class="muted small">Only unlocked boards appear. Correct Victim and Blackened predictions are counted per game and across the series; Danganronpa 3 killer guesses are an unscored decoy.</p>
       </div>
       <div id="statsGrid" class="stats-grid"></div>
+      <section class="prediction-leaderboard panel">
+        <div class="population-header">
+          <div><div class="section-kicker">SERIES COMPARISON</div><h2>Hope vs. despair</h2><p class="muted small">A visual comparison of correct guesses and assigned-character deaths across every unlocked board.</p></div>
+          <div class="prediction-chart-legend"><span><i style="background:var(--blue)"></i>Victim</span><span><i style="background:var(--pink-hot)"></i>Blackened</span><span><i style="background:var(--red)"></i>Deaths</span></div>
+        </div>
+        <div id="predictionChart" class="prediction-chart"></div>
+      </section>
       <section class="population-panel panel">
         <div class="population-header">
           <div>
             <div class="section-kicker">KNOWN POPULATION</div>
-            <h2>Chapter progression</h2>
-            <p class="muted small">Each chapter shows what the players know at the end of that chapter.</p>
+            <h2 id="populationTitle">Chapter progression</h2>
+            <p id="populationHelp" class="muted small">Each chapter shows what the players know at the end of that chapter.</p>
           </div>
           <div class="population-legend" aria-label="Population legend">
             <span><i class="legend-swatch alive"></i>Alive</span>
@@ -971,7 +988,16 @@ body.mobile-dragging{user-select:none}
       <p class="muted small">Version history. Releases are newest first and collapsed until you open them.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">v0.7</span><span class="patch-release-title"><strong>Voice safety and version history</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">v0.8</span><span class="patch-release-title"><strong>Series predictions and future boards</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Danganronpa 3 prediction board</h4><p>The series now progresses from DR1 to DR2 and then directly to Danganronpa 3, skipping Ultra Despair Girls. Each episode has a “dies next” prediction and an intentionally unscored suspected-killer decoy.</p></section>
+            <section class="patch-note"><h4>V3 prepared in advance</h4><p>Danganronpa V3: Killing Harmony is preloaded as the next full killing-game board, with its complete student cast, Monokuma, and all five Monokubs ready behind the progression lock.</p></section>
+            <section class="patch-note"><h4>Series-wide statistics</h4><p>Actor records now show per-game Victim, Blackened, death, and correct-guess totals for unlocked boards only, plus an all-series comparison chart.</p></section>
+            <section class="patch-note"><h4>The next title stays classified</h4><p>Locked banners and player game pickers no longer expose upcoming titles. The host can still see and control the full progression in Admin Tools.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.7</span><span class="patch-release-title"><strong>Voice safety and version history</strong><small>Previous release</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Pre-trial now means pre-trial</h4><p>During the current chapter's Trial, previously revealed living characters use only field dialogue heard before that Trial. Trial testimony is excluded. Outside the Trial, the pool remains the previous chapter's strongest lines, including its completed Trial.</p></section>
             <section class="patch-note"><h4>Compact versioned patch notes</h4><p>Major changes are grouped into numbered releases, sorted newest first, and collapsed by default so the history stays easy to scan.</p></section>
@@ -1244,10 +1270,13 @@ body.mobile-dragging{user-select:none}
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
   const GAME_DEFINITIONS = [
-    {id:"dr1",short:"DR1",title:"Danganronpa: Trigger Happy Havoc",kicker:"TRIGGER HAPPY HAVOC"},
-    {id:"dr2",short:"DR2",title:"Danganronpa 2: Goodbye Despair",kicker:"GOODBYE DESPAIR"}
+    {id:"dr1",short:"DR1",title:"Danganronpa: Trigger Happy Havoc",kicker:"TRIGGER HAPPY HAVOC",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:15},
+    {id:"dr2",short:"DR2",title:"Danganronpa 2: Goodbye Despair",kicker:"GOODBYE DESPAIR",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16},
+    {id:"dr3anime",short:"DR3",title:"Danganronpa 3",kicker:"THE END OF HOPE'S PEAK",kind:"anime",maxChapter:12,unit:"Episode",unitShort:"EP",startPopulation:16},
+    {id:"v3",short:"V3",title:"Danganronpa V3: Killing Harmony",kicker:"KILLING HARMONY",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16}
   ];
   const GAME_IDS = GAME_DEFINITIONS.map(game=>game.id);
+  const gameDefinition = gameId => GAME_DEFINITIONS.find(game=>game.id===gameId)||GAME_DEFINITIONS[0];
   let activeGameId = GAME_IDS.includes(sessionStorage.getItem(SESSION_GAME_KEY))?sessionStorage.getItem(SESSION_GAME_KEY):"dr1";
   let gamePickerShown = false;
   const params = new URLSearchParams(location.search);
@@ -1283,6 +1312,11 @@ body.mobile-dragging{user-select:none}
   };
 
   const officialDr2Portrait = number => `https://danganronpa.us/reload/img/characters/danganronpa2/c${String(number).padStart(2,"0")}.jpg`;
+  const officialV3Portrait = number => {
+    const folder=number===2?3:number===3?2:number;
+    return `https://danganronpa.us/v3/sp/images/character/character${String(folder).padStart(2,"0")}/thumb01.jpg`;
+  };
+  const officialAnimePortrait = contentId => `https://www.nbcuni.co.jp/anime/danganronpa3/core_sys/images/contents/${String(contentId).padStart(8,"0")}/base/001.png`;
 
   function id() {
     return window.crypto?.randomUUID ? crypto.randomUUID() : "id-" + Math.random().toString(36).slice(2) + Date.now();
@@ -1321,6 +1355,70 @@ body.mobile-dragging{user-select:none}
       mkRole("Monomi","Teacher",officialDr2Portrait(18),false,{gameId:"dr2"}),
       mkRole("Narrator","Narrator","",false,{gameId:"dr2",voiceProfile:""})
     ];
+  }
+
+  function createAnimeRoles(){
+    const anime=(name,title,contentId,extra={})=>mkRole(name,title,officialAnimePortrait(contentId),false,{gameId:"dr3anime",voiceProfile:"",...extra});
+    return [
+      anime("Kazuo Tengan","Future Foundation Chairman",13),
+      anime("Kyosuke Munakata","Future Foundation Vice Chairman",5),
+      anime("Koichi Kizakura","Future Foundation Branch Head",14),
+      anime("Seiko Kimura","Ultimate Pharmacist",9),
+      anime("Chisa Yukizome","Ultimate Housekeeper",7),
+      anime("Juzo Sakakura","Ultimate Boxer",6),
+      anime("Miaya Gekkogahara","Ultimate Therapist",8),
+      anime("Ruruka Ando","Ultimate Confectioner",10),
+      anime("Sonosuke Izayoi","Ultimate Blacksmith",11),
+      anime("Ryota Mitarai","Ultimate Animator",16),
+      anime("Daisaku Bandai","Ultimate Farmer",15),
+      anime("Great Gozu","Ultimate Wrestler",17),
+      anime("Aoi Asahina","Future Foundation",4),
+      anime("Kyoko Kirigiri","Future Foundation",3),
+      anime("Makoto Naegi","Future Foundation",2),
+      anime("Yasuhiro Hagakure","Ultimate Clairvoyant",12),
+      anime("Monokuma","Killing-game host",1,{predictionEligible:false}),
+      anime("Byakuya Togami","Future Foundation",148),
+      anime("Komaru Naegi","Makoto's younger sister",147),
+      anime("Toko Fukawa","Ultimate Writing Prodigy",146),
+      anime("Monaca Towa","Towa Group heir",93),
+      mkRole("Narrator","Narrator","",false,{gameId:"dr3anime",voiceProfile:"",predictionEligible:false})
+    ];
+  }
+
+  function createV3Roles(){
+    const v3=(name,title,page,extra={})=>mkRole(name,title,officialV3Portrait(page),false,{gameId:"v3",...extra});
+    return [
+      v3("Kaede Akamatsu","Ultimate Pianist",1),
+      v3("Shuichi Saihara","Ultimate Detective",9),
+      v3("Rantaro Amami","Ultimate ???",3),
+      v3("Miu Iruma","Ultimate Inventor",6),
+      v3("Kokichi Oma","Ultimate Supreme Leader",2),
+      v3("K1-B0","Ultimate Robot",7),
+      v3("Gonta Gokuhara","Ultimate Entomologist",8),
+      v3("Tsumugi Shirogane","Ultimate Cosplayer",10),
+      v3("Korekiyo Shinguji","Ultimate Anthropologist",12),
+      v3("Tenko Chabashira","Ultimate Aikido Master",13),
+      v3("Kirumi Tojo","Ultimate Maid",14),
+      v3("Maki Harukawa","Ultimate Child Caregiver",15),
+      v3("Ryoma Hoshi","Ultimate Tennis Pro",16),
+      v3("Kaito Momota","Ultimate Astronaut",17),
+      v3("Himiko Yumeno","Ultimate Magician",18),
+      v3("Angie Yonaga","Ultimate Artist",19),
+      mkRole("Monokuma","Headmaster",IMG.monokuma,false,{gameId:"v3"}),
+      v3("Monokid","Monokub",4),
+      v3("Monotaro","Monokub",5),
+      v3("Monosuke","Monokub",11),
+      v3("Monophanie","Monokub",20),
+      v3("Monodam","Monokub",21),
+      mkRole("Narrator","Narrator","",false,{gameId:"v3",voiceProfile:"",predictionEligible:false})
+    ];
+  }
+
+  function createRolesForGame(gameId){
+    if(gameId==="dr2")return createDr2Roles();
+    if(gameId==="dr3anime")return createAnimeRoles();
+    if(gameId==="v3")return createV3Roles();
+    return [];
   }
 
   function historyKey(name) {
@@ -1370,7 +1468,18 @@ body.mobile-dragging{user-select:none}
     "6":{alive:5,dead:11,unknown:0}
   };
 
-  function populationPresetsForGame(gameId=activeGameId){return gameId==="dr2"?DR2_POPULATION_PRESETS:POPULATION_PRESETS}
+  function populationKeysForGame(gameId=activeGameId){return ["start",...Array.from({length:gameDefinition(gameId).maxChapter},(_,index)=>String(index+1))]}
+  function emptyPopulationPresets(gameId){
+    const result={};
+    populationKeysForGame(gameId).forEach(key=>result[key]=key==="start"?{alive:gameDefinition(gameId).startPopulation,dead:0,unknown:0}:{alive:0,dead:0,unknown:0});
+    return result;
+  }
+  function populationPresetsForGame(gameId=activeGameId){
+    if(gameId==="dr1")return POPULATION_PRESETS;
+    if(gameId==="dr2")return DR2_POPULATION_PRESETS;
+    return emptyPopulationPresets(gameId);
+  }
+  function hasPopulationPreset(gameId,key){return gameId==="dr1"||gameId==="dr2"||key==="start"}
 
   function createGameSettings({chapter=1,gameActive=false}={}){
     const key=String(chapter);
@@ -1380,7 +1489,7 @@ body.mobile-dragging{user-select:none}
   function initialPopulationGraph(chapter=2,gameId="dr1") {
     const result={};
     const presets=populationPresetsForGame(gameId);
-    POPULATION_KEYS.forEach(key=>{
+    populationKeysForGame(gameId).forEach(key=>{
       const completed=key==="start" || Number(key)<chapter;
       result[key]=completed?{...presets[key],revealed:true}:{alive:0,dead:0,unknown:0,revealed:false};
     });
@@ -1397,21 +1506,32 @@ body.mobile-dragging{user-select:none}
     return true;
   }
 
+  const emptyCompletionFlags = () => Object.fromEntries(GAME_IDS.map(gameId=>[gameId,false]));
+  const emptyLockedRoleIds = () => Object.fromEntries(GAME_IDS.map(gameId=>[gameId,null]));
+  const defaultGameSettings = () => Object.fromEntries(GAME_DEFINITIONS.map(game=>[
+    game.id,
+    createGameSettings({chapter:game.id==="dr1"?2:1,gameActive:game.id==="dr1"})
+  ]));
+  const defaultPopulationGraphs = () => Object.fromEntries(GAME_DEFINITIONS.map(game=>[
+    game.id,
+    initialPopulationGraph(game.id==="dr1"?2:1,game.id)
+  ]));
+
   function defaultState() {
     return {
-      version:8,
-      settings:{completedGames:{dr1:false,dr2:false},games:{dr1:createGameSettings({chapter:2,gameActive:true}),dr2:createGameSettings({chapter:1,gameActive:false})}},
-      secretSettings:{games:{dr1:{junkoMukuroRevealed:false,populationPresets:POPULATION_PRESETS},dr2:{populationPresets:DR2_POPULATION_PRESETS}}},
+      version:9,
+      settings:{completedGames:emptyCompletionFlags(),games:defaultGameSettings()},
+      secretSettings:{games:{dr1:{junkoMukuroRevealed:false,populationPresets:POPULATION_PRESETS},dr2:{populationPresets:DR2_POPULATION_PRESETS},dr3anime:{},v3:{}}},
       predictions:{},
       chapterResults:{},
-      populationGraph:{dr1:initialPopulationGraph(2,"dr1"),dr2:initialPopulationGraph(1,"dr2")},
+      populationGraph:defaultPopulationGraphs(),
       actors:[
-        {id:id(),name:"Nicher",hasPassword:false,lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,history:[],deathCount:0},
-        {id:id(),name:"Fae",hasPassword:false,lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,history:[],deathCount:0},
-        {id:id(),name:"Fall",hasPassword:false,lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,history:[],deathCount:0},
-        {id:id(),name:"MD",hasPassword:false,lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,history:[],deathCount:0},
-        {id:id(),name:"Angel",hasPassword:false,lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,history:[],deathCount:0},
-        {id:id(),name:"Reika",hasPassword:false,lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,history:[],deathCount:0}
+        {id:id(),name:"Nicher",hasPassword:false,lockedRoleIds:emptyLockedRoleIds(),replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"Fae",hasPassword:false,lockedRoleIds:emptyLockedRoleIds(),replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"Fall",hasPassword:false,lockedRoleIds:emptyLockedRoleIds(),replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"MD",hasPassword:false,lockedRoleIds:emptyLockedRoleIds(),replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"Angel",hasPassword:false,lockedRoleIds:emptyLockedRoleIds(),replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"Reika",hasPassword:false,lockedRoleIds:emptyLockedRoleIds(),replacementToken:false,history:[],deathCount:0}
       ],
       roles:[
         mkRole("Monokuma","Headmaster",IMG.monokuma),
@@ -1432,7 +1552,10 @@ body.mobile-dragging{user-select:none}
         mkRole("Yasuhiro Hagakure","Ultimate Clairvoyant",IMG.yasuhiro),
         mkRole("Narrator","Narrator","",false,{voiceProfile:""}),
         mkRole("Junko Enoshima","Ultimate Despair",IMG.realJunko,true,{specialRole:"real-junko",voiceProfile:"Junko Enoshima (Real)",voiceRevealChapter:6}),
-        mkRole("Genocide Jack","Ultimate Murderous Fiend","",true,{voiceRevealChapter:2})
+        mkRole("Genocide Jack","Ultimate Murderous Fiend","",true,{voiceRevealChapter:2}),
+        ...createDr2Roles(),
+        ...createAnimeRoles(),
+        ...createV3Roles()
       ]
     };
   }
@@ -1467,7 +1590,6 @@ body.mobile-dragging{user-select:none}
 
   const $ = sel => document.querySelector(sel);
   const $$ = sel => [...document.querySelectorAll(sel)];
-  const gameDefinition = gameId => GAME_DEFINITIONS.find(game=>game.id===gameId)||GAME_DEFINITIONS[0];
   const isGameUnlocked = gameId => gameId==="dr1" || GAME_DEFINITIONS.slice(0,GAME_IDS.indexOf(gameId)).every(game=>!!state.settings.completedGames[game.id]);
   const availableGameIds = () => GAME_IDS.filter(isGameUnlocked);
   const currentSettings = () => state.settings.games[activeGameId];
@@ -1481,16 +1603,21 @@ body.mobile-dragging{user-select:none}
   $("#modeBadge").textContent = mode.toUpperCase();
   $("#modeBadge").classList.add(mode);
 
-  function normaliseGameSettings(value,fallback){
+  function normaliseGameSettings(value,fallback,gameId){
     const settings=value&&typeof value==="object"?value:{...fallback};
     if(!Number.isFinite(settings.maxPerActor))settings.maxPerActor=fallback.maxPerActor;
     if(typeof settings.gameActive!=="boolean")settings.gameActive=fallback.gameActive;
     if(!Number.isFinite(settings.voiceChapter))settings.voiceChapter=fallback.voiceChapter;
-    settings.voiceChapter=Math.max(1,Math.min(6,Math.floor(settings.voiceChapter)));
+    settings.voiceChapter=Math.max(1,Math.min(gameDefinition(gameId).maxChapter,Math.floor(settings.voiceChapter)));
     if(typeof settings.voiceInTrial!=="boolean")settings.voiceInTrial=false;
     if(!settings.trialByChapter||typeof settings.trialByChapter!=="object")settings.trialByChapter={};
     if(!settings.trialEnteredByChapter||typeof settings.trialEnteredByChapter!=="object")settings.trialEnteredByChapter={};
     const key=String(settings.voiceChapter);
+    if(gameDefinition(gameId).kind==="anime"){
+      settings.voiceInTrial=false;
+      settings.trialByChapter[key]=false;
+      settings.trialEnteredByChapter[key]=false;
+    }
     if(typeof settings.trialByChapter[key]!=="boolean")settings.trialByChapter[key]=settings.voiceInTrial;
     settings.voiceInTrial=!!settings.trialByChapter[key];
     if(typeof settings.trialEnteredByChapter[key]!=="boolean")settings.trialEnteredByChapter[key]=settings.voiceInTrial;
@@ -1499,24 +1626,26 @@ body.mobile-dragging{user-select:none}
 
   function normaliseState(s) {
     const previousVersion=Number(s.version)||0;
-    s.version = 8;
+    s.version = 9;
     const legacySettings=s.settings&&!s.settings.games?{...s.settings}:null;
     if(!s.settings?.games){
       s.settings={
-        completedGames:{dr1:false,dr2:false},
-        games:{dr1:legacySettings||createGameSettings({chapter:2,gameActive:true}),dr2:createGameSettings({chapter:1,gameActive:false})}
+        completedGames:emptyCompletionFlags(),
+        games:{...defaultGameSettings(),dr1:legacySettings||createGameSettings({chapter:2,gameActive:true})}
       };
     }
     s.settings.completedGames||={};
     GAME_IDS.forEach(gameId=>s.settings.completedGames[gameId]=!!s.settings.completedGames[gameId]);
     s.settings.games||={};
-    s.settings.games.dr1=normaliseGameSettings(s.settings.games.dr1,createGameSettings({chapter:2,gameActive:true}));
-    s.settings.games.dr2=normaliseGameSettings(s.settings.games.dr2,createGameSettings({chapter:1,gameActive:false}));
+    GAME_DEFINITIONS.forEach(game=>{
+      const fallback=createGameSettings({chapter:game.id==="dr1"?2:1,gameActive:game.id==="dr1"});
+      s.settings.games[game.id]=normaliseGameSettings(s.settings.games[game.id],fallback,game.id);
+    });
 
     const legacySecret=s.secretSettings&&!s.secretSettings.games?{...s.secretSettings}:null;
     s.secretSettings=s.secretSettings||{};
-    if(!s.secretSettings.games)s.secretSettings.games={dr1:legacySecret||{},dr2:{}};
-    s.secretSettings.games.dr1||={};s.secretSettings.games.dr2||={};
+    if(!s.secretSettings.games)s.secretSettings.games={dr1:legacySecret||{}};
+    GAME_IDS.forEach(gameId=>s.secretSettings.games[gameId]||={});
     if(typeof s.secretSettings.games.dr1.junkoMukuroRevealed!=="boolean")s.secretSettings.games.dr1.junkoMukuroRevealed=false;
     if(mode==="host"){
       s.secretSettings.games.dr1.populationPresets=POPULATION_PRESETS;
@@ -1541,7 +1670,7 @@ body.mobile-dragging{user-select:none}
       if(!Number.isFinite(a.deathCount)||a.deathCount<0)a.deathCount=0;
       a.deathCount=Math.floor(a.deathCount);
       if (typeof a.replacementToken !== "boolean") a.replacementToken = false;
-      if(!a.lockedRoleIds||typeof a.lockedRoleIds!=="object")a.lockedRoleIds={dr1:a.lockedRoleId||null,dr2:null};
+      if(!a.lockedRoleIds||typeof a.lockedRoleIds!=="object")a.lockedRoleIds={...emptyLockedRoleIds(),dr1:a.lockedRoleId||null};
       GAME_IDS.forEach(gameId=>{if(!(gameId in a.lockedRoleIds))a.lockedRoleIds[gameId]=null});
       delete a.lockedRoleId;
     });
@@ -1554,7 +1683,7 @@ body.mobile-dragging{user-select:none}
       Object.keys(byChapter).forEach(rawKey=>{
         const [rawGame,rawChapter]=rawKey.includes(":")?rawKey.split(":"):["dr1",rawKey];
         const gameId=GAME_IDS.includes(rawGame)?rawGame:"dr1";
-        const number=Math.max(1,Math.min(6,Number(rawChapter)||1));
+        const number=Math.max(1,Math.min(gameDefinition(gameId).maxChapter,Number(rawChapter)||1));
         const entry=byChapter[rawKey]||{};
         cleaned[`${gameId}:${number}`]={
           victimRoleId:String(entry.victimRoleId||entry.victimCharacterId||""),
@@ -1569,7 +1698,7 @@ body.mobile-dragging{user-select:none}
     Object.keys(s.chapterResults).forEach(rawKey=>{
       const [rawGame,rawChapter]=rawKey.includes(":")?rawKey.split(":"):["dr1",rawKey];
       const gameId=GAME_IDS.includes(rawGame)?rawGame:"dr1";
-      const number=Math.max(1,Math.min(6,Number(rawChapter)||1));
+      const number=Math.max(1,Math.min(gameDefinition(gameId).maxChapter,Number(rawChapter)||1));
       const result=s.chapterResults[rawKey]||{};
       cleanedResults[`${gameId}:${number}`]={
         victimRoleId:String(result.victimRoleId||""),
@@ -1580,10 +1709,10 @@ body.mobile-dragging{user-select:none}
     });
     s.chapterResults=cleanedResults;
     if(!s.populationGraph||typeof s.populationGraph!=="object"||Array.isArray(s.populationGraph))s.populationGraph={};
-    if(!s.populationGraph.dr1)s.populationGraph={dr1:Object.keys(s.populationGraph).some(key=>POPULATION_KEYS.includes(key))?s.populationGraph:initialPopulationGraph(s.settings.games.dr1.voiceChapter,"dr1"),dr2:initialPopulationGraph(s.settings.games.dr2.voiceChapter,"dr2")};
+    if(!s.populationGraph.dr1)s.populationGraph={...defaultPopulationGraphs(),dr1:Object.keys(s.populationGraph).some(key=>POPULATION_KEYS.includes(key))?s.populationGraph:initialPopulationGraph(s.settings.games.dr1.voiceChapter,"dr1")};
     GAME_IDS.forEach(gameId=>{
       const graph=s.populationGraph[gameId]&&typeof s.populationGraph[gameId]==="object"?s.populationGraph[gameId]:(s.populationGraph[gameId]=initialPopulationGraph(s.settings.games[gameId].voiceChapter,gameId));
-      POPULATION_KEYS.forEach(key=>{
+      populationKeysForGame(gameId).forEach(key=>{
         const item=graph[key];
         if(!item||typeof item!=="object"){graph[key]={alive:0,dead:0,unknown:0,revealed:key==="start"};return}
         ["alive","dead","unknown"].forEach(field=>item[field]=Math.max(0,Math.floor(Number(item[field])||0)));
@@ -1600,24 +1729,25 @@ body.mobile-dragging{user-select:none}
       r.modifier ||= "";
       r.lastActorName ||= "";
       if(!Array.isArray(r.customVoiceClips))r.customVoiceClips=[];
+      const maxChapter=gameDefinition(r.gameId).maxChapter;
       r.customVoiceClips=r.customVoiceClips.filter(c=>c&&typeof c.url==="string"&&c.url).map(c=>({
         id:c.id||id(),url:c.url,path:c.path||"",name:c.name||"Custom sample",
-        text:String(c.text||""),chapter:Math.max(1,Math.min(6,Number(c.chapter)||1)),phase:c.phase==="trial"?"trial":"pretrial"
+        text:String(c.text||""),chapter:Math.max(1,Math.min(maxChapter,Number(c.chapter)||1)),phase:c.phase==="trial"?"trial":"pretrial"
       }));
       if(!Array.isArray(r.personalRecordings))r.personalRecordings=[];
       r.personalRecordings=r.personalRecordings.filter(x=>x&&x.actorId&&x.url).map(x=>({
         id:x.id||id(),actorId:String(x.actorId),lineId:String(x.lineId||""),lineText:String(x.lineText||""),
-        referenceUrl:String(x.referenceUrl||""),chapter:Math.max(1,Math.min(6,Number(x.chapter)||1)),
+        referenceUrl:String(x.referenceUrl||""),chapter:Math.max(1,Math.min(maxChapter,Number(x.chapter)||1)),
         path:String(x.path||""),url:String(x.url),mimeType:String(x.mimeType||"audio/webm"),
         durationMs:Math.max(0,Number(x.durationMs)||0),recordedAt:Number(x.recordedAt)||Date.now()
       }));
       if(!Array.isArray(r.practiceLineHistory))r.practiceLineHistory=[];
       r.practiceLineHistory=r.practiceLineHistory.filter(x=>x&&x.actorId&&x.lineId).map(x=>({
-        actorId:String(x.actorId),lineId:String(x.lineId),chapter:Math.max(1,Math.min(6,Number(x.chapter)||1)),
+        actorId:String(x.actorId),lineId:String(x.lineId),chapter:Math.max(1,Math.min(maxChapter,Number(x.chapter)||1)),
         recordedAt:Number(x.recordedAt)||Date.now()
       }));
       if(!Number.isFinite(r.voiceRevealChapter))r.voiceRevealChapter=r.name==="Genocide Jack"?2:1;
-      r.voiceRevealChapter=Math.max(1,Math.min(6,Math.floor(r.voiceRevealChapter)));
+      r.voiceRevealChapter=Math.max(1,Math.min(maxChapter,Math.floor(r.voiceRevealChapter)));
       if(r.dead&&!Number.isFinite(r.voiceFinalChapter)){
         r.voiceFinalChapter=(r.gameId==="dr1"?LEGACY_DEATH_CHAPTERS[r.name]:null)||Math.max(1,roleSettings.voiceChapter-1);
       }
@@ -1649,7 +1779,9 @@ body.mobile-dragging{user-select:none}
           s.roles.push(mkRole("Junko Enoshima","Ultimate Despair",IMG.realJunko,true,{gameId:"dr1",specialRole:"real-junko",voiceProfile:"Junko Enoshima (Real)",voiceRevealChapter:6}));
         }
       }
-      if(s.settings.completedGames.dr1&&!s.roles.some(role=>role.gameId==="dr2"))s.roles.push(...createDr2Roles());
+      GAME_IDS.slice(1).forEach(gameId=>{
+        if(!s.roles.some(role=>role.gameId===gameId))s.roles.push(...createRolesForGame(gameId));
+      });
     }
     s.roles.forEach(r=>{
       if(!r.dead&&r.ownerId)addActorHistory(s.actors.find(a=>a.id===r.ownerId),r.name);
@@ -1776,6 +1908,10 @@ body.mobile-dragging{user-select:none}
 
   async function initializeSharedBoard() {
     setSyncStatus("CONNECTING","working");
+    if(["127.0.0.1","localhost"].includes(location.hostname)){
+      setSyncStatus("LOCAL PREVIEW","offline");
+      return;
+    }
     try{
       remoteSync=new window.CastSupabaseSync(window.CAST_SUPABASE_CONFIG);
       if(mode!=="viewer")await remoteSync.ensureAnonymousUser();
@@ -1797,6 +1933,7 @@ body.mobile-dragging{user-select:none}
         board=await remoteSync.getBoard(true);
       }
 
+      const sharedStateVersion=Number(board.state?.version)||0;
       applyRemoteBoard(board,{renderNow:false});
 
       remoteReady=mode!=="viewer";
@@ -1815,6 +1952,7 @@ body.mobile-dragging{user-select:none}
         }
       );
       setSyncStatus("LIVE","live");
+      if(mode==="host"&&sharedStateVersion<9)saveState();
     }catch(error){
       remoteReady=false;
       setSyncStatus("OFFLINE BACKUP","offline");
@@ -1834,10 +1972,11 @@ body.mobile-dragging{user-select:none}
   function rolesForActor(actorId){ return gameRoles().filter(r=>!r.dead && r.ownerId===actorId); }
   function lockedOwnerOf(roleId){ return state.actors.find(a=>lockedRoleIdFor(a)===roleId) || null; }
   function activeActor(){ return actorById(activeActorId); }
-  function chapterKey(chapter=currentSettings().voiceChapter){return String(Math.max(1,Math.min(6,Number(chapter)||1)))}
-  function chapterStateKey(chapter=currentSettings().voiceChapter,gameId=activeGameId){return `${gameId}:${chapterKey(chapter)}`}
+  function chapterKey(chapter=currentSettings().voiceChapter,gameId=activeGameId){return String(Math.max(1,Math.min(gameDefinition(gameId).maxChapter,Number(chapter)||1)))}
+  function chapterStateKey(chapter=currentSettings().voiceChapter,gameId=activeGameId){return `${gameId}:${chapterKey(chapter,gameId)}`}
   function livingVoiceSourceSummary(){
     const current=currentSettings().voiceChapter;
+    if(gameDefinition(activeGameId).kind==="anime")return "Danganronpa 3 uses episode predictions; only host-uploaded voice samples are available on this board.";
     if(currentSettings().voiceInTrial)return `Chapter ${current} pre-trial field dialogue only (current chapter; Trial testimony excluded).`;
     if(current===1)return "Earliest spoiler-safe Chapter 1 samples (there is no previous chapter).";
     return `Best samples from Chapter ${current-1} (previous chapter, including its completed Trial).`;
@@ -1860,13 +1999,14 @@ body.mobile-dragging{user-select:none}
   function predictionField(kind){return kind==="victim"?"victimRoleId":"blackenedRoleId"}
   function correctField(kind){return kind==="victim"?"victimCorrectActorIds":"blackenedCorrectActorIds"}
   function eligiblePredictionRole(role){
-    return !!role&&!role.dead&&currentRoleVisible(role)&&(!role.hiddenSpoiler||role.revealed)&&role.name!=="Narrator";
+    return !!role&&!role.dead&&role.predictionEligible!==false&&currentRoleVisible(role)&&(!role.hiddenSpoiler||role.revealed)&&role.name!=="Narrator";
   }
   function canEditPrediction(actorId,kind,chapter=currentSettings().voiceChapter){
     if(mode!=="player"||actorId!==activeActorId)return false;
     const key=chapterKey(chapter);
     const prediction=predictionForActor(actorId,key,false);
     const result=resultForChapter(key,false);
+    if(gameDefinition(activeGameId).kind==="anime")return !prediction?.locked&&!result?.victimRoleId;
     return !currentSettings().trialByChapter[key]&&!currentSettings().trialEnteredByChapter[key]&&!prediction?.locked&&!result?.[predictionField(kind)];
   }
   function setPrediction(kind,roleId){
@@ -1878,13 +2018,17 @@ body.mobile-dragging{user-select:none}
     prediction[predictionField(kind)]=roleId||"";
     selectedPredictionKind=null;
     saveState();render();
-    toast(role?`${kind==="victim"?"Victim":"Blackened"} prediction set to ${role.name}.`:`${kind==="victim"?"Victim":"Blackened"} prediction cleared.`);
+    const label=gameDefinition(activeGameId).kind==="anime"?(kind==="victim"?"Dies-next":"Suspected-killer"):kind==="victim"?"Victim":"Blackened";
+    toast(role?`${label} prediction set to ${role.name}.`:`${label} prediction cleared.`);
   }
   function lockChapterPredictions(chapter=currentSettings().voiceChapter){
     state.actors.forEach(actor=>predictionForActor(actor.id,chapter,true).locked=true);
   }
   function recalculateResult(kind,chapter=currentSettings().voiceChapter){
     const result=resultForChapter(chapter,true);
+    if(kind==="blackened"&&gameDefinition(activeGameId).kind==="anime"){
+      result.blackenedCorrectActorIds=[];return;
+    }
     const roleId=result[predictionField(kind)];
     result[correctField(kind)]=roleId?state.actors
       .filter(actor=>predictionForActor(actor.id,chapter,false)?.[predictionField(kind)]===roleId)
@@ -1892,21 +2036,30 @@ body.mobile-dragging{user-select:none}
   }
   function setChapterResult(kind,roleId,chapter=currentSettings().voiceChapter){
     if(mode!=="host")return false;
+    const anime=gameDefinition(activeGameId).kind==="anime";
+    if(anime&&kind==="blackened")return false;
     if(kind==="blackened"&&roleId&&!currentSettings().trialEnteredByChapter[chapterKey(chapter)]){
       toast(`Start the Chapter ${chapterKey(chapter)} Trial before setting the Blackened.`);return false;
     }
     const result=resultForChapter(chapter,true);
     result[predictionField(kind)]=roleId||"";
     recalculateResult(kind,chapter);
+    if(anime&&kind==="victim"&&roleId)lockChapterPredictions(chapter);
     return true;
   }
-  function predictionCountsForActor(actorId){
+  function predictionCountsForActorGame(actorId,gameId){
     let victim=0,blackened=0;
-    Object.entries(state.chapterResults||{}).filter(([key])=>key.startsWith(`${activeGameId}:`)).forEach(([,result])=>{
+    Object.entries(state.chapterResults||{}).filter(([key])=>key.startsWith(`${gameId}:`)).forEach(([,result])=>{
       if(result.victimCorrectActorIds?.includes(actorId))victim++;
-      if(result.blackenedCorrectActorIds?.includes(actorId))blackened++;
+      if(gameDefinition(gameId).kind!=="anime"&&result.blackenedCorrectActorIds?.includes(actorId))blackened++;
     });
-    return {victim,blackened,total:victim+blackened};
+    const deaths=state.roles.filter(role=>role.gameId===gameId&&role.deathRecorded&&role.deathActorId===actorId).length;
+    return {victim,blackened,deaths,total:victim+blackened};
+  }
+  function seriesCountsForActor(actorId){
+    const games=availableGameIds().map(gameId=>({gameId,...predictionCountsForActorGame(actorId,gameId)}));
+    const totals=games.reduce((sum,item)=>({victim:sum.victim+item.victim,blackened:sum.blackened+item.blackened,deaths:sum.deaths+item.deaths,total:sum.total+item.total}),{victim:0,blackened:0,deaths:0,total:0});
+    return {games,totals};
   }
   function predictionMarkers(role,{memorial=false}={}){
     const matches=[];
@@ -1916,9 +2069,10 @@ body.mobile-dragging{user-select:none}
         const actorIds=state.actors.filter(actor=>predictionForActor(actor.id,chapter,false)?.[predictionField(kind)]===role.id).map(actor=>actor.id);
         if(!actorIds.length)return;
         const result=resultForChapter(chapter,false);
-        const correct=result?.[predictionField(kind)]===role.id;
+        const correct=kind==="victim"&&result?.victimRoleId===role.id||kind==="blackened"&&gameDefinition(activeGameId).kind!=="anime"&&result?.blackenedRoleId===role.id;
         const names=actorIds.map(actorId=>actorById(actorId)?.name).filter(Boolean).join(", ");
-        matches.push(`<span class="prediction-chip ${kind} ${correct?"correct":""}" title="${esc(names)}">${memorial?`CH${chapter} · `:""}${kind==="victim"?"Victim":"Blackened"}: ${esc(names)}</span>`);
+        const label=gameDefinition(activeGameId).kind==="anime"?(kind==="victim"?"Dies next":"Suspected killer"):kind==="victim"?"Victim":"Blackened";
+        matches.push(`<span class="prediction-chip ${kind} ${correct?"correct":""}" title="${esc(names)}">${memorial?`${gameDefinition(activeGameId).unitShort}${chapter} · `:""}${label}: ${esc(names)}</span>`);
       });
     });
     return matches.length?`<div class="prediction-markers">${matches.join("")}</div>`:"";
@@ -1980,7 +2134,9 @@ body.mobile-dragging{user-select:none}
   function renderGamePicker(){
     const grid=$("#gamePickerGrid");
     grid.innerHTML="";
-    GAME_DEFINITIONS.forEach((game,index)=>{
+    const games=mode==="host"?GAME_DEFINITIONS:GAME_DEFINITIONS.filter(game=>isGameUnlocked(game.id));
+    games.forEach(game=>{
+      const index=GAME_IDS.indexOf(game.id);
       const unlocked=isGameUnlocked(game.id);
       const completed=!!state.settings.completedGames[game.id];
       const button=document.createElement("button");
@@ -2003,9 +2159,12 @@ body.mobile-dragging{user-select:none}
     const game=gameDefinition(activeGameId);
     $("#gameKicker").textContent=`CAST CONTROL / ${game.kicker}`;
     $("#gameSwitcherBtn").textContent=game.title;
-    const dr2Locked=!isGameUnlocked("dr2");
-    $("#lockedGameBanner").classList.toggle("hidden",!dr2Locked);
-    $("#lockedGameCopy").textContent=mode==="host"?"Mark Trigger Happy Havoc complete in Admin Tools to unlock this board.":"Locked until the host marks Trigger Happy Havoc complete.";
+    const nextLocked=GAME_DEFINITIONS.find(game=>!isGameUnlocked(game.id));
+    $("#lockedGameBanner").classList.toggle("hidden",!nextLocked);
+    const lastUnlocked=GAME_DEFINITIONS.filter(game=>isGameUnlocked(game.id)).at(-1);
+    $("#lockedGameCopy").textContent=mode==="host"
+      ? `Mark ${lastUnlocked?.title||"the current board"} complete in Admin Tools to unlock the next board.`
+      : "The next board remains classified until the host unlocks it.";
     $("#junkoVaultControls").classList.toggle("hidden",activeGameId!=="dr1");
   }
 
@@ -2015,7 +2174,7 @@ body.mobile-dragging{user-select:none}
     if(index<0||index>0&&!isGameUnlocked(gameId)){toast("Complete the previous game first.");return}
     state.settings.completedGames[gameId]=completed;
     if(!completed)GAME_IDS.slice(index+1).forEach(laterId=>state.settings.completedGames[laterId]=false);
-    if(state.settings.completedGames.dr1&&!state.roles.some(role=>role.gameId==="dr2"))state.roles.push(...createDr2Roles());
+    GAME_IDS.slice(1).forEach(id=>{if(!state.roles.some(role=>role.gameId===id))state.roles.push(...createRolesForGame(id))});
     if(!isGameUnlocked(activeGameId))activeGameId="dr1";
     saveState();render();
     toast(`${gameDefinition(gameId).title} marked ${completed?"complete":"not complete"}.`);
@@ -2044,10 +2203,15 @@ body.mobile-dragging{user-select:none}
     }
 
     renderGameChrome();
+    const game=gameDefinition(activeGameId);
     $("#maxRolesLabel").textContent=currentSettings().maxPerActor;
     $("#gameActiveToggle").checked=currentSettings().gameActive;
+    $("#storyUnitLabel").textContent=`Current ${game.unit.toLowerCase()}`;
+    $("#voiceChapterSelect").setAttribute("aria-label",`Current story ${game.unit.toLowerCase()}`);
+    $("#voiceChapterSelect").innerHTML=Array.from({length:game.maxChapter},(_,index)=>`<option value="${index+1}">${game.unit} ${index+1}</option>`).join("");
     $("#voiceChapterSelect").value=String(currentSettings().voiceChapter);
     $("#voiceTrialToggle").checked=currentSettings().voiceInTrial;
+    $("#voiceTrialToggleWrap").classList.toggle("hidden",game.kind==="anime");
     $("#voiceSourceStatus").innerHTML=`<strong>Living-character sample source:</strong> ${esc(livingVoiceSourceSummary())}`;
     $("#junkoMukuroToggle").checked=!!currentSecretSettings().junkoMukuroRevealed;
     $("#actorCount").textContent=state.actors.length;
@@ -2103,7 +2267,11 @@ body.mobile-dragging{user-select:none}
     const actor=activeActor();
     banner.classList.toggle("playing",currentSettings().gameActive);
 
-    if(mode==="host"){
+    if(gameDefinition(activeGameId).kind==="anime"){
+      if(mode==="host")banner.innerHTML=`<strong>ANIME LIVE:</strong> Set the current episode as you watch. Marking the next death awards one point to every matching dies-next prediction and locks that episode; suspected-killer guesses never award points.`;
+      else if(mode==="player")banner.innerHTML=actor?`Predict who <strong>dies next</strong> and optionally place an unscored <strong>suspected-killer</strong> decoy. Both choices lock when the host marks the episode’s death.`:"Log in to your actor to place episode predictions.";
+      else banner.textContent="Danganronpa 3 episode predictions. Suspected-killer guesses are intentionally unscored.";
+    }else if(mode==="host"){
       banner.innerHTML=currentSettings().gameActive
         ? `<strong>LIVE:</strong> Players can only claim characters from the Open Library. Direct stealing is disabled, except for a one-use <span class="token">replacement token</span> after a locked character dies.`
         : `<strong>Casting/setup:</strong> Players may claim an unlocked character from another actor. They still cannot give their own characters directly to someone else; they must return them to the Library first.`;
@@ -2226,6 +2394,13 @@ body.mobile-dragging{user-select:none}
 
   function voicePoolForRole(r){
     const selected=currentSettings().voiceChapter;
+    if(gameDefinition(activeGameId).kind==="anime"){
+      const custom=(r.customVoiceClips||[]).filter(clip=>Number(clip.chapter)<=selected).map(clip=>({
+        id:`custom:${clip.id}`,url:clip.url,text:String(clip.text||""),chapter:Number(clip.chapter)||1,phase:clip.phase,kind:"custom"
+      }));
+      const newest=custom.length?Math.max(...custom.map(clip=>clip.chapter)):0;
+      return {clips:custom.filter(clip=>clip.chapter===newest),label:newest?`host-uploaded Episode ${newest} samples`:"No host-uploaded anime sample"};
+    }
     if(!r.dead&&selected<(Number(r.voiceRevealChapter)||1))return {clips:[],label:"Not revealed yet"};
     const profile=voiceLibraryProfile(r);
     let clips=[];
@@ -2342,9 +2517,12 @@ body.mobile-dragging{user-select:none}
     }
     const actor=activeActor();
     const chapter=chapterKey();
+    const game=gameDefinition(activeGameId);
+    const anime=game.kind==="anime";
+    dock.setAttribute("aria-label",`${game.unit} predictions`);
     const prediction=predictionForActor(actor.id,chapter,true);
     const trial=!!currentSettings().trialByChapter[chapter];
-    const chapterLocked=trial||!!currentSettings().trialEnteredByChapter[chapter]||prediction.locked;
+    const chapterLocked=anime?!!resultForChapter(chapter,false)?.victimRoleId||prediction.locked:trial||!!currentSettings().trialEnteredByChapter[chapter]||prediction.locked;
     dock.classList.remove("hidden");
     const token=(kind,label)=>{
       const field=predictionField(kind);
@@ -2359,10 +2537,10 @@ body.mobile-dragging{user-select:none}
     };
     dock.innerHTML=`
       <div class="prediction-dock-head">
-        <div><div class="prediction-dock-title">Chapter ${chapter} predictions · ${esc(actor.name)}</div><div class="prediction-dock-help">${chapterLocked?"Locked when the Trial began.":"Tap or drag a token, then choose a living character."}</div></div>
-        <span class="badge ${chapterLocked?"host":"player"}">${chapterLocked?(trial?"TRIAL · LOCKED":"CHAPTER · LOCKED"):"PRE-TRIAL · EDITABLE"}</span>
+        <div><div class="prediction-dock-title">${game.unit} ${chapter} predictions · ${esc(actor.name)}</div><div class="prediction-dock-help">${chapterLocked?(anime?"Locked when the host marked the next death.":"Locked when the Trial began."):anime?"Choose who dies next. The killer choice is a deliberately unscored decoy.":"Tap or drag a token, then choose a living character."}</div></div>
+        <span class="badge ${chapterLocked?"host":"player"}">${chapterLocked?(anime?"EPISODE · LOCKED":trial?"TRIAL · LOCKED":"CHAPTER · LOCKED"):anime?"PREDICTIONS · EDITABLE":"PRE-TRIAL · EDITABLE"}</span>
       </div>
-      ${token("victim","Victim prediction")}${token("blackened","Blackened prediction")}`;
+      ${token("victim",anime?"Dies next":"Victim prediction")}${token("blackened",anime?"Suspected killer · unscored":"Blackened prediction")}`;
     dock.querySelectorAll("[data-prediction-token]").forEach(button=>{
       const kind=button.dataset.predictionToken;
       button.onclick=()=>{
@@ -2385,30 +2563,59 @@ body.mobile-dragging{user-select:none}
     grid.innerHTML="";
     if(!state.actors.length){grid.innerHTML='<div class="panel empty-slot">No actors yet.</div>'}
     state.actors.forEach(actor=>{
-      const counts=predictionCountsForActor(actor.id);
+      const counts=seriesCountsForActor(actor.id);
+      const gameRows=counts.games.map(item=>{
+        const game=gameDefinition(item.gameId);
+        return `<div class="stats-game-row"><strong title="${esc(game.title)}">${esc(game.short)}</strong>
+          <span class="stats-game-metric">Correct<b>${item.total}</b></span>
+          <span class="stats-game-metric">Victim<b>${item.victim}</b></span>
+          <span class="stats-game-metric">Blackened<b>${game.kind==="anime"?"—":item.blackened}</b></span>
+          <span class="stats-game-metric">Deaths<b>${item.deaths}</b></span></div>`;
+      }).join("");
       const card=document.createElement("article");
       card.className="stats-card panel";
       card.innerHTML=`<div class="stats-name">${esc(actor.name)}</div>
-        <div class="stats-total"><span>Correct guesses</span>${counts.total}</div>
+        <div class="stats-total"><span>Total correct guesses</span>${counts.totals.total}</div>
         <div class="stats-breakdown">
-          <div>Victim guesses<strong>${counts.victim}</strong></div>
-          <div>Blackened guesses<strong>${counts.blackened}</strong></div>
-          <div>Deaths<strong>${actor.deathCount||0}</strong></div>
-        </div>`;
+          <div>Victim guesses<strong>${counts.totals.victim}</strong></div>
+          <div>Blackened guesses<strong>${counts.totals.blackened}</strong></div>
+          <div>Total deaths<strong>${counts.totals.deaths}</strong></div>
+        </div>
+        <div class="stats-game-list">${gameRows}<div class="stats-game-row total"><strong>ALL SERIES</strong><span class="stats-game-metric">Correct<b>${counts.totals.total}</b></span><span class="stats-game-metric">Victim<b>${counts.totals.victim}</b></span><span class="stats-game-metric">Blackened<b>${counts.totals.blackened}</b></span><span class="stats-game-metric">Deaths<b>${counts.totals.deaths}</b></span></div></div>`;
       grid.appendChild(card);
     });
+    renderPredictionChart();
     renderPopulationChart();
+  }
+
+  function renderPredictionChart(){
+    const chart=$("#predictionChart");
+    chart.innerHTML="";
+    if(!state.actors.length){chart.innerHTML='<div class="empty-slot">No actor statistics yet.</div>';return}
+    const rows=state.actors.map(actor=>({actor,counts:seriesCountsForActor(actor.id).totals}));
+    const maximum=Math.max(1,...rows.map(row=>row.counts.victim+row.counts.blackened+row.counts.deaths));
+    rows.sort((a,b)=>b.counts.total-a.counts.total||b.counts.deaths-a.counts.deaths||a.actor.name.localeCompare(b.actor.name)).forEach(({actor,counts})=>{
+      const overall=counts.victim+counts.blackened+counts.deaths;
+      const segment=(kind,value)=>value?`<span class="prediction-chart-segment ${kind}" style="width:${value/maximum*100}%" title="${kind}: ${value}">${value}</span>`:"";
+      const row=document.createElement("div");row.className="prediction-chart-row";
+      row.innerHTML=`<span class="prediction-chart-name" title="${esc(actor.name)}">${esc(actor.name)}</span><div class="prediction-chart-track">${segment("victim",counts.victim)}${segment("blackened",counts.blackened)}${segment("deaths",counts.deaths)}</div><span class="prediction-chart-total" title="Correct guesses / plotted total">${counts.total} ✓ · ${overall}</span>`;
+      chart.appendChild(row);
+    });
   }
 
   function renderPopulationChart(){
     const chart=$("#populationChart");
     chart.innerHTML="";
+    const game=gameDefinition(activeGameId);
     const graph=currentPopulationGraph();
     const presets=populationPresetsForGame();
-    const labels={start:"Start","1":"CH1","2":"CH2","3":"CH3","4":"CH4","5":"CH5","6":"CH6"};
-    const visibleItems=POPULATION_KEYS.map(key=>graph[key]).filter(item=>mode==="host"||item.revealed);
-    const maximum=Math.max(16,...visibleItems.map(item=>item.alive+item.dead+item.unknown));
-    POPULATION_KEYS.forEach(key=>{
+    const keys=populationKeysForGame();
+    const labels=Object.fromEntries(keys.map(key=>[key,key==="start"?"Start":`${game.unitShort}${key}`]));
+    $("#populationTitle").textContent=`${game.unit} progression · ${game.short}`;
+    $("#populationHelp").textContent=`Each ${game.unit.toLowerCase()} shows what the players know at its end on the currently selected board.`;
+    const visibleItems=keys.map(key=>graph[key]).filter(item=>mode==="host"||item.revealed);
+    const maximum=Math.max(game.startPopulation,...visibleItems.map(item=>item.alive+item.dead+item.unknown));
+    keys.forEach(key=>{
       const item=graph[key];
       const total=item.alive+item.dead+item.unknown;
       const column=document.createElement("div");
@@ -2416,7 +2623,7 @@ body.mobile-dragging{user-select:none}
       const segment=(field,label)=>item[field]?`<div class="population-segment ${field}" style="height:${Math.max(18,item[field]/maximum*210)}px" title="${label}: ${item[field]}">${item[field]}</div>`:"";
       const controls=mode==="host"?`<div class="population-controls">
         ${["alive","dead","unknown"].map(field=>`<div class="population-stepper"><span>${field[0].toUpperCase()+field.slice(1)} ${item[field]}</span><button type="button" data-pop-step="${key}|${field}|-1" ${item[field]===0?"disabled":""}>−</button><button type="button" data-pop-step="${key}|${field}|1">+</button></div>`).join("")}
-        <div class="population-actions"><button type="button" data-pop-preset="${key}">Apply preset</button><button type="button" data-pop-reveal="${key}">${item.revealed?"Hide":"Reveal"}</button></div>
+        <div class="population-actions">${hasPopulationPreset(activeGameId,key)?`<button type="button" data-pop-preset="${key}">Apply preset</button>`:""}<button type="button" data-pop-reveal="${key}">${item.revealed?"Hide":"Reveal"}</button></div>
       </div>`:"";
       column.innerHTML=`<div class="population-bar-wrap">${item.revealed||mode==="host"?(total?`<div class="population-bar">${segment("dead","Dead")}${segment("alive","Alive")}${segment("unknown","Unknown")}</div>`:'<div class="population-empty">No values</div>'):'<div class="population-empty">Unrevealed</div>'}</div><div class="population-label">${labels[key]}</div>${controls}`;
       chart.appendChild(column);
@@ -2429,7 +2636,7 @@ body.mobile-dragging{user-select:none}
       });
       chart.querySelectorAll("[data-pop-preset]").forEach(button=>button.onclick=()=>{
         const key=button.dataset.popPreset;
-        Object.assign(graph[key],presets[key],{revealed:true});saveState();render();toast(`${key==="start"?"Start":`CH${key}`} preset applied.`);
+        Object.assign(graph[key],presets[key],{revealed:true});saveState();render();toast(`${key==="start"?"Start":`${game.unitShort}${key}`} preset applied.`);
       });
       chart.querySelectorAll("[data-pop-reveal]").forEach(button=>button.onclick=()=>{
         const item=graph[button.dataset.popReveal];item.revealed=!item.revealed;saveState();render();
@@ -2807,6 +3014,8 @@ body.mobile-dragging{user-select:none}
     }
 
     deadRoles.slice().sort((a,b)=>(b.deathTime||0)-(a.deathTime||0)).forEach(r=>{
+      const game=gameDefinition(activeGameId);
+      const anime=game.kind==="anime";
       const deathChapter=chapterKey(r.deathChapter||r.voiceFinalChapter||currentSettings().voiceChapter);
       const result=resultForChapter(deathChapter,false);
       const isVictim=result?.victimRoleId===r.id;
@@ -2824,8 +3033,8 @@ body.mobile-dragging{user-select:none}
         <div class="memorial-title">${esc(r.title||"No title")}</div>
         <div class="last-actor">Last voiced by: <strong>${esc(r.lastActorName||"None")}</strong></div>
         <div class="chapter-result-line">
-          ${isVictim?`<span class="result-badge victim">CH${deathChapter} Victim</span>`:""}
-          ${isBlackened?`<span class="result-badge blackened">CH${deathChapter} Blackened</span>`:""}
+          ${isVictim?`<span class="result-badge victim">${game.unitShort}${deathChapter} ${anime?"Next death":"Victim"}</span>`:""}
+          ${isBlackened&&!anime?`<span class="result-badge blackened">${game.unitShort}${deathChapter} Blackened</span>`:""}
         </div>
         ${predictionMarkers(r,{memorial:true})}
         ${r.modifier?`<div class="role-detail">${esc(r.modifier)}</div>`:""}
@@ -2833,8 +3042,8 @@ body.mobile-dragging{user-select:none}
           <div class="role-actions">
             <button type="button" data-revive="${r.id}">↩ Revive</button>
             <button type="button" data-edit-dead="${r.id}">✎ Edit</button>
-            <button type="button" data-result="victim|${r.id}|${deathChapter}">${isVictim?"Clear Victim":`Set CH${deathChapter} Victim`}</button>
-            <button type="button" data-result="blackened|${r.id}|${deathChapter}">${isBlackened?"Clear Blackened":`Set CH${deathChapter} Blackened`}</button>
+            <button type="button" data-result="victim|${r.id}|${deathChapter}">${isVictim?`Clear ${anime?"next death":"Victim"}`:`Set ${game.unitShort}${deathChapter} ${anime?"next death":"Victim"}`}</button>
+            ${anime?"":`<button type="button" data-result="blackened|${r.id}|${deathChapter}">${isBlackened?"Clear Blackened":`Set ${game.unitShort}${deathChapter} Blackened`}</button>`}
           </div>`:""}
       `;
       card.querySelector('[data-action="play-voice"]')?.addEventListener("click",e=>playVoiceSample(r,e.currentTarget));
@@ -2846,7 +3055,8 @@ body.mobile-dragging{user-select:none}
           const current=resultForChapter(chapter,false)?.[predictionField(kind)]||"";
           if(!setChapterResult(kind,current===roleId?"":roleId,chapter))return;
           saveState();render();
-          toast(`${kind==="victim"?"Victim":"Blackened"} result ${current===roleId?"cleared":"saved"} for Chapter ${chapter}.`);
+          const label=anime&&kind==="victim"?"Next-death":kind==="victim"?"Victim":"Blackened";
+          toast(`${label} result ${current===roleId?"cleared":"saved"} for ${game.unit} ${chapter}.`);
         });
       }
       gy.appendChild(card);
@@ -3316,7 +3526,7 @@ body.mobile-dragging{user-select:none}
       const newActor={
         id:id(),name,
         hasPassword:!!password,
-        lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,
+        lockedRoleIds:emptyLockedRoleIds(),replacementToken:false,
         history:mode==="host"?parseHistory($("#actorHistory").value):[],deathCount:0
       };
       try{
@@ -3356,10 +3566,12 @@ body.mobile-dragging{user-select:none}
   function renderRoleVoiceEditor(role){
     const list=$("#roleVoiceList");
     const clips=role?.customVoiceClips||[];
+    const game=gameDefinition(activeGameId);
+    $("#voiceUploadChapter").innerHTML=Array.from({length:game.maxChapter},(_,index)=>`<option value="${index+1}">${game.unit} ${index+1}</option>`).join("");
     $("#roleVoiceCount").textContent=`${clips.length} uploaded`;
     list.innerHTML=clips.length?clips.map(clip=>`
       <div class="voice-clip-row">
-        <span title="${esc(clip.name)}">Ch. ${clip.chapter} · ${clip.phase==="trial"?"trial":"pretrial"} · ${esc(clip.name)}</span>
+        <span title="${esc(clip.name)}">${game.unitShort}${clip.chapter} · ${clip.phase==="trial"?"trial":"pretrial"} · ${esc(clip.name)}</span>
         <button type="button" class="danger-text" data-remove-voice="${esc(clip.id)}">× Remove</button>
       </div>`).join(""):`<div class="muted tiny">No custom uploads for this character.</div>`;
     $("#voiceUploadChapter").value=String(currentSettings().voiceChapter);
@@ -3600,7 +3812,8 @@ body.mobile-dragging{user-select:none}
     currentSettings().voiceInTrial=false;
     selectedPredictionKind=null;
     voiceShuffleBags.clear();saveState();render();
-    toast(`Current chapter set to ${currentSettings().voiceChapter}. Trial reset to off; ${livingVoiceSourceSummary().toLowerCase()}`);
+    const game=gameDefinition(activeGameId);
+    toast(`Current ${game.unit.toLowerCase()} set to ${currentSettings().voiceChapter}.${game.kind==="anime"?" Predictions are open until the next death is marked.":` Trial reset to off; ${livingVoiceSourceSummary().toLowerCase()}`}`);
   };
 
   $("#voiceTrialToggle").onchange=e=>{
@@ -3682,7 +3895,7 @@ body.mobile-dragging{user-select:none}
   $("#exportBtn").onclick=()=>{
     const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);
-    a.download="danganronpa-cast-state-v8.json";a.click();
+    a.download="danganronpa-cast-state-v9.json";a.click();
     setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   };
 

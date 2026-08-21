@@ -428,7 +428,7 @@ begin
   else
     merged_predictions := coalesce(board_row.state -> 'predictions', '{}'::jsonb);
     current_game := coalesce(p_state ->> 'clientGameId', 'dr1');
-    if current_game not in ('dr1', 'dr2') then current_game := 'dr1'; end if;
+    if current_game not in ('dr1', 'dr2', 'dr3anime', 'v3') then current_game := 'dr1'; end if;
     current_chapter_number := coalesce(
       board_row.state #>> array['settings', 'games', current_game, 'voiceChapter'],
       board_row.state #>> '{settings,voiceChapter}',
