@@ -337,6 +337,15 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   box-shadow:0 14px 30px rgba(0,0,0,.22),inset 0 0 0 1px rgba(112,184,255,.05);
 }
 .actor-card.mine::before{background:var(--blue)}
+.actor-card.online{
+  border-color:rgba(98,214,164,.62);
+  box-shadow:0 14px 30px rgba(0,0,0,.22),inset 0 0 0 1px rgba(98,214,164,.09);
+}
+.actor-card.online::before{background:var(--green)}
+.actor-card.online::after{
+  content:"";position:absolute;left:12px;right:12px;bottom:0;height:2px;
+  border-radius:999px 999px 0 0;background:var(--green);opacity:.86;
+}
 .actor-awards{display:flex;gap:4px;align-items:center;margin-bottom:5px}
 .actor-award{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border:1px solid var(--line);border-radius:999px;background:#11141c;font-size:.78rem;box-shadow:0 5px 12px rgba(0,0,0,.22)}
 .actor-award.crown{border-color:rgba(244,204,101,.42);background:var(--gold-soft)}.actor-award.curse{border-color:rgba(255,77,87,.34);background:var(--red-soft)}
@@ -349,10 +358,15 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.055);
 }
 .actor-name{
+  display:flex;align-items:center;gap:7px;
   font-weight:950;
   font-size:1.02rem;
   letter-spacing:-.015em;
   overflow-wrap:anywhere;
+}
+.actor-online-indicator{
+  flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 0 3px rgba(98,214,164,.12),0 0 11px rgba(98,214,164,.5);
 }
 .actor-meta{
   display:flex;gap:5px;align-items:center;flex-wrap:wrap;color:var(--muted);
@@ -1334,7 +1348,7 @@ body.mobile-dragging{user-select:none}
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.08.22.2";
+  const APP_BUILD = "2026.08.22.3";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -1672,6 +1686,7 @@ body.mobile-dragging{user-select:none}
   let actionConfirmResolver = null;
   let selectedPredictionKind = null;
   let activeActorId = mode === "player" ? sessionStorage.getItem(SESSION_ACTOR_KEY) : null;
+  let onlineActorIds = new Set(mode === "player" && activeActorId ? [activeActorId] : []);
   let remoteSync = null;
   let remoteReady = false;
   let remoteRevision = 0;
@@ -1969,6 +1984,21 @@ body.mobile-dragging{user-select:none}
     if(renderNow)render();
   }
 
+  function setOnlineActors(actorIds){
+    const next=new Set((actorIds||[]).map(String));
+    const changed=next.size!==onlineActorIds.size||[...next].some(actorId=>!onlineActorIds.has(actorId));
+    if(!changed)return;
+    onlineActorIds=next;
+    render();
+  }
+
+  function updateOwnPresence(actorId=activeActorId){
+    if(!remoteSync?.setPresenceActor)return;
+    remoteSync.setPresenceActor(mode==="player"&&actorId?actorId:null).catch(error=>{
+      console.warn("Presence update unavailable:",window.CastSupabaseSync?.errorMessage(error)||error);
+    });
+  }
+
   function saveState() {
     cacheState();
     if(!remoteReady||applyingRemoteState||mode==="viewer")return;
@@ -2080,6 +2110,10 @@ body.mobile-dragging{user-select:none}
           if(status==="SUBSCRIBED")setSyncStatus("LIVE","live");
           else if(status==="CHANNEL_ERROR"||status==="TIMED_OUT")setSyncStatus("RECONNECTING","working");
         }
+      );
+      remoteSync.subscribePresence(
+        mode==="player"&&actorById(activeActorId)?activeActorId:null,
+        setOnlineActors
       );
       setSyncStatus("LIVE","live");
       if(mode==="host"&&sharedStateVersion<10)saveState();
@@ -2354,6 +2388,7 @@ body.mobile-dragging{user-select:none}
     if (mode === "player" && activeActorId && !actorById(activeActorId)) {
       activeActorId = null;
       sessionStorage.removeItem(SESSION_ACTOR_KEY);
+      updateOwnPresence(null);
     }
 
     renderGameChrome();
@@ -3199,7 +3234,8 @@ body.mobile-dragging{user-select:none}
       const assigned=rolesForActor(actor.id).filter(currentRoleVisible);
       const gameCounts=predictionCountsForActorGame(actor.id,activeGameId);
       const card=document.createElement("section");
-      card.className="actor-card"+(mode==="player"&&actor.id===activeActorId?" mine":"");
+      const online=onlineActorIds.has(actor.id);
+      card.className="actor-card"+(mode==="player"&&actor.id===activeActorId?" mine":"")+(online?" online":"");
       card.dataset.actorId=actor.id;
 
       let actions="";
@@ -3234,7 +3270,7 @@ body.mobile-dragging{user-select:none}
         <div class="actor-head">
           <div>
             ${awards}
-            <div class="actor-name">${esc(actor.name)}</div>
+            <div class="actor-name">${esc(actor.name)}${online?'<span class="actor-online-indicator" title="Currently logged in" aria-label="Currently logged in"></span>':""}</div>
             <div class="actor-meta">
               ${anime?'<span>ANIME PREDICTIONS</span>':`<span>${assigned.length}/${currentSettings().maxPerActor} characters</span>
               <span>${lockedRoleIdFor(actor)?"🔒 locked":"no locked character"}</span>
@@ -3820,6 +3856,7 @@ body.mobile-dragging{user-select:none}
       if(mode==="player"){
         activeActorId=newActor.id;
         sessionStorage.setItem(SESSION_ACTOR_KEY,activeActorId);
+        updateOwnPresence(activeActorId);
       }
     }
 
@@ -4053,6 +4090,7 @@ body.mobile-dragging{user-select:none}
   function completeLogin(actorId){
     activeActorId=actorId;
     sessionStorage.setItem(SESSION_ACTOR_KEY,actorId);
+    updateOwnPresence(actorId);
     $("#loginDialog").close();
     render();
     toast(`Logged in as ${actorById(actorId)?.name||"actor"}.`);
@@ -4061,6 +4099,7 @@ body.mobile-dragging{user-select:none}
   function logout(){
     activeActorId=null;
     sessionStorage.removeItem(SESSION_ACTOR_KEY);
+    updateOwnPresence(null);
     render();
   }
 

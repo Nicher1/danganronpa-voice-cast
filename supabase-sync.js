@@ -23,6 +23,11 @@
         }
       });
       this.channel = null;
+      this.presenceChannel = null;
+      this.presenceActorId = null;
+      this.presenceSessionId = window.crypto?.randomUUID
+        ? window.crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
 
     async ensureAnonymousUser() {
@@ -170,6 +175,46 @@
           payload => onBoard(payload.new)
         )
         .subscribe(status => onStatus?.(status));
+    }
+
+    subscribePresence(actorId, onPresence, onStatus) {
+      if (this.presenceChannel) this.client.removeChannel(this.presenceChannel);
+      this.presenceActorId = actorId || null;
+      this.presenceChannel = this.client
+        .channel(`cast-presence-${this.slug}`, {
+          config: { presence: { key: this.presenceSessionId } }
+        })
+        .on("presence", { event: "sync" }, () => {
+          const presenceState = this.presenceChannel?.presenceState?.() || {};
+          const actorIds = new Set();
+          Object.values(presenceState).flat().forEach(entry => {
+            if (entry?.actor_id) actorIds.add(String(entry.actor_id));
+          });
+          onPresence?.([...actorIds]);
+        })
+        .subscribe(async status => {
+          onStatus?.(status);
+          if (status === "SUBSCRIBED" && this.presenceActorId) {
+            await this.presenceChannel.track({
+              actor_id: this.presenceActorId,
+              online_at: new Date().toISOString()
+            });
+          }
+        });
+    }
+
+    async setPresenceActor(actorId) {
+      this.presenceActorId = actorId || null;
+      if (!this.presenceChannel) return false;
+      if (!this.presenceActorId) {
+        await this.presenceChannel.untrack();
+        return true;
+      }
+      await this.presenceChannel.track({
+        actor_id: this.presenceActorId,
+        online_at: new Date().toISOString()
+      });
+      return true;
     }
 
     async refresh(fullState = false) {
