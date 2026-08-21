@@ -1334,6 +1334,7 @@ body.mobile-dragging{user-select:none}
   <script>
 
 (async () => {
+  const APP_BUILD = "2026.08.22.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -1367,6 +1368,30 @@ body.mobile-dragging{user-select:none}
     cleanHostUrl.search="";cleanHostUrl.hash="";
     history.replaceState(null,"",cleanHostUrl.pathname);
   }
+
+  async function refreshOutdatedBuild(){
+    if(!/^https?:$/.test(location.protocol))return false;
+    try{
+      const manifestUrl=new URL("build.json",location.href);
+      manifestUrl.searchParams.set("check",Date.now());
+      const response=await fetch(manifestUrl,{cache:"no-store"});
+      if(!response.ok)return false;
+      const remoteBuild=String((await response.json()).build||"");
+      if(!remoteBuild||remoteBuild===APP_BUILD)return false;
+      const freshUrl=new URL(location.href);
+      if(hostAccess){
+        freshUrl.pathname=freshUrl.pathname.replace(/\/11037\/?$/,"/");
+        freshUrl.search="";
+        freshUrl.searchParams.set("host","11037");
+      }
+      freshUrl.searchParams.set("build",remoteBuild);
+      location.replace(freshUrl.href);
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+  if(await refreshOutdatedBuild())return;
 
   const IMG = {
     monokuma:"https://static.wikia.nocookie.net/danganronpa/images/9/99/Monokuma_VA_ID.png/revision/latest/scale-to-width-down/75?cb=20170217164015",

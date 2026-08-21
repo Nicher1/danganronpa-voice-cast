@@ -4,6 +4,8 @@ const vm = require("node:vm");
 
 const html = fs.readFileSync("index.html", "utf8");
 const sql = fs.readFileSync("supabase-schema.sql", "utf8");
+const hostRedirect = fs.readFileSync("11037/index.html", "utf8");
+const build = JSON.parse(fs.readFileSync("build.json", "utf8"));
 
 const inlineScripts = html
   .split("<script")
@@ -62,5 +64,8 @@ assert.ok(html.includes('data-reveal-game="dr3anime"'));
 assert.ok(html.includes('sharedStateVersion<10'));
 assert.ok(sql.includes("'dr1', 'dr2', 'dr3anime', 'v3'"));
 assert.ok(html.includes("version:10"));
+assert.ok(html.includes(`const APP_BUILD = "${build.build}"`));
+assert.ok(hostRedirect.includes(`build=${build.build}`));
+assert.ok(html.includes("async function refreshOutdatedBuild()"));
 
 console.log("Series progression, anime scoring, V3 roster, and statistics checks passed.");
