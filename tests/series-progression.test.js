@@ -67,5 +67,8 @@ assert.ok(html.includes("version:10"));
 assert.ok(html.includes(`const APP_BUILD = "${build.build}"`));
 assert.ok(hostRedirect.includes(`build=${build.build}`));
 assert.ok(html.includes("async function refreshOutdatedBuild()"));
+assert.doesNotMatch(html, /unscored|decoy/i);
+assert.ok(html.includes('anime?"Suspected killer":"Blackened prediction"'));
+assert.ok(html.includes("Suspected-killer points are awarded after the anime is completed."));
 
 console.log("Series progression, anime scoring, V3 roster, and statistics checks passed.");

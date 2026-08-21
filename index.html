@@ -986,7 +986,7 @@ body.mobile-dragging{user-select:none}
       <div class="stats-hero panel">
         <div class="section-kicker">PLAYER RECORDS</div>
         <h2>Statistics</h2>
-        <p id="statisticsHelp" class="muted small">Only unlocked boards appear. Correct Victim and Blackened predictions are counted per game and across the series; Danganronpa 3 killer guesses are an unscored decoy.</p>
+        <p id="statisticsHelp" class="muted small">Only unlocked boards appear. Correct Victim and Blackened predictions are counted per game and across the series; Danganronpa 3 suspected-killer points are awarded after the anime is completed.</p>
       </div>
       <div id="statsGrid" class="stats-grid"></div>
       <section class="prediction-leaderboard panel">
@@ -1058,7 +1058,7 @@ body.mobile-dragging{user-select:none}
         <details class="patch-release">
           <summary><span class="patch-version">v0.8</span><span class="patch-release-title"><strong>Series predictions and future boards</strong><small>Previous release</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
-            <section class="patch-note" data-reveal-game="dr3anime"><h4>Danganronpa 3 prediction board</h4><p>The series now progresses from DR1 to DR2 and then directly to Danganronpa 3, skipping Ultra Despair Girls. Each episode has a “dies next” prediction and an intentionally unscored suspected-killer decoy.</p></section>
+            <section class="patch-note" data-reveal-game="dr3anime"><h4>Danganronpa 3 prediction board</h4><p>The series now progresses from DR1 to DR2 and then directly to Danganronpa 3, skipping Ultra Despair Girls. Each episode has a “dies next” prediction and a suspected-killer prediction.</p></section>
             <section class="patch-note" data-reveal-game="v3"><h4>V3 prepared in advance</h4><p>Danganronpa V3: Killing Harmony is preloaded as the next full killing-game board, with its complete student cast, Monokuma, and all five Monokubs ready behind the progression lock.</p></section>
             <section class="patch-note"><h4>Series-wide statistics</h4><p>Actor records now show per-game Victim, Blackened, death, and correct-guess totals for unlocked boards only, plus an all-series comparison chart.</p></section>
             <section class="patch-note"><h4>Spoiler-safe progression</h4><p>Player game pickers show only boards the host has unlocked, while the host retains the full progression controls in Admin Tools.</p></section>
@@ -1334,7 +1334,7 @@ body.mobile-dragging{user-select:none}
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.08.22.1";
+  const APP_BUILD = "2026.08.22.2";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2371,7 +2371,7 @@ body.mobile-dragging{user-select:none}
     $("#actorPanelTitle").textContent=anime?"Prediction players":"Voice actors";
     $("#statisticsHelp").textContent=state.settings.completedGames.dr3anime
       ? "Only unlocked boards appear. The completed Danganronpa 3 scoreboard now includes its revealed final prediction totals."
-      : "Only unlocked boards appear. Correct Victim and Blackened predictions are counted per game and across the series; Danganronpa 3 killer guesses are an unscored decoy.";
+      : "Only unlocked boards appear. Correct Victim and Blackened predictions are counted per game and across the series; Danganronpa 3 suspected-killer points are awarded after the anime is completed.";
     $("#maxRolesLabel").textContent=currentSettings().maxPerActor;
     $("#gameActiveToggle").checked=currentSettings().gameActive;
     $("#storyUnitLabel").textContent=`Current ${game.unit.toLowerCase()}`;
@@ -2477,8 +2477,8 @@ body.mobile-dragging{user-select:none}
         ? `<strong>ANIME COMPLETE:</strong> All recorded prediction points are revealed. Reopening the anime hides the pending column again without deleting it.`
         : `<strong>ANIME LIVE:</strong> Marking the next death awards every matching dies-next prediction and locks that watch step. Pending suspected-killer points appear only in your host view until the anime is completed.`;
       else if(complete)banner.innerHTML=`<strong>ANIME COMPLETE:</strong> The final prediction scoreboard has been revealed.`;
-      else if(mode==="player")banner.innerHTML=actor?`Predict who <strong>dies next</strong> and optionally place an unscored <strong>suspected-killer</strong> decoy. Both choices lock when the host marks the next death.`:"Log in to your actor to place episode predictions.";
-      else banner.textContent="Danganronpa 3 episode predictions. Suspected-killer guesses are intentionally unscored.";
+      else if(mode==="player")banner.innerHTML=actor?`Predict who <strong>dies next</strong> and optionally choose a <strong>suspected killer</strong>. Suspected-killer points are awarded after the anime is completed. Both choices lock when the host marks the next death.`:"Log in to your actor to place episode predictions.";
+      else banner.textContent="Danganronpa 3 episode predictions. Suspected-killer points are awarded after the anime is completed.";
     }else if(mode==="host"){
       banner.innerHTML=currentSettings().gameActive
         ? `<strong>LIVE:</strong> Players can only claim characters from the Open Library. Direct stealing is disabled, except for a one-use <span class="token">replacement token</span> after a locked character dies.`
@@ -2746,10 +2746,10 @@ body.mobile-dragging{user-select:none}
     };
     dock.innerHTML=`
       <div class="prediction-dock-head">
-        <div><div class="prediction-dock-title">${anime?esc(storyUnitLabel(activeGameId,chapter)):`${game.unit} ${chapter}`} predictions · ${esc(actor.name)}</div><div class="prediction-dock-help">${animeComplete?"The anime is complete and its final scoreboard has been revealed.":chapterLocked?(anime?"Locked when the host marked the next death.":"Locked when the Trial began."):anime?"Choose who dies next. The killer choice is a deliberately unscored decoy.":"Tap or drag a token, then choose a living character."}</div></div>
+        <div><div class="prediction-dock-title">${anime?esc(storyUnitLabel(activeGameId,chapter)):`${game.unit} ${chapter}`} predictions · ${esc(actor.name)}</div><div class="prediction-dock-help">${animeComplete?"The anime is complete and its final scoreboard has been revealed.":chapterLocked?(anime?"Locked when the host marked the next death.":"Locked when the Trial began."):anime?"Choose who dies next and who you suspect is the killer. Suspected-killer points are awarded after the anime is completed.":"Tap or drag a token, then choose a living character."}</div></div>
         <span class="badge ${chapterLocked?"host":"player"}">${chapterLocked?(anime?"EPISODE · LOCKED":trial?"TRIAL · LOCKED":"CHAPTER · LOCKED"):anime?"PREDICTIONS · EDITABLE":"PRE-TRIAL · EDITABLE"}</span>
       </div>
-      ${token("victim",anime?"Dies next":"Victim prediction")}${token("blackened",anime?(animeComplete?"Suspected killer":"Suspected killer · unscored"):"Blackened prediction")}`;
+      ${token("victim",anime?"Dies next":"Victim prediction")}${token("blackened",anime?"Suspected killer":"Blackened prediction")}`;
     dock.querySelectorAll("[data-prediction-token]").forEach(button=>{
       const kind=button.dataset.predictionToken;
       button.onclick=()=>{
