@@ -346,9 +346,11 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
   content:"";position:absolute;left:12px;right:12px;bottom:0;height:2px;
   border-radius:999px 999px 0 0;background:var(--green);opacity:.86;
 }
-.actor-awards{display:flex;gap:4px;align-items:center;margin-bottom:5px}
-.actor-award{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border:1px solid var(--line);border-radius:999px;background:#11141c;font-size:.78rem;box-shadow:0 5px 12px rgba(0,0,0,.22)}
-.actor-award.crown{border-color:rgba(244,204,101,.42);background:var(--gold-soft)}.actor-award.curse{border-color:rgba(255,77,87,.34);background:var(--red-soft)}
+.actor-awards{display:flex;gap:5px;align-items:center;margin-bottom:5px}
+.actor-award{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;padding:2px;border:1px solid var(--line);border-radius:9px;background:#11141c;box-shadow:0 5px 12px rgba(0,0,0,.22)}
+.actor-award svg{display:block;width:23px;height:23px;overflow:visible}
+.actor-award.hope{border-color:rgba(244,204,101,.5);background:linear-gradient(145deg,rgba(244,204,101,.16),rgba(112,184,255,.08))}
+.actor-award.monokuma{border-color:rgba(255,77,87,.45);background:linear-gradient(145deg,#f4f4f4 0 49%,#101219 51% 100%)}
 .actor-card.dragover,.role-pool.dragover,.spoiler-vault.dragover{
   border-color:var(--pink-hot);
   box-shadow:0 0 0 2px rgba(245,64,148,.12),0 14px 30px rgba(0,0,0,.26);
@@ -1059,7 +1061,7 @@ body.mobile-dragging{user-select:none}
           <summary><span class="patch-version">v0.9</span><span class="patch-release-title"><strong>Anime watch board</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Anime-first layout</h4><p>Danganronpa 3 replaces the voice-casting slots with compact prediction score cards, a current-episode tracker, and a color-coded Future Arc, Despair Arc, and Hope Arc watch-order guide.</p></section>
-            <section class="patch-note"><h4>Board leaders</h4><p>The strongest predictor on the active board receives a crown, while the actor with the most assigned-character deaths carries a small curse marker. Voice-actor cards are ordered by their most recent locked-character activity.</p></section>
+            <section class="patch-note"><h4>Board leaders</h4><p>The strongest predictor on the active board receives the Hope’s Peak emblem, while the actor with the most assigned-character deaths carries a Monokuma face. Voice-actor cards are ordered by their most recent locked-character activity.</p></section>
             <section class="patch-note"><h4>The next title</h4><p>The locked banner now names the immediately upcoming game without revealing anything beyond it.</p></section>
           </div>
         </details>
@@ -1348,7 +1350,7 @@ body.mobile-dragging{user-select:none}
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.08.22.4";
+  const APP_BUILD = "2026.08.22.5";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -3219,6 +3221,24 @@ body.mobile-dragging{user-select:none}
     return new Set(maximum?values.filter(item=>item.value===maximum).map(item=>item.id):[]);
   }
 
+  const HOPE_PEAK_AWARD_ICON=`<svg viewBox="0 0 48 48" aria-hidden="true">
+    <path d="M15 20 5 16l6 7-7 1 10 4M33 20l10-4-6 7 7 1-10 4" fill="none" stroke="#f4cc65" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="m17 11 3-5 4 4 4-4 3 5" fill="#f4cc65" stroke="#fff3b0" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M13 13h22v14c0 7-5 11-11 14-6-3-11-7-11-14Z" fill="#f2f4f8" stroke="#d9e4f0" stroke-width="2"/>
+    <path d="M24 14h10v13c0 6-4 9-10 12Z" fill="#222733"/>
+    <path d="m17 27 5-9 4 8 6-5-5 12-5-5-4 4Z" fill="#f54094" stroke="#ff8bc0" stroke-width="1" stroke-linejoin="round"/>
+  </svg>`;
+  const MONOKUMA_AWARD_ICON=`<svg viewBox="0 0 48 48" aria-hidden="true">
+    <circle cx="14" cy="12" r="7" fill="#f5f5f5" stroke="#11141b" stroke-width="2"/>
+    <circle cx="34" cy="12" r="7" fill="#11141b" stroke="#11141b" stroke-width="2"/>
+    <circle cx="24" cy="26" r="16" fill="#f5f5f5" stroke="#11141b" stroke-width="2"/>
+    <path d="M24 10a16 16 0 0 1 0 32Z" fill="#11141b"/>
+    <circle cx="18" cy="23" r="2.8" fill="#11141b"/>
+    <path d="m30 18 2.2 3 3.8-.2-2.4 3 1.4 3.5-3.6-1.2-3 2 .1-3.8-3-2.3 3.7-1Z" fill="#ff4d57"/>
+    <path d="M13 31q5 6 11 1" fill="none" stroke="#11141b" stroke-width="2" stroke-linecap="round"/>
+    <path d="m25 32 3 3 3-3 3 3 3-4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+
   function renderActors(){
     const grid=$("#actorsGrid");
     grid.innerHTML="";
@@ -3228,8 +3248,8 @@ body.mobile-dragging{user-select:none}
     }
 
     const anime=gameDefinition(activeGameId).kind==="anime";
-    const crownIds=activeGameLeaderIds("total");
-    const curseIds=activeGameLeaderIds("deaths");
+    const hopeLeaderIds=activeGameLeaderIds("total");
+    const monokumaLeaderIds=activeGameLeaderIds("deaths");
     sortedActorsForBoard().forEach(actor=>{
       const assigned=rolesForActor(actor.id).filter(currentRoleVisible);
       const gameCounts=predictionCountsForActorGame(actor.id,activeGameId);
@@ -3257,7 +3277,7 @@ body.mobile-dragging{user-select:none}
         }
       }
 
-      const awards=`<div class="actor-awards">${crownIds.has(actor.id)?'<span class="actor-award crown" title="Prediction leader for this board">👑</span>':""}${curseIds.has(actor.id)?'<span class="actor-award curse" title="Most assigned-character deaths on this board">🏴‍☠️</span>':""}</div>`;
+      const awards=`<div class="actor-awards">${hopeLeaderIds.has(actor.id)?`<span class="actor-award hope" role="img" aria-label="Most correct predictions in the current game" title="Most correct predictions in the current game">${HOPE_PEAK_AWARD_ICON}</span>`:""}${monokumaLeaderIds.has(actor.id)?`<span class="actor-award monokuma" role="img" aria-label="Most assigned-character deaths in the current game" title="Most assigned-character deaths in the current game">${MONOKUMA_AWARD_ICON}</span>`:""}</div>`;
       const animeBlackened=state.settings.completedGames.dr3anime?String(gameCounts.blackened):"—";
       const animeBody=anime?`
         <div class="anime-score-card">
