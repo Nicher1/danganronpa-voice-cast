@@ -725,6 +725,13 @@ body.mobile-dragging{user-select:none}
 .chapter-result-line{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
 .result-badge{padding:.27rem .46rem;border-radius:999px;border:1px solid var(--line);font-size:.61rem;font-weight:900}
 .result-badge.victim{color:#d9edff;border-color:rgba(112,184,255,.36)}.result-badge.blackened{color:#ffd9e8;border-color:rgba(245,64,148,.36)}
+.patch-notes{display:grid;gap:10px;margin-top:12px;max-height:min(58vh,520px);overflow:auto;padding-right:3px}
+.patch-note{
+  padding:12px 13px;border:1px solid var(--line);border-radius:12px;
+  background:linear-gradient(135deg,rgba(245,64,148,.055),rgba(112,184,255,.025)),var(--panel-raised)
+}
+.patch-note h4{margin:0 0 5px;font-size:.9rem}.patch-note p{margin:0;color:var(--muted);font-size:.75rem;line-height:1.5}
+.patch-version{display:inline-block;margin-bottom:6px;color:var(--pink-hot);font-size:.6rem;font-weight:950;letter-spacing:.13em}
 @media(max-width:620px){
   .prediction-dock{grid-template-columns:1fr}.prediction-dock-head{align-items:flex-start;flex-direction:column}
   .stats-breakdown{grid-template-columns:1fr 1fr}.stats-breakdown div:last-child{grid-column:1/-1}
@@ -750,6 +757,7 @@ body.mobile-dragging{user-select:none}
     <div class="top-actions">
       <span id="modeBadge" class="badge">HOST</span>
       <span id="syncStatus" class="badge sync working">CONNECTING</span>
+      <button id="patchNotesBtn" class="ghost">Patch notes</button>
 
       <button id="previewPlayerBtn" class="ghost host-only">Preview Player</button>
       <button id="previewViewerBtn" class="ghost host-only">Preview Viewer</button>
@@ -894,6 +902,27 @@ body.mobile-dragging{user-select:none}
       </section>
     </section>
   </main>
+
+  <dialog id="patchNotesDialog" class="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">WHAT'S NEW</div>
+          <h3>Patch notes</h3>
+        </div>
+        <button type="button" class="icon-btn" data-close="patchNotesDialog">×</button>
+      </div>
+      <p class="muted small">Changes since the version before chapter predictions were introduced.</p>
+      <div class="patch-notes">
+        <section class="patch-note"><span class="patch-version">CHAPTER PREDICTIONS</span><h4>Victim and Blackened voting</h4><p>Every actor now receives two predictions per chapter. They can move them freely before the Trial; entering the Trial permanently locks that chapter's choices.</p></section>
+        <section class="patch-note"><span class="patch-version">RESULTS & MEMORIAL</span><h4>Persistent results without double scoring</h4><p>Pre-Trial deaths can establish the Victim, the host can mark the Blackened from Memorial, and prediction markers stay visible after a character dies. Result snapshots prevent duplicate points.</p></section>
+        <section class="patch-note"><span class="patch-version">STATISTICS</span><h4>Actor records and known population</h4><p>The new Statistics tab tracks correct Victim guesses, correct Blackened guesses, and historical character deaths separately. Its host-controlled chart shows Alive at the bottom, Dead above it, and Unknown on top.</p></section>
+        <section class="patch-note"><span class="patch-version">TRIAL & VOICE SAFETY</span><h4>Chapter-aware Trial state</h4><p>Changing chapter turns Trial Ongoing off for the new chapter. Starting the Trial locks predictions and safely expands the voice-sample pool to include that chapter's Trial lines.</p></section>
+        <section class="patch-note"><span class="patch-version">SYNC & ACCESS</span><h4>Shared, role-protected data</h4><p>Predictions, results, graph values, and statistics persist through Supabase. Players can edit only their own current pre-Trial predictions; spectators remain read-only; graph and result controls remain host-only.</p></section>
+      </div>
+      <div class="modal-actions"><button type="button" class="primary" data-close="patchNotesDialog">Got it</button></div>
+    </div>
+  </dialog>
 
   <dialog id="roleDialog" class="modal">
     <form id="roleForm" class="modal-card">
@@ -1142,7 +1171,8 @@ body.mobile-dragging{user-select:none}
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const params = new URLSearchParams(location.search);
   const requestedMode = params.get("mode");
-  const mode = ["player", "viewer"].includes(requestedMode) ? requestedMode : "host";
+  const hostAccess = params.get("host") === "11037" || /\/11037\/?$/.test(location.pathname);
+  const mode = hostAccess ? "host" : requestedMode === "viewer" ? "viewer" : "player";
 
   const IMG = {
     monokuma:"https://static.wikia.nocookie.net/danganronpa/images/9/99/Monokuma_VA_ID.png/revision/latest/scale-to-width-down/75?cb=20170217164015",
@@ -3324,9 +3354,19 @@ body.mobile-dragging{user-select:none}
     btn.onclick=()=>document.getElementById(btn.dataset.close).close();
   });
 
-  function openPreview(targetMode){
+  $("#patchNotesBtn").onclick=()=>$("#patchNotesDialog").showModal();
+
+  function publicModeUrl(targetMode){
     const url=new URL(location.href);
+    url.pathname=url.pathname.replace(/\/11037\/?$/, "/");
+    url.search="";
+    url.hash="";
     url.searchParams.set("mode",targetMode);
+    return url;
+  }
+
+  function openPreview(targetMode){
+    const url=publicModeUrl(targetMode);
     window.open(url.href,"_blank","noopener");
   }
 
@@ -3334,8 +3374,7 @@ body.mobile-dragging{user-select:none}
   $("#previewViewerBtn").onclick=()=>openPreview("viewer");
 
   async function copyModeLink(targetMode){
-    const url=new URL(location.href);
-    url.searchParams.set("mode",targetMode);
+    const url=publicModeUrl(targetMode);
     try{
       await navigator.clipboard.writeText(url.href);toast(`${targetMode==="player"?"Player":"Viewer"} link copied.`);
     }catch(_){
