@@ -734,10 +734,35 @@ body.mobile-dragging{user-select:none}
 }
 .patch-note h4{margin:0 0 5px;font-size:.9rem}.patch-note p{margin:0;color:var(--muted);font-size:.75rem;line-height:1.5}
 .patch-version{display:inline-block;margin-bottom:6px;color:var(--pink-hot);font-size:.6rem;font-weight:950;letter-spacing:.13em}
+.game-lock-banner{
+  position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  margin:0 0 14px;padding:16px 18px;overflow:hidden;border:1px solid #444b5b;border-radius:15px;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 9px,transparent 9px 18px),linear-gradient(120deg,#151820,#20242d);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.4),0 12px 28px rgba(0,0,0,.18)
+}
+.game-lock-banner::before,.game-lock-banner::after{content:"⛓";position:absolute;color:#666e7c;font-size:2.1rem;opacity:.42;transform:rotate(-18deg)}
+.game-lock-banner::before{left:-7px;bottom:-13px}.game-lock-banner::after{right:18%;top:-15px}
+.game-lock-copy{position:relative;z-index:1;display:flex;align-items:center;gap:13px}.game-lock-icon{font-size:1.55rem;filter:grayscale(1)}
+.game-lock-copy h2{margin:1px 0 3px;font-size:1rem}.game-lock-copy p{margin:0;color:var(--muted);font-size:.73rem}
+.current-game-btn{display:flex;align-items:center;gap:7px}.current-game-btn::before{content:"◈";color:var(--pink-hot)}
+.admin-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:13px;padding:18px}
+.admin-games{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.admin-game-card{position:relative;padding:16px;overflow:hidden}.admin-game-card.locked{filter:saturate(.45)}
+.admin-game-card h3{margin:3px 0 5px;font-size:1rem}.admin-game-card p{margin:0 0 12px;color:var(--muted);font-size:.73rem;line-height:1.45}
+.admin-game-state{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:11px}
+.game-state-badge{padding:.28rem .48rem;border-radius:999px;font-size:.58rem;font-weight:950;letter-spacing:.09em;background:rgba(255,255,255,.06);color:var(--muted)}
+.game-state-badge.open{background:rgba(112,184,255,.13);color:#bfe0ff}.game-state-badge.complete{background:rgba(104,220,151,.13);color:#aaf1c6}
+.game-picker-card{width:min(94vw,720px)}
+.game-picker-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:11px;margin-top:13px}
+.game-choice{position:relative;text-align:left;min-height:138px;padding:16px;border-radius:14px;background:linear-gradient(140deg,rgba(245,64,148,.09),rgba(112,184,255,.055)),var(--panel-raised)}
+.game-choice strong{display:block;margin:5px 0;font-size:1rem}.game-choice small{display:block;color:var(--muted);line-height:1.42}
+.game-choice.locked{cursor:not-allowed;filter:grayscale(.8);opacity:.58}.game-choice .game-number{font-size:.58rem;font-weight:950;letter-spacing:.13em;color:var(--pink-hot)}
+.game-choice .choice-lock{position:absolute;right:13px;top:12px;font-size:1.1rem}
 @media(max-width:620px){
   .prediction-dock{grid-template-columns:1fr}.prediction-dock-head{align-items:flex-start;flex-direction:column}
   .stats-breakdown{grid-template-columns:1fr 1fr}.stats-breakdown div:last-child{grid-column:1/-1}
   .population-header{flex-direction:column}
+  .game-lock-banner,.admin-hero{align-items:flex-start;flex-direction:column}
 }
 
 </style>
@@ -745,7 +770,7 @@ body.mobile-dragging{user-select:none}
 <body>
   <header class="topbar">
     <div>
-      <div class="brand-kicker">CAST CONTROL / TRIGGER HAPPY HAVOC</div>
+      <div id="gameKicker" class="brand-kicker">CAST CONTROL / TRIGGER HAPPY HAVOC</div>
       <div class="brand-row">
         <div class="brand-mark" aria-hidden="true"><span>V</span><span>A</span></div>
         <div>
@@ -759,6 +784,7 @@ body.mobile-dragging{user-select:none}
     <div class="top-actions">
       <span id="modeBadge" class="badge">HOST</span>
       <span id="syncStatus" class="badge sync working">CONNECTING</span>
+      <button id="gameSwitcherBtn" class="ghost current-game-btn">Trigger Happy Havoc</button>
       <button id="patchNotesBtn" class="ghost">Patch notes</button>
 
       <button id="previewPlayerBtn" class="ghost host-only">Preview Player</button>
@@ -777,10 +803,18 @@ body.mobile-dragging{user-select:none}
   </header>
 
   <main class="app-shell">
+    <section id="lockedGameBanner" class="game-lock-banner hidden" aria-label="Locked game">
+      <div class="game-lock-copy">
+        <span class="game-lock-icon">🔒</span>
+        <div><div class="section-kicker">NEXT KILLING GAME</div><h2>Danganronpa 2: Goodbye Despair</h2><p id="lockedGameCopy">Locked until Trigger Happy Havoc is completed.</p></div>
+      </div>
+      <button id="lockedGameAdminBtn" class="ghost host-only">Open Admin Tools</button>
+    </section>
     <nav class="tabs">
       <button class="tab active" data-tab="casting"><span class="tab-icon">◆</span> Assignments</button>
       <button class="tab" data-tab="memorial"><span class="tab-icon">☠</span> Memorial <span id="deadCount" class="counter">0</span></button>
       <button class="tab" data-tab="statistics"><span class="tab-icon">▥</span> Statistics</button>
+      <button class="tab host-only" data-tab="admin"><span class="tab-icon">⚙</span> Admin Tools</button>
     </nav>
 
     <section id="castingTab" class="tab-panel active">
@@ -844,7 +878,7 @@ body.mobile-dragging{user-select:none}
               <span id="spoilerCount" class="count-pill">0</span>
             </summary>
             <p class="muted tiny">Players and viewers cannot see this section at all. Drag a character out of the vault to reveal it.</p>
-            <div class="vault-switch-card">
+            <div id="junkoVaultControls" class="vault-switch-card">
               <div class="vault-switch-title">Junko / Mukuro identity swap</div>
               <div class="vault-switch-copy">Reversibly changes the original dead “Junko” card to Mukuro’s real name, talent, and portrait. The separate real Junko stays hidden below until Chapter 6.</div>
               <label class="toggle-wrap">
@@ -904,7 +938,23 @@ body.mobile-dragging{user-select:none}
         <div id="populationChart" class="population-chart"></div>
       </section>
     </section>
+
+    <section id="adminTab" class="tab-panel host-only">
+      <div class="admin-hero panel">
+        <div><div class="section-kicker">SERIES CONTROL</div><h2>Admin Tools</h2><p class="muted small">Mark games complete to unlock the next board. Turning a completion off locks later games again without deleting their saved cast data.</p></div>
+        <button id="adminChooseGameBtn" class="ghost">Choose active game</button>
+      </div>
+      <div id="adminGamesGrid" class="admin-games"></div>
+    </section>
   </main>
+
+  <dialog id="gamePickerDialog" class="modal">
+    <div class="modal-card game-picker-card">
+      <div class="modal-head"><div><div class="eyebrow">SELECT BOARD</div><h3>Choose a Danganronpa game</h3></div><button type="button" class="icon-btn" data-close="gamePickerDialog">×</button></div>
+      <p class="muted small">Each game keeps its own assignments, chapters, predictions, Memorial, and population history.</p>
+      <div id="gamePickerGrid" class="game-picker-grid"></div>
+    </div>
+  </dialog>
 
   <dialog id="patchNotesDialog" class="modal">
     <div class="modal-card">
@@ -915,8 +965,9 @@ body.mobile-dragging{user-select:none}
         </div>
         <button type="button" class="icon-btn" data-close="patchNotesDialog">×</button>
       </div>
-      <p class="muted small">Changes since the version before chapter predictions were introduced.</p>
+      <p class="muted small">Major releases, with each entry covering changes since the previous major push.</p>
       <div class="patch-notes">
+        <section class="patch-note"><span class="patch-version">MULTI-GAME BOARD · DR2</span><h4>Goodbye Despair is ready behind a progression lock</h4><p>Admin Tools can mark games complete, unlocking the next spoiler-safe board. Every window gets a game picker once DR2 is available, while each game preserves separate assignments, chapters, Trial state, predictions, Memorial, and population history.</p></section>
         <section class="patch-note"><span class="patch-version">CHAPTER PREDICTIONS</span><h4>Victim and Blackened voting</h4><p>Every actor now receives two predictions per chapter. They can move them freely before the Trial; entering the Trial permanently locks that chapter's choices.</p></section>
         <section class="patch-note"><span class="patch-version">RESULTS & MEMORIAL</span><h4>Persistent results without double scoring</h4><p>Pre-Trial deaths can establish the Victim, the host can mark the Blackened from Memorial, and prediction markers stay visible after a character dies. Result snapshots prevent duplicate points.</p></section>
         <section class="patch-note"><span class="patch-version">STATISTICS</span><h4>Actor records and known population</h4><p>The new Statistics tab tracks correct Victim guesses, correct Blackened guesses, and historical character deaths separately. Its host-controlled chart shows Alive at the bottom, Dead above it, and Unknown on top.</p></section>
@@ -1172,6 +1223,14 @@ body.mobile-dragging{user-select:none}
 (async () => {
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
+  const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
+  const GAME_DEFINITIONS = [
+    {id:"dr1",short:"DR1",title:"Danganronpa: Trigger Happy Havoc",kicker:"TRIGGER HAPPY HAVOC"},
+    {id:"dr2",short:"DR2",title:"Danganronpa 2: Goodbye Despair",kicker:"GOODBYE DESPAIR"}
+  ];
+  const GAME_IDS = GAME_DEFINITIONS.map(game=>game.id);
+  let activeGameId = GAME_IDS.includes(sessionStorage.getItem(SESSION_GAME_KEY))?sessionStorage.getItem(SESSION_GAME_KEY):"dr1";
+  let gamePickerShown = false;
   const params = new URLSearchParams(location.search);
   const requestedMode = params.get("mode");
   const hostAccess = params.get("host") === "11037" || /\/11037\/?$/.test(location.pathname);
@@ -1204,19 +1263,45 @@ body.mobile-dragging{user-select:none}
     yasuhiro:"https://static.wikia.nocookie.net/danganronpa/images/e/e3/Yasuhiro_Hagakure_VA_ID.png/revision/latest?cb=20170217212331"
   };
 
+  const officialDr2Portrait = number => `https://danganronpa.us/reload/img/characters/danganronpa2/c${String(number).padStart(2,"0")}.jpg`;
+
   function id() {
     return window.crypto?.randomUUID ? crypto.randomUUID() : "id-" + Math.random().toString(36).slice(2) + Date.now();
   }
 
   function mkRole(name, title, image = "", hiddenSpoiler = false, extra = {}) {
     return {
-      id:id(), name, title, modifier:"", image,
+      id:id(), name, title, modifier:"", image,gameId:"dr1",
       ownerId:null, dead:false, lastActorName:"", deathTime:null,deathChapter:null,deathActorId:null,deathRecorded:false,
       hiddenSpoiler, revealed:!hiddenSpoiler,
       voiceProfile:name,voiceRevealChapter:1,voiceFinalChapter:null,customVoiceClips:[],
       personalRecordings:[],practiceLineHistory:[],
       ...extra
     };
+  }
+
+  function createDr2Roles(){
+    return [
+      mkRole("Hajime Hinata","Ultimate ???",officialDr2Portrait(1),false,{gameId:"dr2"}),
+      mkRole("Nagito Komaeda","Ultimate Lucky Student",officialDr2Portrait(2),false,{gameId:"dr2"}),
+      mkRole("Gundham Tanaka","Ultimate Breeder",officialDr2Portrait(3),false,{gameId:"dr2"}),
+      mkRole("Kazuichi Soda","Ultimate Mechanic",officialDr2Portrait(4),false,{gameId:"dr2"}),
+      mkRole("Byakuya Togami","Ultimate Affluent Progeny",officialDr2Portrait(5),false,{gameId:"dr2"}),
+      mkRole("Teruteru Hanamura","Ultimate Cook",officialDr2Portrait(6),false,{gameId:"dr2"}),
+      mkRole("Nekomaru Nidai","Ultimate Team Manager",officialDr2Portrait(7),false,{gameId:"dr2"}),
+      mkRole("Fuyuhiko Kuzuryu","Ultimate Yakuza",officialDr2Portrait(8),false,{gameId:"dr2"}),
+      mkRole("Akane Owari","Ultimate Gymnast",officialDr2Portrait(9),false,{gameId:"dr2"}),
+      mkRole("Chiaki Nanami","Ultimate Gamer",officialDr2Portrait(10),false,{gameId:"dr2"}),
+      mkRole("Sonia Nevermind","Ultimate Princess",officialDr2Portrait(11),false,{gameId:"dr2"}),
+      mkRole("Hiyoko Saionji","Ultimate Traditional Dancer",officialDr2Portrait(12),false,{gameId:"dr2"}),
+      mkRole("Mahiru Koizumi","Ultimate Photographer",officialDr2Portrait(13),false,{gameId:"dr2"}),
+      mkRole("Mikan Tsumiki","Ultimate Nurse",officialDr2Portrait(14),false,{gameId:"dr2"}),
+      mkRole("Ibuki Mioda","Ultimate Musician",officialDr2Portrait(15),false,{gameId:"dr2"}),
+      mkRole("Peko Pekoyama","Ultimate Swordswoman",officialDr2Portrait(16),false,{gameId:"dr2"}),
+      mkRole("Monokuma","Headmaster",officialDr2Portrait(17),false,{gameId:"dr2"}),
+      mkRole("Monomi","Teacher",officialDr2Portrait(18),false,{gameId:"dr2"}),
+      mkRole("Narrator","Narrator","",false,{gameId:"dr2",voiceProfile:""})
+    ];
   }
 
   function historyKey(name) {
@@ -1256,12 +1341,29 @@ body.mobile-dragging{user-select:none}
     "5":{alive:6,dead:10,unknown:0},
     "6":{alive:6,dead:10,unknown:0}
   };
+  const DR2_POPULATION_PRESETS={
+    start:{alive:16,dead:0,unknown:0},
+    "1":{alive:14,dead:2,unknown:0},
+    "2":{alive:12,dead:4,unknown:0},
+    "3":{alive:9,dead:7,unknown:0},
+    "4":{alive:7,dead:9,unknown:0},
+    "5":{alive:5,dead:11,unknown:0},
+    "6":{alive:5,dead:11,unknown:0}
+  };
 
-  function initialPopulationGraph(chapter=2) {
+  function populationPresetsForGame(gameId=activeGameId){return gameId==="dr2"?DR2_POPULATION_PRESETS:POPULATION_PRESETS}
+
+  function createGameSettings({chapter=1,gameActive=false}={}){
+    const key=String(chapter);
+    return {maxPerActor:3,gameActive,voiceChapter:chapter,voiceInTrial:false,trialByChapter:{[key]:false},trialEnteredByChapter:{[key]:false}};
+  }
+
+  function initialPopulationGraph(chapter=2,gameId="dr1") {
     const result={};
+    const presets=populationPresetsForGame(gameId);
     POPULATION_KEYS.forEach(key=>{
       const completed=key==="start" || Number(key)<chapter;
-      result[key]=completed?{...POPULATION_PRESETS[key],revealed:true}:{alive:0,dead:0,unknown:0,revealed:false};
+      result[key]=completed?{...presets[key],revealed:true}:{alive:0,dead:0,unknown:0,revealed:false};
     });
     return result;
   }
@@ -1278,19 +1380,19 @@ body.mobile-dragging{user-select:none}
 
   function defaultState() {
     return {
-      version:7,
-      settings:{ maxPerActor:3, gameActive:true, voiceChapter:2, voiceInTrial:false, trialByChapter:{"2":false}, trialEnteredByChapter:{"2":false} },
-      secretSettings:{ junkoMukuroRevealed:false, populationPresets:POPULATION_PRESETS },
+      version:8,
+      settings:{completedGames:{dr1:false,dr2:false},games:{dr1:createGameSettings({chapter:2,gameActive:true}),dr2:createGameSettings({chapter:1,gameActive:false})}},
+      secretSettings:{games:{dr1:{junkoMukuroRevealed:false,populationPresets:POPULATION_PRESETS},dr2:{populationPresets:DR2_POPULATION_PRESETS}}},
       predictions:{},
       chapterResults:{},
-      populationGraph:initialPopulationGraph(2),
+      populationGraph:{dr1:initialPopulationGraph(2,"dr1"),dr2:initialPopulationGraph(1,"dr2")},
       actors:[
-        {id:id(),name:"Nicher",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
-        {id:id(),name:"Fae",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
-        {id:id(),name:"Fall",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
-        {id:id(),name:"MD",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
-        {id:id(),name:"Angel",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0},
-        {id:id(),name:"Reika",hasPassword:false,lockedRoleId:null,replacementToken:false,history:[],deathCount:0}
+        {id:id(),name:"Nicher",hasPassword:false,lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"Fae",hasPassword:false,lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"Fall",hasPassword:false,lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"MD",hasPassword:false,lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"Angel",hasPassword:false,lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,history:[],deathCount:0},
+        {id:id(),name:"Reika",hasPassword:false,lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,history:[],deathCount:0}
       ],
       roles:[
         mkRole("Monokuma","Headmaster",IMG.monokuma),
@@ -1329,6 +1431,7 @@ body.mobile-dragging{user-select:none}
   let remoteReady = false;
   let remoteRevision = 0;
   let remoteSaveQueue = Promise.resolve();
+  let initialBoardLoadComplete = false;
   let hostAuthSetup = false;
   let hostAuthResolver = null;
   let applyingRemoteState = false;
@@ -1345,34 +1448,64 @@ body.mobile-dragging{user-select:none}
 
   const $ = sel => document.querySelector(sel);
   const $$ = sel => [...document.querySelectorAll(sel)];
+  const gameDefinition = gameId => GAME_DEFINITIONS.find(game=>game.id===gameId)||GAME_DEFINITIONS[0];
+  const isGameUnlocked = gameId => gameId==="dr1" || GAME_DEFINITIONS.slice(0,GAME_IDS.indexOf(gameId)).every(game=>!!state.settings.completedGames[game.id]);
+  const availableGameIds = () => GAME_IDS.filter(isGameUnlocked);
+  const currentSettings = () => state.settings.games[activeGameId];
+  const currentSecretSettings = () => state.secretSettings?.games?.[activeGameId]||{};
+  const currentPopulationGraph = () => state.populationGraph[activeGameId];
+  const gameRoles = (gameId=activeGameId) => state.roles.filter(role=>role.gameId===gameId);
+  const lockedRoleIdFor = actor => actor?.lockedRoleIds?.[activeGameId]||null;
+  const setLockedRoleIdFor = (actor,roleId) => {if(actor){actor.lockedRoleIds||={};actor.lockedRoleIds[activeGameId]=roleId||null}};
 
   document.body.classList.add(mode + "-mode");
   $("#modeBadge").textContent = mode.toUpperCase();
   $("#modeBadge").classList.add(mode);
 
+  function normaliseGameSettings(value,fallback){
+    const settings=value&&typeof value==="object"?value:{...fallback};
+    if(!Number.isFinite(settings.maxPerActor))settings.maxPerActor=fallback.maxPerActor;
+    if(typeof settings.gameActive!=="boolean")settings.gameActive=fallback.gameActive;
+    if(!Number.isFinite(settings.voiceChapter))settings.voiceChapter=fallback.voiceChapter;
+    settings.voiceChapter=Math.max(1,Math.min(6,Math.floor(settings.voiceChapter)));
+    if(typeof settings.voiceInTrial!=="boolean")settings.voiceInTrial=false;
+    if(!settings.trialByChapter||typeof settings.trialByChapter!=="object")settings.trialByChapter={};
+    if(!settings.trialEnteredByChapter||typeof settings.trialEnteredByChapter!=="object")settings.trialEnteredByChapter={};
+    const key=String(settings.voiceChapter);
+    if(typeof settings.trialByChapter[key]!=="boolean")settings.trialByChapter[key]=settings.voiceInTrial;
+    settings.voiceInTrial=!!settings.trialByChapter[key];
+    if(typeof settings.trialEnteredByChapter[key]!=="boolean")settings.trialEnteredByChapter[key]=settings.voiceInTrial;
+    return settings;
+  }
+
   function normaliseState(s) {
     const previousVersion=Number(s.version)||0;
-    s.version = 7;
-    s.settings ||= {};
-    if (!Number.isFinite(s.settings.maxPerActor)) s.settings.maxPerActor = 3;
-    if (typeof s.settings.gameActive !== "boolean") s.settings.gameActive = true;
-    if (!Number.isFinite(s.settings.voiceChapter)) s.settings.voiceChapter = 2;
-    s.settings.voiceChapter=Math.max(1,Math.min(6,Math.floor(s.settings.voiceChapter)));
-    if (typeof s.settings.voiceInTrial !== "boolean") s.settings.voiceInTrial = false;
-    if(!s.settings.trialByChapter||typeof s.settings.trialByChapter!=="object")s.settings.trialByChapter={};
-    if(!s.settings.trialEnteredByChapter||typeof s.settings.trialEnteredByChapter!=="object")s.settings.trialEnteredByChapter={};
-    const currentChapterKey=String(s.settings.voiceChapter);
-    if(typeof s.settings.trialByChapter[currentChapterKey]!=="boolean"){
-      s.settings.trialByChapter[currentChapterKey]=s.settings.voiceInTrial;
+    s.version = 8;
+    const legacySettings=s.settings&&!s.settings.games?{...s.settings}:null;
+    if(!s.settings?.games){
+      s.settings={
+        completedGames:{dr1:false,dr2:false},
+        games:{dr1:legacySettings||createGameSettings({chapter:2,gameActive:true}),dr2:createGameSettings({chapter:1,gameActive:false})}
+      };
     }
-    s.settings.voiceInTrial=!!s.settings.trialByChapter[currentChapterKey];
-    if(typeof s.settings.trialEnteredByChapter[currentChapterKey]!=="boolean"){
-      s.settings.trialEnteredByChapter[currentChapterKey]=s.settings.voiceInTrial;
+    s.settings.completedGames||={};
+    GAME_IDS.forEach(gameId=>s.settings.completedGames[gameId]=!!s.settings.completedGames[gameId]);
+    s.settings.games||={};
+    s.settings.games.dr1=normaliseGameSettings(s.settings.games.dr1,createGameSettings({chapter:2,gameActive:true}));
+    s.settings.games.dr2=normaliseGameSettings(s.settings.games.dr2,createGameSettings({chapter:1,gameActive:false}));
+
+    const legacySecret=s.secretSettings&&!s.secretSettings.games?{...s.secretSettings}:null;
+    s.secretSettings=s.secretSettings||{};
+    if(!s.secretSettings.games)s.secretSettings.games={dr1:legacySecret||{},dr2:{}};
+    s.secretSettings.games.dr1||={};s.secretSettings.games.dr2||={};
+    if(typeof s.secretSettings.games.dr1.junkoMukuroRevealed!=="boolean")s.secretSettings.games.dr1.junkoMukuroRevealed=false;
+    if(mode==="host"){
+      s.secretSettings.games.dr1.populationPresets=POPULATION_PRESETS;
+      s.secretSettings.games.dr2.populationPresets=DR2_POPULATION_PRESETS;
+    }else{
+      delete s.secretSettings.games.dr1.populationPresets;
+      delete s.secretSettings.games.dr2.populationPresets;
     }
-    s.secretSettings ||= {};
-    if (typeof s.secretSettings.junkoMukuroRevealed !== "boolean") s.secretSettings.junkoMukuroRevealed = false;
-    if(mode==="host")s.secretSettings.populationPresets=POPULATION_PRESETS;
-    else delete s.secretSettings.populationPresets;
     s.actors ||= [];
     s.roles ||= [];
     const actorNameMigrations={
@@ -1389,48 +1522,58 @@ body.mobile-dragging{user-select:none}
       if(!Number.isFinite(a.deathCount)||a.deathCount<0)a.deathCount=0;
       a.deathCount=Math.floor(a.deathCount);
       if (typeof a.replacementToken !== "boolean") a.replacementToken = false;
-      if (!("lockedRoleId" in a)) a.lockedRoleId = null;
+      if(!a.lockedRoleIds||typeof a.lockedRoleIds!=="object")a.lockedRoleIds={dr1:a.lockedRoleId||null,dr2:null};
+      GAME_IDS.forEach(gameId=>{if(!(gameId in a.lockedRoleIds))a.lockedRoleIds[gameId]=null});
+      delete a.lockedRoleId;
     });
     if(!s.predictions||typeof s.predictions!=="object"||Array.isArray(s.predictions))s.predictions={};
     Object.keys(s.predictions).forEach(actorId=>{
       if(!s.actors.some(actor=>actor.id===actorId)){delete s.predictions[actorId];return}
       const byChapter=s.predictions[actorId];
       if(!byChapter||typeof byChapter!=="object"||Array.isArray(byChapter)){s.predictions[actorId]={};return}
-      Object.keys(byChapter).forEach(chapter=>{
-        const number=Math.max(1,Math.min(6,Number(chapter)||1));
-        const entry=byChapter[chapter]||{};
-        const clean={
+      const cleaned={};
+      Object.keys(byChapter).forEach(rawKey=>{
+        const [rawGame,rawChapter]=rawKey.includes(":")?rawKey.split(":"):["dr1",rawKey];
+        const gameId=GAME_IDS.includes(rawGame)?rawGame:"dr1";
+        const number=Math.max(1,Math.min(6,Number(rawChapter)||1));
+        const entry=byChapter[rawKey]||{};
+        cleaned[`${gameId}:${number}`]={
           victimRoleId:String(entry.victimRoleId||entry.victimCharacterId||""),
           blackenedRoleId:String(entry.blackenedRoleId||entry.blackenedCharacterId||""),
           locked:!!entry.locked
         };
-        if(String(number)!==String(chapter))delete byChapter[chapter];
-        byChapter[String(number)]=clean;
       });
+      s.predictions[actorId]=cleaned;
     });
     if(!s.chapterResults||typeof s.chapterResults!=="object"||Array.isArray(s.chapterResults))s.chapterResults={};
-    Object.keys(s.chapterResults).forEach(chapter=>{
-      const result=s.chapterResults[chapter]||{};
-      s.chapterResults[chapter]={
+    const cleanedResults={};
+    Object.keys(s.chapterResults).forEach(rawKey=>{
+      const [rawGame,rawChapter]=rawKey.includes(":")?rawKey.split(":"):["dr1",rawKey];
+      const gameId=GAME_IDS.includes(rawGame)?rawGame:"dr1";
+      const number=Math.max(1,Math.min(6,Number(rawChapter)||1));
+      const result=s.chapterResults[rawKey]||{};
+      cleanedResults[`${gameId}:${number}`]={
         victimRoleId:String(result.victimRoleId||""),
         blackenedRoleId:String(result.blackenedRoleId||""),
         victimCorrectActorIds:[...new Set(Array.isArray(result.victimCorrectActorIds)?result.victimCorrectActorIds.map(String):[])],
         blackenedCorrectActorIds:[...new Set(Array.isArray(result.blackenedCorrectActorIds)?result.blackenedCorrectActorIds.map(String):[])]
       };
     });
-    if(!s.populationGraph||typeof s.populationGraph!=="object"||Array.isArray(s.populationGraph)){
-      s.populationGraph=initialPopulationGraph(s.settings.voiceChapter);
-    }
-    POPULATION_KEYS.forEach(key=>{
-      const item=s.populationGraph[key];
-      if(!item||typeof item!=="object"){
-        s.populationGraph[key]={alive:0,dead:0,unknown:0,revealed:key==="start"};
-        return;
-      }
-      ["alive","dead","unknown"].forEach(field=>item[field]=Math.max(0,Math.floor(Number(item[field])||0)));
-      item.revealed=!!item.revealed;
+    s.chapterResults=cleanedResults;
+    if(!s.populationGraph||typeof s.populationGraph!=="object"||Array.isArray(s.populationGraph))s.populationGraph={};
+    if(!s.populationGraph.dr1)s.populationGraph={dr1:Object.keys(s.populationGraph).some(key=>POPULATION_KEYS.includes(key))?s.populationGraph:initialPopulationGraph(s.settings.games.dr1.voiceChapter,"dr1"),dr2:initialPopulationGraph(s.settings.games.dr2.voiceChapter,"dr2")};
+    GAME_IDS.forEach(gameId=>{
+      const graph=s.populationGraph[gameId]&&typeof s.populationGraph[gameId]==="object"?s.populationGraph[gameId]:(s.populationGraph[gameId]=initialPopulationGraph(s.settings.games[gameId].voiceChapter,gameId));
+      POPULATION_KEYS.forEach(key=>{
+        const item=graph[key];
+        if(!item||typeof item!=="object"){graph[key]={alive:0,dead:0,unknown:0,revealed:key==="start"};return}
+        ["alive","dead","unknown"].forEach(field=>item[field]=Math.max(0,Math.floor(Number(item[field])||0)));
+        item.revealed=!!item.revealed;
+      });
     });
     s.roles.forEach(r => {
+      if(!GAME_IDS.includes(r.gameId))r.gameId="dr1";
+      const roleSettings=s.settings.games[r.gameId];
       if (typeof r.hiddenSpoiler !== "boolean") r.hiddenSpoiler = false;
       if (typeof r.revealed !== "boolean") r.revealed = !r.hiddenSpoiler;
       if (typeof r.dead !== "boolean") r.dead = false;
@@ -1457,10 +1600,10 @@ body.mobile-dragging{user-select:none}
       if(!Number.isFinite(r.voiceRevealChapter))r.voiceRevealChapter=r.name==="Genocide Jack"?2:1;
       r.voiceRevealChapter=Math.max(1,Math.min(6,Math.floor(r.voiceRevealChapter)));
       if(r.dead&&!Number.isFinite(r.voiceFinalChapter)){
-        r.voiceFinalChapter=LEGACY_DEATH_CHAPTERS[r.name]||Math.max(1,s.settings.voiceChapter-1);
+        r.voiceFinalChapter=(r.gameId==="dr1"?LEGACY_DEATH_CHAPTERS[r.name]:null)||Math.max(1,roleSettings.voiceChapter-1);
       }
       if(!r.voiceProfile&&r.name!=="Narrator")r.voiceProfile=r.name;
-      if(r.dead&&!Number.isFinite(r.deathChapter))r.deathChapter=r.voiceFinalChapter||LEGACY_DEATH_CHAPTERS[r.name]||s.settings.voiceChapter;
+      if(r.dead&&!Number.isFinite(r.deathChapter))r.deathChapter=r.voiceFinalChapter||(r.gameId==="dr1"?LEGACY_DEATH_CHAPTERS[r.name]:null)||roleSettings.voiceChapter;
       if(!r.deathActorId&&r.lastActorName){
         const historicalActor=s.actors.find(actor=>actor.name===r.lastActorName);
         if(historicalActor)r.deathActorId=historicalActor.id;
@@ -1469,23 +1612,25 @@ body.mobile-dragging{user-select:none}
     });
 
     if(mode==="host"){
-      let disguise=s.roles.find(r=>r.specialRole==="junko-disguise") || s.roles.find(r=>
+      let disguise=s.roles.find(r=>r.gameId==="dr1"&&r.specialRole==="junko-disguise") || s.roles.find(r=>
+        r.gameId==="dr1"&&
         !r.hiddenSpoiler && ((r.name==="Junko Enoshima"&&/Fashionista/i.test(r.title||"")) || (r.name==="Mukuro Ikusaba"&&/Soldier/i.test(r.title||"")))
       );
       if(disguise){
         disguise.specialRole="junko-disguise";
-        applyJunkoIdentity(disguise,s.secretSettings.junkoMukuroRevealed);
+        applyJunkoIdentity(disguise,s.secretSettings.games.dr1.junkoMukuroRevealed);
       }
 
-      let realJunko=s.roles.find(r=>r.specialRole==="real-junko");
+      let realJunko=s.roles.find(r=>r.gameId==="dr1"&&r.specialRole==="real-junko");
       if(!realJunko){
-        realJunko=s.roles.find(r=>r.hiddenSpoiler&&!r.revealed&&r.name==="Mukuro Ikusaba");
+        realJunko=s.roles.find(r=>r.gameId==="dr1"&&r.hiddenSpoiler&&!r.revealed&&r.name==="Mukuro Ikusaba");
         if(realJunko){
-          Object.assign(realJunko,{name:"Junko Enoshima",title:"Ultimate Despair",image:IMG.realJunko,specialRole:"real-junko",voiceProfile:"Junko Enoshima (Real)",voiceRevealChapter:6});
+          Object.assign(realJunko,{name:"Junko Enoshima",title:"Ultimate Despair",image:IMG.realJunko,gameId:"dr1",specialRole:"real-junko",voiceProfile:"Junko Enoshima (Real)",voiceRevealChapter:6});
         }else{
-          s.roles.push(mkRole("Junko Enoshima","Ultimate Despair",IMG.realJunko,true,{specialRole:"real-junko",voiceProfile:"Junko Enoshima (Real)",voiceRevealChapter:6}));
+          s.roles.push(mkRole("Junko Enoshima","Ultimate Despair",IMG.realJunko,true,{gameId:"dr1",specialRole:"real-junko",voiceProfile:"Junko Enoshima (Real)",voiceRevealChapter:6}));
         }
       }
+      if(s.settings.completedGames.dr1&&!s.roles.some(role=>role.gameId==="dr2"))s.roles.push(...createDr2Roles());
     }
     s.roles.forEach(r=>{
       if(!r.dead&&r.ownerId)addActorHistory(s.actors.find(a=>a.id===r.ownerId),r.name);
@@ -1521,6 +1666,8 @@ body.mobile-dragging{user-select:none}
   function remoteSafeState(value=state) {
     const copy=JSON.parse(JSON.stringify(value));
     (copy.actors||[]).forEach(actor=>delete actor.passwordHash);
+    if(mode==="player")copy.clientGameId=activeGameId;
+    else delete copy.clientGameId;
     return copy;
   }
 
@@ -1534,6 +1681,7 @@ body.mobile-dragging{user-select:none}
     if(!row?.state)return;
     applyingRemoteState=true;
     state=normaliseState(row.state);
+    if(!isGameUnlocked(activeGameId)){activeGameId="dr1";sessionStorage.setItem(SESSION_GAME_KEY,activeGameId)}
     remoteRevision=Number(row.revision)||0;
     cacheState();
     applyingRemoteState=false;
@@ -1664,26 +1812,27 @@ body.mobile-dragging{user-select:none}
 
   function actorById(actorId){ return state.actors.find(a=>a.id===actorId); }
   function roleById(roleId){ return state.roles.find(r=>r.id===roleId); }
-  function rolesForActor(actorId){ return state.roles.filter(r=>!r.dead && r.ownerId===actorId); }
-  function lockedOwnerOf(roleId){ return state.actors.find(a=>a.lockedRoleId===roleId) || null; }
+  function rolesForActor(actorId){ return gameRoles().filter(r=>!r.dead && r.ownerId===actorId); }
+  function lockedOwnerOf(roleId){ return state.actors.find(a=>lockedRoleIdFor(a)===roleId) || null; }
   function activeActor(){ return actorById(activeActorId); }
-  function chapterKey(chapter=state.settings.voiceChapter){return String(Math.max(1,Math.min(6,Number(chapter)||1)))}
+  function chapterKey(chapter=currentSettings().voiceChapter){return String(Math.max(1,Math.min(6,Number(chapter)||1)))}
+  function chapterStateKey(chapter=currentSettings().voiceChapter,gameId=activeGameId){return `${gameId}:${chapterKey(chapter)}`}
   function livingVoiceSourceSummary(){
-    const current=state.settings.voiceChapter;
-    if(state.settings.voiceInTrial)return `Chapter ${current} pre-trial samples (current chapter).`;
+    const current=currentSettings().voiceChapter;
+    if(currentSettings().voiceInTrial)return `Chapter ${current} pre-trial samples (current chapter).`;
     if(current===1)return "Earliest spoiler-safe Chapter 1 samples (there is no previous chapter).";
     return `Best samples from Chapter ${current-1} (previous chapter).`;
   }
-  function predictionForActor(actorId,chapter=state.settings.voiceChapter,create=false){
-    const key=chapterKey(chapter);
+  function predictionForActor(actorId,chapter=currentSettings().voiceChapter,create=false){
+    const key=chapterStateKey(chapter);
     if(create){
       state.predictions[actorId]||={};
       state.predictions[actorId][key]||={victimRoleId:"",blackenedRoleId:"",locked:false};
     }
     return state.predictions?.[actorId]?.[key]||null;
   }
-  function resultForChapter(chapter=state.settings.voiceChapter,create=false){
-    const key=chapterKey(chapter);
+  function resultForChapter(chapter=currentSettings().voiceChapter,create=false){
+    const key=chapterStateKey(chapter);
     if(create){
       state.chapterResults[key]||={victimRoleId:"",blackenedRoleId:"",victimCorrectActorIds:[],blackenedCorrectActorIds:[]};
     }
@@ -1694,37 +1843,37 @@ body.mobile-dragging{user-select:none}
   function eligiblePredictionRole(role){
     return !!role&&!role.dead&&currentRoleVisible(role)&&(!role.hiddenSpoiler||role.revealed)&&role.name!=="Narrator";
   }
-  function canEditPrediction(actorId,kind,chapter=state.settings.voiceChapter){
+  function canEditPrediction(actorId,kind,chapter=currentSettings().voiceChapter){
     if(mode!=="player"||actorId!==activeActorId)return false;
     const key=chapterKey(chapter);
     const prediction=predictionForActor(actorId,key,false);
     const result=resultForChapter(key,false);
-    return !state.settings.trialByChapter[key]&&!state.settings.trialEnteredByChapter[key]&&!prediction?.locked&&!result?.[predictionField(kind)];
+    return !currentSettings().trialByChapter[key]&&!currentSettings().trialEnteredByChapter[key]&&!prediction?.locked&&!result?.[predictionField(kind)];
   }
   function setPrediction(kind,roleId){
     const actor=activeActor();
     const role=roleId?roleById(roleId):null;
     if(!actor||!canEditPrediction(actor.id,kind))return toast("This prediction is locked for the chapter.");
     if(roleId&&!eligiblePredictionRole(role))return toast("Choose a living, revealed character.");
-    const prediction=predictionForActor(actor.id,state.settings.voiceChapter,true);
+    const prediction=predictionForActor(actor.id,currentSettings().voiceChapter,true);
     prediction[predictionField(kind)]=roleId||"";
     selectedPredictionKind=null;
     saveState();render();
     toast(role?`${kind==="victim"?"Victim":"Blackened"} prediction set to ${role.name}.`:`${kind==="victim"?"Victim":"Blackened"} prediction cleared.`);
   }
-  function lockChapterPredictions(chapter=state.settings.voiceChapter){
+  function lockChapterPredictions(chapter=currentSettings().voiceChapter){
     state.actors.forEach(actor=>predictionForActor(actor.id,chapter,true).locked=true);
   }
-  function recalculateResult(kind,chapter=state.settings.voiceChapter){
+  function recalculateResult(kind,chapter=currentSettings().voiceChapter){
     const result=resultForChapter(chapter,true);
     const roleId=result[predictionField(kind)];
     result[correctField(kind)]=roleId?state.actors
       .filter(actor=>predictionForActor(actor.id,chapter,false)?.[predictionField(kind)]===roleId)
       .map(actor=>actor.id):[];
   }
-  function setChapterResult(kind,roleId,chapter=state.settings.voiceChapter){
+  function setChapterResult(kind,roleId,chapter=currentSettings().voiceChapter){
     if(mode!=="host")return false;
-    if(kind==="blackened"&&roleId&&!state.settings.trialEnteredByChapter[chapterKey(chapter)]){
+    if(kind==="blackened"&&roleId&&!currentSettings().trialEnteredByChapter[chapterKey(chapter)]){
       toast(`Start the Chapter ${chapterKey(chapter)} Trial before setting the Blackened.`);return false;
     }
     const result=resultForChapter(chapter,true);
@@ -1734,7 +1883,7 @@ body.mobile-dragging{user-select:none}
   }
   function predictionCountsForActor(actorId){
     let victim=0,blackened=0;
-    Object.values(state.chapterResults||{}).forEach(result=>{
+    Object.entries(state.chapterResults||{}).filter(([key])=>key.startsWith(`${activeGameId}:`)).forEach(([,result])=>{
       if(result.victimCorrectActorIds?.includes(actorId))victim++;
       if(result.blackenedCorrectActorIds?.includes(actorId))blackened++;
     });
@@ -1742,7 +1891,7 @@ body.mobile-dragging{user-select:none}
   }
   function predictionMarkers(role,{memorial=false}={}){
     const matches=[];
-    const chapters=memorial?Object.keys(state.predictions||{}).flatMap(actorId=>Object.keys(state.predictions[actorId]||{})):[chapterKey()];
+    const chapters=memorial?Object.keys(state.predictions||{}).flatMap(actorId=>Object.keys(state.predictions[actorId]||{})).filter(key=>key.startsWith(`${activeGameId}:`)).map(key=>key.split(":")[1]):[chapterKey()];
     [...new Set(chapters)].sort((a,b)=>Number(a)-Number(b)).forEach(chapter=>{
       ["victim","blackened"].forEach(kind=>{
         const actorIds=state.actors.filter(actor=>predictionForActor(actor.id,chapter,false)?.[predictionField(kind)]===role.id).map(actor=>actor.id);
@@ -1797,23 +1946,96 @@ body.mobile-dragging{user-select:none}
     return !!r.revealed;
   }
 
+  function selectGame(gameId,{announce=true}={}){
+    if(!isGameUnlocked(gameId)){toast(`${gameDefinition(gameId).title} is still locked.`);return false}
+    if(activeAudio){activeAudio.pause();resetActiveAudio()}
+    activeGameId=gameId;
+    sessionStorage.setItem(SESSION_GAME_KEY,activeGameId);
+    expanded.clear();selectedPredictionKind=null;voiceShuffleBags.clear();
+    $("#gamePickerDialog").close();
+    render();
+    if(announce)toast(`${gameDefinition(gameId).title} board selected.`);
+    return true;
+  }
+
+  function renderGamePicker(){
+    const grid=$("#gamePickerGrid");
+    grid.innerHTML="";
+    GAME_DEFINITIONS.forEach((game,index)=>{
+      const unlocked=isGameUnlocked(game.id);
+      const completed=!!state.settings.completedGames[game.id];
+      const button=document.createElement("button");
+      button.type="button";button.className=`game-choice ${unlocked?"":"locked"}`;button.disabled=!unlocked;
+      button.innerHTML=`<span class="game-number">GAME ${index+1}</span><strong>${esc(game.title)}</strong><small>${unlocked?(completed?"Completed · board remains available":"Available now"):`Complete ${esc(GAME_DEFINITIONS[index-1]?.title||"the previous game")} to unlock.`}</small>${unlocked?"":'<span class="choice-lock">🔒</span>'}`;
+      if(unlocked)button.onclick=()=>selectGame(game.id);
+      grid.appendChild(button);
+    });
+  }
+
+  function showGamePicker({automatic=false}={}){
+    renderGamePicker();
+    if(automatic&&availableGameIds().length<2)return;
+    gamePickerShown=true;
+    $("#gamePickerDialog").showModal();
+  }
+
+  function renderGameChrome(){
+    if(!isGameUnlocked(activeGameId)){activeGameId="dr1";sessionStorage.setItem(SESSION_GAME_KEY,activeGameId)}
+    const game=gameDefinition(activeGameId);
+    $("#gameKicker").textContent=`CAST CONTROL / ${game.kicker}`;
+    $("#gameSwitcherBtn").textContent=game.title;
+    const dr2Locked=!isGameUnlocked("dr2");
+    $("#lockedGameBanner").classList.toggle("hidden",!dr2Locked);
+    $("#lockedGameCopy").textContent=mode==="host"?"Mark Trigger Happy Havoc complete in Admin Tools to unlock this board.":"Locked until the host marks Trigger Happy Havoc complete.";
+    $("#junkoVaultControls").classList.toggle("hidden",activeGameId!=="dr1");
+  }
+
+  async function setGameCompleted(gameId,completed){
+    if(mode!=="host")return;
+    const index=GAME_IDS.indexOf(gameId);
+    if(index<0||index>0&&!isGameUnlocked(gameId)){toast("Complete the previous game first.");return}
+    state.settings.completedGames[gameId]=completed;
+    if(!completed)GAME_IDS.slice(index+1).forEach(laterId=>state.settings.completedGames[laterId]=false);
+    if(state.settings.completedGames.dr1&&!state.roles.some(role=>role.gameId==="dr2"))state.roles.push(...createDr2Roles());
+    if(!isGameUnlocked(activeGameId))activeGameId="dr1";
+    saveState();render();
+    toast(`${gameDefinition(gameId).title} marked ${completed?"complete":"not complete"}.`);
+    if(completed&&GAME_IDS[index+1]&&isGameUnlocked(GAME_IDS[index+1]))showGamePicker();
+  }
+
+  function renderAdminTools(){
+    if(mode!=="host")return;
+    const grid=$("#adminGamesGrid");grid.innerHTML="";
+    GAME_DEFINITIONS.forEach((game,index)=>{
+      const unlocked=isGameUnlocked(game.id);
+      const completed=!!state.settings.completedGames[game.id];
+      const card=document.createElement("article");card.className=`admin-game-card panel ${unlocked?"":"locked"}`;
+      const stateClass=completed?"complete":unlocked?"open":"";
+      const stateText=completed?"COMPLETED":unlocked?"AVAILABLE":"LOCKED";
+      card.innerHTML=`<div class="admin-game-state"><span class="section-kicker">GAME ${index+1}</span><span class="game-state-badge ${stateClass}">${stateText}</span></div><h3>${esc(game.title)}</h3><p>${unlocked?"This board is available in the game picker and keeps its own campaign state.":`Complete ${esc(GAME_DEFINITIONS[index-1]?.title||"the previous game")} first.`}</p><label class="toggle-wrap"><input type="checkbox" data-complete-game="${game.id}" ${completed?"checked":""} ${unlocked?"":"disabled"}><span class="toggle"></span><span><strong>Game completed</strong><small>${completed?"Later games may be unlocked":"Mark complete when your group finishes"}</small></span></label>`;
+      card.querySelector("[data-complete-game]")?.addEventListener("change",event=>setGameCompleted(game.id,event.target.checked));
+      grid.appendChild(card);
+    });
+  }
+
   function render(){
     if (mode === "player" && activeActorId && !actorById(activeActorId)) {
       activeActorId = null;
       sessionStorage.removeItem(SESSION_ACTOR_KEY);
     }
 
-    $("#maxRolesLabel").textContent=state.settings.maxPerActor;
-    $("#gameActiveToggle").checked=state.settings.gameActive;
-    $("#voiceChapterSelect").value=String(state.settings.voiceChapter);
-    $("#voiceTrialToggle").checked=state.settings.voiceInTrial;
+    renderGameChrome();
+    $("#maxRolesLabel").textContent=currentSettings().maxPerActor;
+    $("#gameActiveToggle").checked=currentSettings().gameActive;
+    $("#voiceChapterSelect").value=String(currentSettings().voiceChapter);
+    $("#voiceTrialToggle").checked=currentSettings().voiceInTrial;
     $("#voiceSourceStatus").innerHTML=`<strong>Living-character sample source:</strong> ${esc(livingVoiceSourceSummary())}`;
-    $("#junkoMukuroToggle").checked=!!state.secretSettings.junkoMukuroRevealed;
+    $("#junkoMukuroToggle").checked=!!currentSecretSettings().junkoMukuroRevealed;
     $("#actorCount").textContent=state.actors.length;
 
-    const free=state.roles.filter(r=>!r.dead && !r.ownerId && currentRoleVisible(r) && (!r.hiddenSpoiler || r.revealed));
-    const spoilers=state.roles.filter(r=>!r.dead && !r.ownerId && r.hiddenSpoiler && !r.revealed);
-    const dead=state.roles.filter(r=>r.dead && currentRoleVisible(r));
+    const free=gameRoles().filter(r=>!r.dead && !r.ownerId && currentRoleVisible(r) && (!r.hiddenSpoiler || r.revealed));
+    const spoilers=gameRoles().filter(r=>!r.dead && !r.ownerId && r.hiddenSpoiler && !r.revealed);
+    const dead=gameRoles().filter(r=>r.dead && currentRoleVisible(r));
 
     $("#availableCount").textContent=free.length;
     $("#spoilerCount").textContent=spoilers.length;
@@ -1827,6 +2049,10 @@ body.mobile-dragging{user-select:none}
     renderActors();
     renderGraveyard(dead);
     renderStatistics();
+    renderAdminTools();
+    if(initialBoardLoadComplete&&availableGameIds().length>1&&!gamePickerShown){
+      setTimeout(()=>{if(!gamePickerShown&&!document.querySelector("dialog[open]"))showGamePicker({automatic:true})},40);
+    }
   }
 
   function renderSession(){
@@ -1856,22 +2082,22 @@ body.mobile-dragging{user-select:none}
   function renderRules(){
     const banner=$("#playRuleBanner");
     const actor=activeActor();
-    banner.classList.toggle("playing",state.settings.gameActive);
+    banner.classList.toggle("playing",currentSettings().gameActive);
 
     if(mode==="host"){
-      banner.innerHTML=state.settings.gameActive
+      banner.innerHTML=currentSettings().gameActive
         ? `<strong>LIVE:</strong> Players can only claim characters from the Open Library. Direct stealing is disabled, except for a one-use <span class="token">replacement token</span> after a locked character dies.`
         : `<strong>Casting/setup:</strong> Players may claim an unlocked character from another actor. They still cannot give their own characters directly to someone else; they must return them to the Library first.`;
     } else if(mode==="player"){
       if(!actor){
         banner.textContent="Log in to your actor to move characters.";
-      }else if(state.settings.gameActive){
+      }else if(currentSettings().gameActive){
         banner.innerHTML=`Game in progress: claim from the <strong>Open Library</strong> or return your own characters there.${actor.replacementToken ? ' Your <span class="token">★ replacement token</span> lets you claim one unlocked character from another actor once.' : ""}`;
       }else{
         banner.innerHTML=`Casting/setup: you can claim available characters and also take an <strong>unlocked</strong> character from another actor. To give one of your characters away, return it to the Library first.`;
       }
     }else{
-      banner.textContent=state.settings.gameActive ? "Game in progress." : "Casting/setup mode.";
+      banner.textContent=currentSettings().gameActive ? "Game in progress." : "Casting/setup mode.";
     }
 
     const touchHint=window.matchMedia?.("(pointer: coarse)").matches
@@ -1901,7 +2127,7 @@ body.mobile-dragging{user-select:none}
     if(sourceLocked) return false;
 
     if(activeActor().replacementToken) return true;
-    return !state.settings.gameActive;
+    return !currentSettings().gameActive;
   }
 
   function voiceLibraryProfile(r){
@@ -1948,7 +2174,7 @@ body.mobile-dragging{user-select:none}
   }
 
   function voicePoolForRole(r){
-    const selected=state.settings.voiceChapter;
+    const selected=currentSettings().voiceChapter;
     if(!r.dead&&selected<(Number(r.voiceRevealChapter)||1))return {clips:[],label:"Not revealed yet"};
     const profile=voiceLibraryProfile(r);
     let clips=[];
@@ -1959,7 +2185,7 @@ body.mobile-dragging{user-select:none}
       const pack=voicePackForChapter(profile,target);
       clips=[...(pack?.highlights||[]).map(item=>officialVoiceClip(item,pack?.chapter||target,"trial")),...customVoiceFor(r,target,"trial")];
       label=`best samples from Chapter ${pack?.chapter||target}`;
-    }else if(state.settings.voiceInTrial){
+    }else if(currentSettings().voiceInTrial){
       const pack=voicePackAtChapter(profile,selected);
       clips=[
         ...(pack?.reveal||[]).map(item=>officialVoiceClip(item,selected,"pretrial")),
@@ -2066,8 +2292,8 @@ body.mobile-dragging{user-select:none}
     const actor=activeActor();
     const chapter=chapterKey();
     const prediction=predictionForActor(actor.id,chapter,true);
-    const trial=!!state.settings.trialByChapter[chapter];
-    const chapterLocked=trial||!!state.settings.trialEnteredByChapter[chapter]||prediction.locked;
+    const trial=!!currentSettings().trialByChapter[chapter];
+    const chapterLocked=trial||!!currentSettings().trialEnteredByChapter[chapter]||prediction.locked;
     dock.classList.remove("hidden");
     const token=(kind,label)=>{
       const field=predictionField(kind);
@@ -2126,11 +2352,13 @@ body.mobile-dragging{user-select:none}
   function renderPopulationChart(){
     const chart=$("#populationChart");
     chart.innerHTML="";
+    const graph=currentPopulationGraph();
+    const presets=populationPresetsForGame();
     const labels={start:"Start","1":"CH1","2":"CH2","3":"CH3","4":"CH4","5":"CH5","6":"CH6"};
-    const visibleItems=POPULATION_KEYS.map(key=>state.populationGraph[key]).filter(item=>mode==="host"||item.revealed);
+    const visibleItems=POPULATION_KEYS.map(key=>graph[key]).filter(item=>mode==="host"||item.revealed);
     const maximum=Math.max(16,...visibleItems.map(item=>item.alive+item.dead+item.unknown));
     POPULATION_KEYS.forEach(key=>{
-      const item=state.populationGraph[key];
+      const item=graph[key];
       const total=item.alive+item.dead+item.unknown;
       const column=document.createElement("div");
       column.className="population-column";
@@ -2145,15 +2373,15 @@ body.mobile-dragging{user-select:none}
     if(mode==="host"){
       chart.querySelectorAll("[data-pop-step]").forEach(button=>button.onclick=()=>{
         const [key,field,delta]=button.dataset.popStep.split("|");
-        const item=state.populationGraph[key];
+        const item=graph[key];
         item[field]=Math.max(0,item[field]+Number(delta));item.revealed=true;saveState();render();
       });
       chart.querySelectorAll("[data-pop-preset]").forEach(button=>button.onclick=()=>{
         const key=button.dataset.popPreset;
-        Object.assign(state.populationGraph[key],POPULATION_PRESETS[key],{revealed:true});saveState();render();toast(`${key==="start"?"Start":`CH${key}`} preset applied.`);
+        Object.assign(graph[key],presets[key],{revealed:true});saveState();render();toast(`${key==="start"?"Start":`CH${key}`} preset applied.`);
       });
       chart.querySelectorAll("[data-pop-reveal]").forEach(button=>button.onclick=()=>{
-        const item=state.populationGraph[button.dataset.popReveal];item.revealed=!item.revealed;saveState();render();
+        const item=graph[button.dataset.popReveal];item.revealed=!item.revealed;saveState();render();
       });
     }
   }
@@ -2473,8 +2701,8 @@ body.mobile-dragging{user-select:none}
           <div>
             <div class="actor-name">${esc(actor.name)}</div>
             <div class="actor-meta">
-              <span>${assigned.length}/${state.settings.maxPerActor} characters</span>
-              <span>${actor.lockedRoleId?"🔒 locked":"no locked character"}</span>
+              <span>${assigned.length}/${currentSettings().maxPerActor} characters</span>
+              <span>${lockedRoleIdFor(actor)?"🔒 locked":"no locked character"}</span>
               <span class="death-counter">☠ ${actor.deathCount} ${actor.deathCount===1?"death":"deaths"}</span>
               ${actor.hasPassword?`<span>🔑 password</span>`:""}
               ${actor.replacementToken?`<span class="token-badge">★ REPLACEMENT</span>`:""}
@@ -2495,7 +2723,7 @@ body.mobile-dragging{user-select:none}
 
       const slots=card.querySelector(".actor-slots");
       if(!assigned.length) slots.innerHTML=`<div class="empty-slot">${mode==="viewer"?"No characters":"Drop a character here"}</div>`;
-      assigned.forEach(r=>slots.appendChild(roleCard(r,{assigned:true,locked:actor.lockedRoleId===r.id})));
+      assigned.forEach(r=>slots.appendChild(roleCard(r,{assigned:true,locked:lockedRoleIdFor(actor)===r.id})));
 
       if(mode!=="viewer") makeDropZone(card,actor.id,"actor");
       if(mode==="host")makeHistoryDropZone(card.querySelector(".actor-history"),actor);
@@ -2528,7 +2756,7 @@ body.mobile-dragging{user-select:none}
     }
 
     deadRoles.slice().sort((a,b)=>(b.deathTime||0)-(a.deathTime||0)).forEach(r=>{
-      const deathChapter=chapterKey(r.deathChapter||r.voiceFinalChapter||state.settings.voiceChapter);
+      const deathChapter=chapterKey(r.deathChapter||r.voiceFinalChapter||currentSettings().voiceChapter);
       const result=resultForChapter(deathChapter,false);
       const isVictim=result?.victimRoleId===r.id;
       const isBlackened=result?.blackenedRoleId===r.id;
@@ -2716,7 +2944,7 @@ body.mobile-dragging{user-select:none}
     const oldOwnerId=r.ownerId;
     const oldActor=oldOwnerId?actorById(oldOwnerId):null;
     const newActor=newOwnerId?actorById(newOwnerId):null;
-    const sourceLocked=!!oldActor&&oldActor.lockedRoleId===r.id;
+    const sourceLocked=!!oldActor&&lockedRoleIdFor(oldActor)===r.id;
 
     if(mode==="player"){
       const me=activeActor();
@@ -2736,7 +2964,7 @@ body.mobile-dragging{user-select:none}
       // Taking from another actor to self.
       else if(oldOwnerId && oldOwnerId!==me.id && newOwnerId===me.id){
         if(sourceLocked) return moveDenied("That character is locked and cannot be claimed.");
-        if(state.settings.gameActive && !me.replacementToken){
+        if(currentSettings().gameActive && !me.replacementToken){
           return moveDenied("The game is in progress: you can only claim from the Open Library.");
         }
         // Outside live play, unlocked stealing is allowed.
@@ -2749,17 +2977,17 @@ body.mobile-dragging{user-select:none}
 
     if(newActor){
       const count=rolesForActor(newOwnerId).length;
-      if(count>=state.settings.maxPerActor){
+      if(count>=currentSettings().maxPerActor){
         return moveDenied(`${newActor.name} already has the maximum number of characters.`);
       }
     }
 
-    const removedLocked=!!oldActor&&oldActor.lockedRoleId===r.id;
+    const removedLocked=!!oldActor&&lockedRoleIdFor(oldActor)===r.id;
 
     // A hidden spoiler becomes public the moment host places it in Open Library or on an actor.
     if(mode==="host" && r.hiddenSpoiler && !r.revealed && zone!=="spoiler"){
       r.revealed=true;
-      r.voiceRevealChapter=state.settings.voiceChapter;
+      r.voiceRevealChapter=currentSettings().voiceChapter;
     }
 
     // Players cannot intentionally move revealed roles back into the host-only spoiler vault.
@@ -2769,11 +2997,11 @@ body.mobile-dragging{user-select:none}
     if(newActor)addActorHistory(newActor,r.name);
 
     if(removedLocked){
-      oldActor.lockedRoleId=null;
+      setLockedRoleIdFor(oldActor,null);
     }
 
     let consumedReplacement=false;
-    if(mode==="player" && oldOwnerId && oldOwnerId!==activeActorId && newOwnerId===activeActorId && state.settings.gameActive){
+    if(mode==="player" && oldOwnerId && oldOwnerId!==activeActorId && newOwnerId===activeActorId && currentSettings().gameActive){
       const me=activeActor();
       if(me.replacementToken){
         me.replacementToken=false;
@@ -2790,12 +3018,12 @@ body.mobile-dragging{user-select:none}
     }
 
     // If the target has no locked role, keep asking on each newly received role until one is accepted.
-    if(newActor && !newActor.lockedRoleId){
+    if(newActor && !lockedRoleIdFor(newActor)){
       const mayAsk = mode==="host" || (mode==="player" && newActor.id===activeActorId);
       if(mayAsk){
         const lockIt=await askLockNewRole(newActor,r);
         if(lockIt){
-          newActor.lockedRoleId=r.id;
+          setLockedRoleIdFor(newActor,r.id);
           saveState();render();
         }
       }
@@ -2871,13 +3099,13 @@ body.mobile-dragging{user-select:none}
 
     const roles=rolesForActor(actorId).filter(currentRoleVisible);
     if(!roles.length){
-      actor.lockedRoleId=null;saveState();render();
+      setLockedRoleIdFor(actor,null);saveState();render();
       if(manual)toast("There are no characters to lock.");
       return;
     }
 
     const selectedId=await askRoleChoice(actor,roles,true);
-    actor.lockedRoleId=selectedId;
+    setLockedRoleIdFor(actor,selectedId);
     saveState();render();
   }
 
@@ -2896,7 +3124,7 @@ body.mobile-dragging{user-select:none}
 
     const ownerId=r.ownerId;
     const owner=ownerId?actorById(ownerId):null;
-    const wasLocked=!!owner&&owner.lockedRoleId===r.id;
+    const wasLocked=!!owner&&lockedRoleIdFor(owner)===r.id;
     const firstRecordedDeath=!r.deathRecorded;
 
     if(owner&&firstRecordedDeath){
@@ -2906,13 +3134,13 @@ body.mobile-dragging{user-select:none}
 
     r.dead=true;
     if(firstRecordedDeath){
-      r.voiceFinalChapter=state.settings.voiceChapter;
-      r.deathChapter=state.settings.voiceChapter;
+      r.voiceFinalChapter=currentSettings().voiceChapter;
+      r.deathChapter=currentSettings().voiceChapter;
       r.deathActorId=owner?.id||null;
       r.lastActorName=owner?owner.name:"None";
       r.deathRecorded=true;
-      if(!state.settings.voiceInTrial&&!resultForChapter(state.settings.voiceChapter,false)?.victimRoleId){
-        setChapterResult("victim",r.id,state.settings.voiceChapter);
+      if(!currentSettings().voiceInTrial&&!resultForChapter(currentSettings().voiceChapter,false)?.victimRoleId){
+        setChapterResult("victim",r.id,currentSettings().voiceChapter);
       }
     }
     r.deathTime=Date.now();
@@ -2921,7 +3149,7 @@ body.mobile-dragging{user-select:none}
     expanded.delete(r.id);
 
     if(wasLocked){
-      owner.lockedRoleId=null;
+      setLockedRoleIdFor(owner,null);
       owner.replacementToken=true;
     }
 
@@ -2945,7 +3173,7 @@ body.mobile-dragging{user-select:none}
     if(mode!=="host")return;
     const r=roleById(roleId);if(!r)return;
     r.revealed=true;
-    r.voiceRevealChapter=state.settings.voiceChapter;
+    r.voiceRevealChapter=currentSettings().voiceChapter;
     saveState();render();toast(`${r.name} has been revealed in the Open Library.`);
   }
 
@@ -2962,8 +3190,8 @@ body.mobile-dragging{user-select:none}
     if(!approved)return;
 
     const owner=r.ownerId?actorById(r.ownerId):null;
-    const wasLocked=!!owner&&owner.lockedRoleId===r.id;
-    if(wasLocked)owner.lockedRoleId=null;
+    const wasLocked=!!owner&&lockedRoleIdFor(owner)===r.id;
+    if(wasLocked)setLockedRoleIdFor(owner,null);
     state.roles=state.roles.filter(x=>x.id!==roleId);
     expanded.delete(roleId);
     saveState();render();
@@ -3037,7 +3265,7 @@ body.mobile-dragging{user-select:none}
       const newActor={
         id:id(),name,
         hasPassword:!!password,
-        lockedRoleId:null,replacementToken:false,
+        lockedRoleIds:{dr1:null,dr2:null},replacementToken:false,
         history:mode==="host"?parseHistory($("#actorHistory").value):[],deathCount:0
       };
       try{
@@ -3083,7 +3311,7 @@ body.mobile-dragging{user-select:none}
         <span title="${esc(clip.name)}">Ch. ${clip.chapter} · ${clip.phase==="trial"?"trial":"pretrial"} · ${esc(clip.name)}</span>
         <button type="button" class="danger-text" data-remove-voice="${esc(clip.id)}">× Remove</button>
       </div>`).join(""):`<div class="muted tiny">No custom uploads for this character.</div>`;
-    $("#voiceUploadChapter").value=String(state.settings.voiceChapter);
+    $("#voiceUploadChapter").value=String(currentSettings().voiceChapter);
     $("#uploadVoiceBtn").disabled=!role||!remoteReady;
     $("#roleVoiceHelp").textContent=!role
       ? "Save this character once before uploading samples. Maximum 5 MB per file."
@@ -3180,8 +3408,8 @@ body.mobile-dragging{user-select:none}
       if(!hiddenSpoiler)r.revealed=true;
     }else{
       state.roles.push({
-        id:id(),...values,ownerId:null,dead:false,lastActorName:"",deathTime:null,deathChapter:null,deathActorId:null,deathRecorded:false,
-        revealed:!hiddenSpoiler,voiceProfile:name,voiceRevealChapter:state.settings.voiceChapter,
+        id:id(),...values,gameId:activeGameId,ownerId:null,dead:false,lastActorName:"",deathTime:null,deathChapter:null,deathActorId:null,deathRecorded:false,
+        revealed:!hiddenSpoiler,voiceProfile:name,voiceRevealChapter:currentSettings().voiceChapter,
         voiceFinalChapter:null,customVoiceClips:[],personalRecordings:[],practiceLineHistory:[]
       });
     }
@@ -3297,40 +3525,40 @@ body.mobile-dragging{user-select:none}
   $("#addRoleBtn").onclick=()=>openRoleDialog();
 
   $("#maxRolesBtn").onclick=()=>{
-    const raw=prompt("Maximum characters per voice actor:",state.settings.maxPerActor);
+    const raw=prompt("Maximum characters per voice actor:",currentSettings().maxPerActor);
     if(raw===null)return;
-    const n=Math.max(1,Math.min(30,parseInt(raw,10)||state.settings.maxPerActor));
+    const n=Math.max(1,Math.min(30,parseInt(raw,10)||currentSettings().maxPerActor));
     const tooMany=state.actors.filter(a=>rolesForActor(a.id).length>n);
     if(tooMany.length){
       alert(`Cannot set the limit to ${n} because ${tooMany.map(a=>a.name).join(", ")} already have more characters assigned.`);
       return;
     }
-    state.settings.maxPerActor=n;saveState();render();
+    currentSettings().maxPerActor=n;saveState();render();
   };
 
   $("#gameActiveToggle").onchange=e=>{
-    state.settings.gameActive=e.target.checked;saveState();render();
-    toast(state.settings.gameActive?"Live rules enabled.":"Casting/setup rules enabled.");
+    currentSettings().gameActive=e.target.checked;saveState();render();
+    toast(currentSettings().gameActive?"Live rules enabled.":"Casting/setup rules enabled.");
   };
 
   $("#voiceChapterSelect").onchange=e=>{
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
-    state.settings.voiceChapter=Number(e.target.value)||1;
-    state.settings.trialByChapter[chapterKey()]=false;
-    if(typeof state.settings.trialEnteredByChapter[chapterKey()]!=="boolean")state.settings.trialEnteredByChapter[chapterKey()]=false;
-    state.settings.voiceInTrial=false;
+    currentSettings().voiceChapter=Number(e.target.value)||1;
+    currentSettings().trialByChapter[chapterKey()]=false;
+    if(typeof currentSettings().trialEnteredByChapter[chapterKey()]!=="boolean")currentSettings().trialEnteredByChapter[chapterKey()]=false;
+    currentSettings().voiceInTrial=false;
     selectedPredictionKind=null;
     voiceShuffleBags.clear();saveState();render();
-    toast(`Current chapter set to ${state.settings.voiceChapter}. Trial reset to off; ${livingVoiceSourceSummary().toLowerCase()}`);
+    toast(`Current chapter set to ${currentSettings().voiceChapter}. Trial reset to off; ${livingVoiceSourceSummary().toLowerCase()}`);
   };
 
   $("#voiceTrialToggle").onchange=e=>{
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
-    const wasOngoing=!!state.settings.voiceInTrial;
-    state.settings.voiceInTrial=e.target.checked;
-    state.settings.trialByChapter[chapterKey()]=state.settings.voiceInTrial;
-    if(!wasOngoing&&state.settings.voiceInTrial){
-      state.settings.trialEnteredByChapter[chapterKey()]=true;
+    const wasOngoing=!!currentSettings().voiceInTrial;
+    currentSettings().voiceInTrial=e.target.checked;
+    currentSettings().trialByChapter[chapterKey()]=currentSettings().voiceInTrial;
+    if(!wasOngoing&&currentSettings().voiceInTrial){
+      currentSettings().trialEnteredByChapter[chapterKey()]=true;
       lockChapterPredictions();
     }
     selectedPredictionKind=null;
@@ -3340,15 +3568,15 @@ body.mobile-dragging{user-select:none}
 
   $("#junkoMukuroToggle").onchange=e=>{
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
-    state.secretSettings.junkoMukuroRevealed=e.target.checked;
-    const role=state.roles.find(r=>r.specialRole==="junko-disguise");
+    currentSecretSettings().junkoMukuroRevealed=e.target.checked;
+    const role=gameRoles().find(r=>r.specialRole==="junko-disguise");
     applyJunkoIdentity(role,e.target.checked);
     voiceShuffleBags.clear();saveState();render();
     toast(e.target.checked?"The original Junko card now shows Mukuro’s true identity.":"The original disguise identity has been restored.");
   };
 
   $("#expandAllBtn").onclick=()=>{
-    state.roles.filter(r=>!r.dead&&!r.ownerId&&(!r.hiddenSpoiler||r.revealed)).forEach(r=>expanded.add(r.id));
+    gameRoles().filter(r=>!r.dead&&!r.ownerId&&(!r.hiddenSpoiler||r.revealed)).forEach(r=>expanded.add(r.id));
     render();
   };
   $("#collapseAllBtn").onclick=()=>{expanded.clear();render()};
@@ -3357,20 +3585,20 @@ body.mobile-dragging{user-select:none}
   $("#editMyActorBtn").onclick=()=>{const actor=activeActor();if(actor)openActorDialog(actor,true)};
   $("#logoutBtn").onclick=logout;
 
-  $$(".tab").forEach(btn=>{
-    btn.onclick=()=>{
-      $$(".tab").forEach(x=>x.classList.toggle("active",x===btn));
-      $("#castingTab").classList.toggle("active",btn.dataset.tab==="casting");
-      $("#memorialTab").classList.toggle("active",btn.dataset.tab==="memorial");
-      $("#statisticsTab").classList.toggle("active",btn.dataset.tab==="statistics");
-    };
-  });
+  function activateTab(tabName){
+    $$(".tab").forEach(button=>button.classList.toggle("active",button.dataset.tab===tabName));
+    $$(".tab-panel").forEach(panel=>panel.classList.toggle("active",panel.id===`${tabName}Tab`));
+  }
+  $$(".tab").forEach(btn=>btn.onclick=()=>activateTab(btn.dataset.tab));
 
   $$("[data-close]").forEach(btn=>{
     btn.onclick=()=>document.getElementById(btn.dataset.close).close();
   });
 
   $("#patchNotesBtn").onclick=()=>$("#patchNotesDialog").showModal();
+  $("#gameSwitcherBtn").onclick=()=>showGamePicker();
+  $("#adminChooseGameBtn").onclick=()=>showGamePicker();
+  $("#lockedGameAdminBtn").onclick=()=>activateTab("admin");
 
   function publicModeUrl(targetMode){
     const url=new URL(location.href);
@@ -3403,7 +3631,7 @@ body.mobile-dragging{user-select:none}
   $("#exportBtn").onclick=()=>{
     const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);
-    a.download="danganronpa-cast-state-v7.json";a.click();
+    a.download="danganronpa-cast-state-v8.json";a.click();
     setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   };
 
@@ -3419,11 +3647,16 @@ body.mobile-dragging{user-select:none}
 
   render();
   await initializeSharedBoard();
+  initialBoardLoadComplete=true;
   render();
 
   // If a player arrives without a selected actor, open the selector automatically.
   if(mode==="player"&&!activeActorId){
-    setTimeout(()=>beginLogin(),120);
+    setTimeout(()=>{
+      const picker=$("#gamePickerDialog");
+      if(picker.open)picker.addEventListener("close",()=>setTimeout(()=>beginLogin(),50),{once:true});
+      else beginLogin();
+    },160);
   }
 })();
 

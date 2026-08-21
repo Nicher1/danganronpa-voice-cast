@@ -395,6 +395,8 @@ declare
   board_row public.cast_boards%rowtype;
   merged_state jsonb;
   merged_predictions jsonb;
+  current_game text;
+  current_chapter_number text;
   current_chapter text;
   trial_ongoing boolean;
   chapter_result jsonb;
@@ -425,8 +427,21 @@ begin
     merged_state := p_state;
   else
     merged_predictions := coalesce(board_row.state -> 'predictions', '{}'::jsonb);
-    current_chapter := coalesce(board_row.state #>> '{settings,voiceChapter}', '1');
+    current_game := coalesce(p_state ->> 'clientGameId', 'dr1');
+    if current_game not in ('dr1', 'dr2') then current_game := 'dr1'; end if;
+    current_chapter_number := coalesce(
+      board_row.state #>> array['settings', 'games', current_game, 'voiceChapter'],
+      board_row.state #>> '{settings,voiceChapter}',
+      '1'
+    );
+    current_chapter := case
+      when board_row.state #> '{settings,games}' is null then current_chapter_number
+      else current_game || ':' || current_chapter_number
+    end;
     trial_ongoing := coalesce(
+      (board_row.state #>> array['settings', 'games', current_game, 'trialEnteredByChapter', current_chapter_number])::boolean,
+      (board_row.state #>> array['settings', 'games', current_game, 'trialByChapter', current_chapter_number])::boolean,
+      (board_row.state #>> array['settings', 'games', current_game, 'voiceInTrial'])::boolean,
       (board_row.state #>> array['settings', 'trialEnteredByChapter', current_chapter])::boolean,
       (board_row.state #>> array['settings', 'trialByChapter', current_chapter])::boolean,
       (board_row.state #>> '{settings,voiceInTrial}')::boolean,
@@ -535,7 +550,7 @@ begin
     );
   end if;
 
-  merged_state := public.cast_state_with_password_flags(p_slug, merged_state);
+  merged_state := public.cast_state_with_password_flags(p_slug, merged_state - 'clientGameId');
 
   update public.cast_boards
   set state = merged_state,
