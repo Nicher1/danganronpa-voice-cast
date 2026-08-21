@@ -634,6 +634,8 @@ body.mobile-dragging{user-select:none}
 .auth-error{min-height:1.25em;color:#ff9ca5;font-size:.76rem}
 .voice-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .voice-controls label{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.72rem;font-weight:800}
+.voice-source-status{flex-basis:100%;color:var(--muted);font-size:.68rem;font-weight:700;line-height:1.35}
+.voice-source-status strong{color:var(--text)}
 .voice-controls select,.voice-upload-grid select{
   border:1px solid var(--line);background:#11141c;color:var(--text);border-radius:9px;padding:.55rem .65rem;outline:none
 }
@@ -797,7 +799,7 @@ body.mobile-dragging{user-select:none}
         </label>
 
         <div class="voice-controls host-only" aria-label="Voice sample controls">
-          <label>Samples from
+          <label>Current chapter
             <select id="voiceChapterSelect" aria-label="Current story chapter">
               <option value="1">Chapter 1</option>
               <option value="2">Chapter 2</option>
@@ -810,8 +812,9 @@ body.mobile-dragging{user-select:none}
           <label class="toggle-wrap compact-toggle">
             <input id="voiceTrialToggle" type="checkbox">
             <span class="toggle"></span>
-            <span><strong>Trial ongoing</strong><small>Lock predictions and add this chapter’s Trial lines</small></span>
+            <span><strong>In Trial</strong><small>Lock predictions; use this chapter’s pre-trial lines</small></span>
           </label>
+          <div id="voiceSourceStatus" class="voice-source-status" aria-live="polite"></div>
         </div>
 
         <div class="spacer"></div>
@@ -917,7 +920,7 @@ body.mobile-dragging{user-select:none}
         <section class="patch-note"><span class="patch-version">CHAPTER PREDICTIONS</span><h4>Victim and Blackened voting</h4><p>Every actor now receives two predictions per chapter. They can move them freely before the Trial; entering the Trial permanently locks that chapter's choices.</p></section>
         <section class="patch-note"><span class="patch-version">RESULTS & MEMORIAL</span><h4>Persistent results without double scoring</h4><p>Pre-Trial deaths can establish the Victim, the host can mark the Blackened from Memorial, and prediction markers stay visible after a character dies. Result snapshots prevent duplicate points.</p></section>
         <section class="patch-note"><span class="patch-version">STATISTICS</span><h4>Actor records and known population</h4><p>The new Statistics tab tracks correct Victim guesses, correct Blackened guesses, and historical character deaths separately. Its host-controlled chart shows Alive at the bottom, Dead above it, and Unknown on top.</p></section>
-        <section class="patch-note"><span class="patch-version">TRIAL & VOICE SAFETY</span><h4>Chapter-aware Trial state</h4><p>Changing chapter turns Trial Ongoing off for the new chapter. Starting the Trial locks predictions and safely expands the voice-sample pool to include that chapter's Trial lines.</p></section>
+        <section class="patch-note"><span class="patch-version">TRIAL & VOICE SAFETY</span><h4>Chapter-aware sample sources</h4><p>The chapter selector tracks the chapter currently being played. Outside a Trial, living characters use the previous chapter's best samples. During a Trial, they use only spoiler-safe pre-trial samples from the current chapter.</p></section>
         <section class="patch-note"><span class="patch-version">SYNC & ACCESS</span><h4>Shared, role-protected data</h4><p>Predictions, results, graph values, and statistics persist through Supabase. Players can edit only their own current pre-Trial predictions; spectators remain read-only; graph and result controls remain host-only.</p></section>
       </div>
       <div class="modal-actions"><button type="button" class="primary" data-close="patchNotesDialog">Got it</button></div>
@@ -1665,6 +1668,12 @@ body.mobile-dragging{user-select:none}
   function lockedOwnerOf(roleId){ return state.actors.find(a=>a.lockedRoleId===roleId) || null; }
   function activeActor(){ return actorById(activeActorId); }
   function chapterKey(chapter=state.settings.voiceChapter){return String(Math.max(1,Math.min(6,Number(chapter)||1)))}
+  function livingVoiceSourceSummary(){
+    const current=state.settings.voiceChapter;
+    if(state.settings.voiceInTrial)return `Chapter ${current} pre-trial samples (current chapter).`;
+    if(current===1)return "Earliest spoiler-safe Chapter 1 samples (there is no previous chapter).";
+    return `Best samples from Chapter ${current-1} (previous chapter).`;
+  }
   function predictionForActor(actorId,chapter=state.settings.voiceChapter,create=false){
     const key=chapterKey(chapter);
     if(create){
@@ -1798,6 +1807,7 @@ body.mobile-dragging{user-select:none}
     $("#gameActiveToggle").checked=state.settings.gameActive;
     $("#voiceChapterSelect").value=String(state.settings.voiceChapter);
     $("#voiceTrialToggle").checked=state.settings.voiceInTrial;
+    $("#voiceSourceStatus").innerHTML=`<strong>Living-character sample source:</strong> ${esc(livingVoiceSourceSummary())}`;
     $("#junkoMukuroToggle").checked=!!state.secretSettings.junkoMukuroRevealed;
     $("#actorCount").textContent=state.actors.length;
 
@@ -1911,6 +1921,11 @@ body.mobile-dragging{user-select:none}
     return {chapter:selected,...profile.chapters[selected]};
   }
 
+  function voicePackAtChapter(profile,chapter){
+    const pack=profile?.chapters?.[chapter];
+    return pack?{chapter:Number(chapter),...pack}:null;
+  }
+
   function voiceUrl(path){
     if(/^https?:/i.test(path))return path;
     return `${window.CAST_VOICE_LIBRARY?.cdnBase||""}${path}/revision/latest`;
@@ -1923,8 +1938,8 @@ body.mobile-dragging{user-select:none}
     return {id:`official:${rawId}`,url:voiceUrl(path),text:String(item?.text||""),chapter,phase,kind:"official"};
   }
 
-  function customVoiceFor(r,chapter,phase){
-    const clips=(r.customVoiceClips||[]).filter(c=>c.phase===phase&&Number(c.chapter)<=chapter);
+  function customVoiceFor(r,chapter,phase,exactChapter=false){
+    const clips=(r.customVoiceClips||[]).filter(c=>c.phase===phase&&(exactChapter?Number(c.chapter)===chapter:Number(c.chapter)<=chapter));
     if(!clips.length)return [];
     const bestChapter=Math.max(...clips.map(c=>Number(c.chapter)||1));
     return clips.filter(c=>(Number(c.chapter)||1)===bestChapter).map(c=>({
@@ -1936,7 +1951,6 @@ body.mobile-dragging{user-select:none}
     const selected=state.settings.voiceChapter;
     if(!r.dead&&selected<(Number(r.voiceRevealChapter)||1))return {clips:[],label:"Not revealed yet"};
     const profile=voiceLibraryProfile(r);
-    const pretrial=(profile?.pretrial||[]).map(item=>officialVoiceClip(item,selected,"pretrial")).filter(Boolean);
     let clips=[];
     let label="";
 
@@ -1946,23 +1960,21 @@ body.mobile-dragging{user-select:none}
       clips=[...(pack?.highlights||[]).map(item=>officialVoiceClip(item,pack?.chapter||target,"trial")),...customVoiceFor(r,target,"trial")];
       label=`best samples from Chapter ${pack?.chapter||target}`;
     }else if(state.settings.voiceInTrial){
-      const pack=voicePackForChapter(profile,selected);
+      const pack=voicePackAtChapter(profile,selected);
       clips=[
-        ...pretrial.slice(0,2),
-        ...(pack?.highlights||[]).slice(0,3).map(item=>officialVoiceClip(item,pack?.chapter||selected,"trial")),
-        ...customVoiceFor(r,selected,"pretrial"),
-        ...customVoiceFor(r,selected,"trial")
+        ...(pack?.reveal||[]).map(item=>officialVoiceClip(item,selected,"pretrial")),
+        ...customVoiceFor(r,selected,"pretrial",true)
       ];
-      label=`Chapter ${selected} pretrial + trial mix`;
-    }else if((Number(r.voiceRevealChapter)||1)===selected){
-      const pack=voicePackForChapter(profile,selected);
-      clips=[...(pack?.reveal||[]).map(item=>officialVoiceClip(item,pack?.chapter||selected,"pretrial")),...customVoiceFor(r,selected,"pretrial")];
-      label=`safe early Chapter ${selected} samples`;
+      label=`spoiler-safe Chapter ${selected} pre-trial samples`;
+    }else if(selected===1){
+      const pack=voicePackAtChapter(profile,1);
+      clips=[...(pack?.reveal||[]).map(item=>officialVoiceClip(item,1,"pretrial")),...customVoiceFor(r,1,"pretrial",true)];
+      label="earliest spoiler-safe Chapter 1 samples";
     }else{
-      const target=Math.max(1,selected-1);
-      const pack=voicePackForChapter(profile,target);
-      clips=[...(pack?.highlights||[]).map(item=>officialVoiceClip(item,pack?.chapter||target,"trial")),...customVoiceFor(r,target,"trial")];
-      label=`best samples from Chapter ${pack?.chapter||target}`;
+      const target=selected-1;
+      const pack=voicePackAtChapter(profile,target);
+      clips=[...(pack?.highlights||[]).map(item=>officialVoiceClip(item,target,"trial")),...customVoiceFor(r,target,"trial",true)];
+      label=`best samples from Chapter ${target} (previous chapter)`;
     }
 
     const seen=new Set();
@@ -3309,7 +3321,7 @@ body.mobile-dragging{user-select:none}
     state.settings.voiceInTrial=false;
     selectedPredictionKind=null;
     voiceShuffleBags.clear();saveState();render();
-    toast(`Chapter ${state.settings.voiceChapter} selected. Trial Ongoing reset to off.`);
+    toast(`Current chapter set to ${state.settings.voiceChapter}. Trial reset to off; ${livingVoiceSourceSummary().toLowerCase()}`);
   };
 
   $("#voiceTrialToggle").onchange=e=>{
@@ -3323,9 +3335,7 @@ body.mobile-dragging{user-select:none}
     }
     selectedPredictionKind=null;
     voiceShuffleBags.clear();saveState();render();
-    toast(state.settings.voiceInTrial
-      ? `Trial samples enabled for Chapter ${state.settings.voiceChapter}.`
-      : "Using spoiler-safe samples from before the current trial.");
+    toast(livingVoiceSourceSummary());
   };
 
   $("#junkoMukuroToggle").onchange=e=>{
