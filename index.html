@@ -1063,6 +1063,7 @@ body.mobile-dragging{user-select:none}
             <section class="patch-note"><h4>See who is online</h4><p>An actor box now receives a subtle highlighted border and status dot while that actor’s account is logged in. The highlight clears automatically after logout or disconnection.</p></section>
             <section class="patch-note"><h4>Hope and despair leader emblems</h4><p>The current game’s strongest predictor receives the Hope’s Peak emblem, while the actor with the most assigned-character deaths carries a Monokuma face. Tied leaders share the relevant emblem.</p></section>
             <section class="patch-note" data-reveal-game="dr3anime"><h4>Cleaner prediction labels</h4><p>Prediction controls use clearer, neutral labels and explain when their totals are finalized.</p></section>
+            <section class="patch-note"><h4>Voice samples stay available</h4><p>When a revealed character has no dedicated sample pack for the ideal chapter, their play button now uses the newest earlier spoiler-safe pack instead of disappearing.</p></section>
             <section class="patch-note"><h4>Always-current pages</h4><p>The site now detects an older cached build and reloads the current release automatically, keeping host, player, and viewer pages consistent after an update.</p></section>
           </div>
         </details>
@@ -1359,7 +1360,7 @@ body.mobile-dragging{user-select:none}
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.08.22.6";
+  const APP_BUILD = "2026.08.22.7";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2154,7 +2155,7 @@ body.mobile-dragging{user-select:none}
     if(gameDefinition(activeGameId).kind==="anime")return "Danganronpa 3 uses episode predictions; only host-uploaded voice samples are available on this board.";
     if(currentSettings().voiceInTrial)return `Chapter ${current} pre-trial field dialogue only (current chapter; Trial testimony excluded).`;
     if(current===1)return "Earliest spoiler-safe Chapter 1 samples (there is no previous chapter).";
-    return `Best samples from Chapter ${current-1} (previous chapter, including its completed Trial).`;
+    return `Best samples from Chapter ${current-1} (previous chapter, including its completed Trial), or the newest earlier spoiler-safe pack available for that character.`;
   }
   function predictionForActor(actorId,chapter=currentSettings().voiceChapter,create=false){
     const key=chapterStateKey(chapter);
@@ -2605,7 +2606,8 @@ body.mobile-dragging{user-select:none}
     const chapters=Object.keys(profile.chapters).map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
     if(!chapters.length)return null;
     const safe=chapters.filter(n=>n<=chapter);
-    const selected=safe.length?safe[safe.length-1]:chapters[0];
+    if(!safe.length)return null;
+    const selected=safe[safe.length-1];
     return {chapter:selected,...profile.chapters[selected]};
   }
 
@@ -2678,9 +2680,12 @@ body.mobile-dragging{user-select:none}
       label="earliest spoiler-safe Chapter 1 samples";
     }else{
       const target=selected-1;
-      const pack=voicePackAtChapter(profile,target);
-      clips=[...(pack?.highlights||[]).map(item=>officialVoiceClip(item,target,"trial")),...customVoiceFor(r,target,"trial",true),...customVoiceFor(r,target,"pretrial",true)];
-      label=`best samples from Chapter ${target} (previous chapter)`;
+      const pack=voicePackForChapter(profile,target);
+      const sourceChapter=pack?.chapter||target;
+      clips=[...(pack?.highlights||[]).map(item=>officialVoiceClip(item,sourceChapter,"trial")),...customVoiceFor(r,target,"trial"),...customVoiceFor(r,target,"pretrial")];
+      label=sourceChapter===target
+        ?`best samples from Chapter ${target} (previous chapter)`
+        :`newest earlier spoiler-safe samples from Chapter ${sourceChapter}`;
     }
 
     const seen=new Set();

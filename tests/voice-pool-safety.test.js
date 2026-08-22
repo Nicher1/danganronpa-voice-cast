@@ -22,6 +22,33 @@ for (const [name, profile] of Object.entries(profiles)) {
   assert.ok(profile.pretrial?.length, `${name} needs a non-trial field-dialogue fallback`);
 }
 
+const packHelperMatch = html.match(
+  /function voicePackForChapter\(profile,chapter\)\s*({[\s\S]*?\r?\n  })\r?\n\r?\n  function voicePackAtChapter/
+);
+assert.ok(packHelperMatch, "The latest-safe chapter-pack helper is missing");
+const voicePackForChapter = vm.runInNewContext(`(function voicePackForChapter(profile,chapter)${packHelperMatch[1]})`);
+
+for (const [name, profile] of Object.entries(profiles)) {
+  const availableChapters = Object.keys(profile.chapters || {}).map(Number).sort((a, b) => a - b);
+  assert.ok(availableChapters.length, `${name} needs at least one chapter pack`);
+  for (let target = availableChapters[0]; target <= 6; target += 1) {
+    const expectedChapter = availableChapters.filter(chapter => chapter <= target).at(-1);
+    const resolved = voicePackForChapter(profile, target);
+    assert.equal(resolved?.chapter, expectedChapter, `${name} should keep its newest safe pack through Chapter ${target}`);
+    assert.ok(resolved?.highlights?.length, `${name} should retain playable highlights through Chapter ${target}`);
+  }
+  assert.equal(voicePackForChapter(profile, availableChapters[0] - 1), null, `${name} must never fall forward into an unrevealed chapter`);
+}
+
+const futureGameProfile = {
+  chapters: {
+    2: { highlights: [{ id: "future-2" }] },
+    5: { highlights: [{ id: "future-5" }] }
+  }
+};
+assert.equal(voicePackForChapter(futureGameProfile, 4).chapter, 2, "Future game libraries need the same latest-safe fallback");
+assert.equal(voicePackForChapter(futureGameProfile, 1), null, "Future game libraries must not expose a later chapter");
+
 const curatedMatch = html.match(
   /const CURATED_CURRENT_PRETRIAL_CLIPS=({[\s\S]*?\r?\n  });\r?\n\r?\n  function voiceLibraryProfile/
 );
@@ -51,6 +78,8 @@ assert.ok(currentTrialBranch.includes("currentPretrialVoiceItems"));
 assert.ok(!currentTrialBranch.includes(".reveal"), "Current Trial playback must not read the Trial reveal pool directly");
 assert.ok(poolSource.includes("const target=selected-1"), "Normal playback should target the previous chapter");
 assert.ok(poolSource.includes("pack?.highlights"), "Normal playback should use the previous chapter's highlights");
+assert.ok(poolSource.includes("voicePackForChapter(profile,target)"), "Normal playback should fall back to the newest earlier safe pack");
+assert.ok(poolSource.includes('customVoiceFor(r,target,"trial")'), "Host-uploaded Trial clips should use the same earlier-safe fallback");
 
 const versions = [...html.matchAll(/class="patch-version">(v[0-9.]+)/g)].map(match => match[1]);
 assert.deepEqual(versions, ["v0.10", "v0.9", "v0.8.1", "v0.8", "v0.7", "v0.6", "v0.5"]);
@@ -61,6 +90,7 @@ const patchNotes = html.slice(html.indexOf('<dialog id="patchNotesDialog"'), htm
 assert.doesNotMatch(patchNotes, /secret points?|hidden points?|unscored|decoy/i);
 assert.ok(patchNotes.includes("See who is online"));
 assert.ok(patchNotes.includes("Hope and despair leader emblems"));
+assert.ok(patchNotes.includes("Voice samples stay available"));
 assert.ok(patchNotes.includes('data-reveal-game="dr3anime"><h4>Cleaner prediction labels'));
 
 console.log("Voice-pool safety and patch-history checks passed.");
