@@ -35,10 +35,11 @@
   --radius-sm:12px;
 }
 *{box-sizing:border-box}
-html{background:var(--bg);color:var(--text)}
+html{background:var(--bg);color:var(--text);max-width:100%}
 body{
   margin:0;
   min-height:100vh;
+  max-width:100%;
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   background:
     linear-gradient(135deg,rgba(245,64,148,.025) 25%,transparent 25%) 0 0/38px 38px,
@@ -154,9 +155,14 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .badge.sync.working{color:#ffe7ae;border-color:rgba(255,193,77,.42);background:rgba(255,193,77,.1)}
 .badge.sync.offline{color:#ffd3d7;border-color:rgba(255,90,100,.42);background:rgba(255,90,100,.1)}
 .app-shell{max-width:1650px;margin:auto;padding:14px 30px 46px}
+.topbar,.topbar *,.app-shell,.app-shell *{min-width:0}
+.topbar,.app-shell,.tab-panel,.casting-layout,.role-pool,.actors-panel,.control-strip{width:100%;max-width:100%}
+.panel-title-row>*,.actor-head>*,.prediction-dock-head>*,.game-lock-copy>*{min-width:0}
+.rule-banner,.voice-source-status,.prediction-dock-help,.game-lock-copy p,.panel p,.small,.tiny{overflow-wrap:anywhere}
 .tabs{
   display:flex;gap:8px;
   margin:0 0 16px;
+  max-width:100%;
 }
 .tab{
   border:1px solid transparent;
@@ -664,14 +670,20 @@ body.mobile-dragging{user-select:none}
   .role-pool,.anime-watch-guide{position:static;max-height:none}
 }
 @media(max-width:620px){
-  .topbar,.app-shell{padding-left:14px;padding-right:14px}
-  .topbar::after{left:14px;right:14px}
+  .topbar,.app-shell{padding-left:10px;padding-right:10px}
+  .topbar::after{left:10px;right:10px}
+  .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;width:100%}
+  .host-mode .tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tab{min-width:0;padding:9px 4px;gap:3px;font-size:.69rem;white-space:nowrap}
+  .tab .counter{padding:.18rem .32rem;font-size:.58rem}
   .actors-grid{grid-template-columns:1fr}
   .image-editor{grid-template-columns:1fr}
   .image-preview{width:100%;height:190px}
   .toggle-wrap{width:100%}
   .brand-mark{width:44px;height:44px}
   .control-strip{padding:8px}
+  .role-pool,.actors-panel,.memorial-hero,.stats-hero,.prediction-leaderboard,.population-panel{padding:12px}
+  .modal-card,.compact-modal,.practice-dialog-card,.game-picker-card{width:100%;max-width:100%}
   .anime-episode-tracker{align-items:stretch;flex-direction:column}.anime-episode-tracker button{width:100%}.anime-score-card{grid-template-columns:1fr 1fr}.anime-score-metric.total{grid-column:1/-1;grid-row:1}
 }
 
@@ -825,6 +837,13 @@ body.mobile-dragging{user-select:none}
   .stats-game-row{grid-template-columns:minmax(86px,1.2fr) repeat(4,minmax(34px,.55fr));padding:7px 5px}.prediction-chart-row{grid-template-columns:78px minmax(120px,1fr) auto;gap:6px}
   .population-header{flex-direction:column}
   .game-lock-banner,.admin-hero{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:350px){
+  .topbar,.app-shell{padding-left:8px;padding-right:8px}
+  .topbar::after{left:8px;right:8px}
+  .tab{font-size:.65rem;padding-left:2px;padding-right:2px}
+  .tab .counter{padding:.13rem .25rem}
+  .role-mini-img{width:46px;height:52px;flex-basis:46px}
 }
 
 </style>
@@ -1058,7 +1077,15 @@ body.mobile-dragging{user-select:none}
       <p class="muted small">Version history. Releases are newest first and collapsed until you open them.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">v0.10</span><span class="patch-release-title"><strong>Live presence and leader emblems</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">v0.11</span><span class="patch-release-title"><strong>Mobile layout and chapter predictions</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Phone-sized boards stay on screen</h4><p>Navigation, cards, controls, statistics, Memorial layouts, and dialogs now shrink and wrap within narrow phone screens without creating a blank strip to the right.</p></section>
+            <section class="patch-note"><h4>Fresh predictions for every chapter</h4><p>Each actor now begins a newly entered chapter with empty Victim and Blackened choices, while earlier chapter predictions remain available for history and Statistics.</p></section>
+            <section class="patch-note"><h4>Trial-based prediction locking</h4><p>Victim and Blackened choices remain editable before the Trial, lock while the Trial is ongoing, and correctly reopen with a fresh chapter. Death results now respect whether they occurred before or during the Trial.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.10</span><span class="patch-release-title"><strong>Live presence and leader emblems</strong><small>Previous release</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>See who is online</h4><p>An actor box now receives a subtle highlighted border and status dot while that actor’s account is logged in. The highlight clears automatically after logout or disconnection.</p></section>
             <section class="patch-note"><h4>Hope and despair leader emblems</h4><p>The current game’s strongest predictor receives the Hope’s Peak emblem, while the actor with the most assigned-character deaths carries a Monokuma face. Tied leaders share the relevant emblem.</p></section>
@@ -1360,7 +1387,7 @@ body.mobile-dragging{user-select:none}
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.08.22.7";
+  const APP_BUILD = "2026.08.23.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -1454,7 +1481,7 @@ body.mobile-dragging{user-select:none}
   function mkRole(name, title, image = "", hiddenSpoiler = false, extra = {}) {
     return {
       id:id(), name, title, modifier:"", image,gameId:"dr1",
-      ownerId:null, dead:false, lastActorName:"", deathTime:null,deathChapter:null,deathActorId:null,deathRecorded:false,
+      ownerId:null, dead:false, lastActorName:"", deathTime:null,deathChapter:null,deathPhase:"",deathActorId:null,deathRecorded:false,
       hiddenSpoiler, revealed:!hiddenSpoiler,
       voiceProfile:name,voiceRevealChapter:1,voiceFinalChapter:null,customVoiceClips:[],
       personalRecordings:[],practiceLineHistory:[],
@@ -1612,7 +1639,7 @@ body.mobile-dragging{user-select:none}
 
   function createGameSettings({chapter=1,gameActive=false}={}){
     const key=String(chapter);
-    return {maxPerActor:3,gameActive,voiceChapter:chapter,voiceInTrial:false,trialByChapter:{[key]:false},trialEnteredByChapter:{[key]:false},completedUnits:{}};
+    return {maxPerActor:3,gameActive,voiceChapter:chapter,voiceInTrial:false,trialByChapter:{[key]:false},completedUnits:{}};
   }
 
   function initialPopulationGraph(chapter=2,gameId="dr1") {
@@ -1648,7 +1675,7 @@ body.mobile-dragging{user-select:none}
 
   function defaultState() {
     return {
-      version:10,
+      version:11,
       settings:{completedGames:emptyCompletionFlags(),games:defaultGameSettings()},
       secretSettings:{games:{dr1:{junkoMukuroRevealed:false,populationPresets:POPULATION_PRESETS},dr2:{populationPresets:DR2_POPULATION_PRESETS},dr3anime:{},v3:{}}},
       predictions:{},
@@ -1747,7 +1774,7 @@ body.mobile-dragging{user-select:none}
     settings.voiceChapter=Math.max(1,Math.min(gameDefinition(gameId).maxChapter,Math.floor(settings.voiceChapter)));
     if(typeof settings.voiceInTrial!=="boolean")settings.voiceInTrial=false;
     if(!settings.trialByChapter||typeof settings.trialByChapter!=="object")settings.trialByChapter={};
-    if(!settings.trialEnteredByChapter||typeof settings.trialEnteredByChapter!=="object")settings.trialEnteredByChapter={};
+    delete settings.trialEnteredByChapter;
     if(!settings.completedUnits||typeof settings.completedUnits!=="object"||Array.isArray(settings.completedUnits))settings.completedUnits={};
     const completedUnits={};
     Object.keys(settings.completedUnits).forEach(rawKey=>{
@@ -1759,17 +1786,15 @@ body.mobile-dragging{user-select:none}
     if(gameDefinition(gameId).kind==="anime"){
       settings.voiceInTrial=false;
       settings.trialByChapter[key]=false;
-      settings.trialEnteredByChapter[key]=false;
     }
     if(typeof settings.trialByChapter[key]!=="boolean")settings.trialByChapter[key]=settings.voiceInTrial;
     settings.voiceInTrial=!!settings.trialByChapter[key];
-    if(typeof settings.trialEnteredByChapter[key]!=="boolean")settings.trialEnteredByChapter[key]=settings.voiceInTrial;
     return settings;
   }
 
   function normaliseState(s) {
     const previousVersion=Number(s.version)||0;
-    s.version = 10;
+    s.version = 11;
     const legacySettings=s.settings&&!s.settings.games?{...s.settings}:null;
     if(!s.settings?.games){
       s.settings={
@@ -1836,8 +1861,7 @@ body.mobile-dragging{user-select:none}
         const entry=byChapter[rawKey]||{};
         cleaned[`${gameId}:${number}`]={
           victimRoleId:String(entry.victimRoleId||entry.victimCharacterId||""),
-          blackenedRoleId:String(entry.blackenedRoleId||entry.blackenedCharacterId||""),
-          locked:!!entry.locked
+          blackenedRoleId:String(entry.blackenedRoleId||entry.blackenedCharacterId||"")
         };
       });
       s.predictions[actorId]=cleaned;
@@ -1915,6 +1939,10 @@ body.mobile-dragging{user-select:none}
         if(historicalActor)r.deathActorId=historicalActor.id;
       }
       if(typeof r.deathRecorded!=="boolean")r.deathRecorded=!!r.dead||!!r.deathActorId;
+      if(r.deathRecorded&&!['pretrial','trial'].includes(r.deathPhase)){
+        const result=s.chapterResults[`${r.gameId}:${chapterKey(r.deathChapter||r.voiceFinalChapter||roleSettings.voiceChapter,r.gameId)}`];
+        r.deathPhase=result?.blackenedRoleId===r.id?"trial":result?.victimRoleId===r.id?"pretrial":"";
+      }
     });
 
     if(mode==="host"){
@@ -2150,6 +2178,31 @@ body.mobile-dragging{user-select:none}
   function activeActor(){ return actorById(activeActorId); }
   function chapterKey(chapter=currentSettings().voiceChapter,gameId=activeGameId){return String(Math.max(1,Math.min(gameDefinition(gameId).maxChapter,Number(chapter)||1)))}
   function chapterStateKey(chapter=currentSettings().voiceChapter,gameId=activeGameId){return `${gameId}:${chapterKey(chapter,gameId)}`}
+  function isChapterPredictionLocked(gameKind,trialOngoing,gameComplete=false,resultResolved=false){
+    return gameKind==="anime"?!!gameComplete||!!resultResolved:!!trialOngoing;
+  }
+  function predictionKindForDeath(gameKind,trialOngoing){
+    return gameKind==="anime"||!trialOngoing?"victim":"blackened";
+  }
+  function resetPredictionsForChapter(predictions,actorIds,gameId,chapter){
+    const key=`${gameId}:${chapter}`;
+    actorIds.forEach(actorId=>{
+      predictions[actorId]||={};
+      predictions[actorId][key]={victimRoleId:"",blackenedRoleId:""};
+    });
+  }
+  function enterChapter(chapter){
+    const settings=currentSettings();
+    const next=chapterKey(chapter);
+    const firstVisit=!Object.prototype.hasOwnProperty.call(settings.trialByChapter,next);
+    settings.voiceChapter=Number(next);
+    if(firstVisit){
+      settings.trialByChapter[next]=false;
+      resetPredictionsForChapter(state.predictions,state.actors.map(actor=>actor.id),activeGameId,next);
+    }
+    settings.voiceInTrial=gameDefinition(activeGameId).kind==="anime"?false:!!settings.trialByChapter[next];
+    return firstVisit;
+  }
   function livingVoiceSourceSummary(){
     const current=currentSettings().voiceChapter;
     if(gameDefinition(activeGameId).kind==="anime")return "Danganronpa 3 uses episode predictions; only host-uploaded voice samples are available on this board.";
@@ -2161,7 +2214,7 @@ body.mobile-dragging{user-select:none}
     const key=chapterStateKey(chapter);
     if(create){
       state.predictions[actorId]||={};
-      state.predictions[actorId][key]||={victimRoleId:"",blackenedRoleId:"",locked:false};
+      state.predictions[actorId][key]||={victimRoleId:"",blackenedRoleId:""};
     }
     return state.predictions?.[actorId]?.[key]||null;
   }
@@ -2181,10 +2234,9 @@ body.mobile-dragging{user-select:none}
   function canEditPrediction(actorId,kind,chapter=currentSettings().voiceChapter){
     if(mode!=="player"||actorId!==activeActorId)return false;
     const key=chapterKey(chapter);
-    const prediction=predictionForActor(actorId,key,false);
+    const game=gameDefinition(activeGameId);
     const result=resultForChapter(key,false);
-    if(gameDefinition(activeGameId).kind==="anime")return !state.settings.completedGames[activeGameId]&&!prediction?.locked&&!result?.victimRoleId;
-    return !currentSettings().trialByChapter[key]&&!currentSettings().trialEnteredByChapter[key]&&!prediction?.locked&&!result?.[predictionField(kind)];
+    return !isChapterPredictionLocked(game.kind,currentSettings().trialByChapter[key],state.settings.completedGames[activeGameId],!!result?.victimRoleId);
   }
   function setPrediction(kind,roleId){
     const actor=activeActor();
@@ -2193,13 +2245,12 @@ body.mobile-dragging{user-select:none}
     if(roleId&&!eligiblePredictionRole(role))return toast("Choose a living, revealed character.");
     const prediction=predictionForActor(actor.id,currentSettings().voiceChapter,true);
     prediction[predictionField(kind)]=roleId||"";
+    const result=resultForChapter(currentSettings().voiceChapter,false);
+    if(result?.[predictionField(kind)])recalculateResult(kind,currentSettings().voiceChapter);
     selectedPredictionKind=null;
     saveState();render();
     const label=gameDefinition(activeGameId).kind==="anime"?(kind==="victim"?"Dies-next":"Suspected-killer"):kind==="victim"?"Victim":"Blackened";
     toast(role?`${label} prediction set to ${role.name}.`:`${label} prediction cleared.`);
-  }
-  function lockChapterPredictions(chapter=currentSettings().voiceChapter){
-    state.actors.forEach(actor=>predictionForActor(actor.id,chapter,true).locked=true);
   }
   function recalculateResult(kind,chapter=currentSettings().voiceChapter){
     const result=resultForChapter(chapter,true);
@@ -2220,13 +2271,12 @@ body.mobile-dragging{user-select:none}
     if(mode!=="host")return false;
     const anime=gameDefinition(activeGameId).kind==="anime";
     if(anime&&kind==="blackened")return false;
-    if(kind==="blackened"&&roleId&&!currentSettings().trialEnteredByChapter[chapterKey(chapter)]){
+    if(kind==="blackened"&&roleId&&!currentSettings().trialByChapter[chapterKey(chapter)]){
       toast(`Start the Chapter ${chapterKey(chapter)} Trial before setting the Blackened.`);return false;
     }
     const result=resultForChapter(chapter,true);
     result[predictionField(kind)]=roleId||"";
     recalculateResult(kind,chapter);
-    if(anime&&kind==="victim"&&roleId)lockChapterPredictions(chapter);
     return true;
   }
   function predictionCountsForActorGame(actorId,gameId){
@@ -2483,8 +2533,7 @@ body.mobile-dragging{user-select:none}
     if(mode!=="host"||activeGameId!=="dr3anime")return;
     const next=Math.max(1,Math.min(ANIME_WATCH_ORDER.length,Number(step)||1));
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
-    currentSettings().voiceChapter=next;
-    currentSettings().voiceInTrial=false;
+    enterChapter(next);
     selectedPredictionKind=null;
     voiceShuffleBags.clear();saveState();render();
     toast(`Now watching ${animeWatchEntry(next).label}.`);
@@ -2782,7 +2831,7 @@ body.mobile-dragging{user-select:none}
     const prediction=predictionForActor(actor.id,chapter,true);
     const trial=!!currentSettings().trialByChapter[chapter];
     const animeComplete=anime&&!!state.settings.completedGames[activeGameId];
-    const chapterLocked=anime?animeComplete||!!resultForChapter(chapter,false)?.victimRoleId||prediction.locked:trial||!!currentSettings().trialEnteredByChapter[chapter]||prediction.locked;
+    const chapterLocked=isChapterPredictionLocked(game.kind,trial,animeComplete,!!resultForChapter(chapter,false)?.victimRoleId);
     dock.classList.remove("hidden");
     const token=(kind,label)=>{
       const field=predictionField(kind);
@@ -3747,11 +3796,13 @@ body.mobile-dragging{user-select:none}
     if(firstRecordedDeath){
       r.voiceFinalChapter=currentSettings().voiceChapter;
       r.deathChapter=currentSettings().voiceChapter;
+      r.deathPhase=currentSettings().voiceInTrial?"trial":"pretrial";
       r.deathActorId=owner?.id||null;
       r.lastActorName=owner?owner.name:"None";
       r.deathRecorded=true;
-      if(!currentSettings().voiceInTrial&&!resultForChapter(currentSettings().voiceChapter,false)?.victimRoleId){
-        setChapterResult("victim",r.id,currentSettings().voiceChapter);
+      const resultKind=predictionKindForDeath(gameDefinition(activeGameId).kind,currentSettings().voiceInTrial);
+      if(!resultForChapter(currentSettings().voiceChapter,false)?.[predictionField(resultKind)]){
+        setChapterResult(resultKind,r.id,currentSettings().voiceChapter);
       }
     }
     r.deathTime=Date.now();
@@ -4022,7 +4073,7 @@ body.mobile-dragging{user-select:none}
       if(!hiddenSpoiler)r.revealed=true;
     }else{
       state.roles.push({
-        id:id(),...values,gameId:activeGameId,ownerId:null,dead:false,lastActorName:"",deathTime:null,deathChapter:null,deathActorId:null,deathRecorded:false,
+        id:id(),...values,gameId:activeGameId,ownerId:null,dead:false,lastActorName:"",deathTime:null,deathChapter:null,deathPhase:"",deathActorId:null,deathRecorded:false,
         revealed:!hiddenSpoiler,voiceProfile:name,voiceRevealChapter:currentSettings().voiceChapter,
         voiceFinalChapter:null,customVoiceClips:[],personalRecordings:[],practiceLineHistory:[]
       });
@@ -4169,25 +4220,18 @@ body.mobile-dragging{user-select:none}
 
   $("#voiceChapterSelect").onchange=e=>{
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
-    currentSettings().voiceChapter=Number(e.target.value)||1;
-    currentSettings().trialByChapter[chapterKey()]=false;
-    if(typeof currentSettings().trialEnteredByChapter[chapterKey()]!=="boolean")currentSettings().trialEnteredByChapter[chapterKey()]=false;
-    currentSettings().voiceInTrial=false;
+    const firstVisit=enterChapter(Number(e.target.value)||1);
     selectedPredictionKind=null;
     voiceShuffleBags.clear();saveState();render();
     const game=gameDefinition(activeGameId);
-    toast(`Current ${game.unit.toLowerCase()} set to ${currentSettings().voiceChapter}.${game.kind==="anime"?" Predictions are open until the next death is marked.":` Trial reset to off; ${livingVoiceSourceSummary().toLowerCase()}`}`);
+    const chapterState=firstVisit?" Fresh predictions are open.":currentSettings().voiceInTrial?" Its Trial and prediction lock were restored.":" Its saved pre-Trial predictions remain editable.";
+    toast(`Current ${game.unit.toLowerCase()} set to ${currentSettings().voiceChapter}.${game.kind==="anime"?" Predictions are open until the next death is marked.":chapterState}`);
   };
 
   $("#voiceTrialToggle").onchange=e=>{
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
-    const wasOngoing=!!currentSettings().voiceInTrial;
     currentSettings().voiceInTrial=e.target.checked;
     currentSettings().trialByChapter[chapterKey()]=currentSettings().voiceInTrial;
-    if(!wasOngoing&&currentSettings().voiceInTrial){
-      currentSettings().trialEnteredByChapter[chapterKey()]=true;
-      lockChapterPredictions();
-    }
     selectedPredictionKind=null;
     voiceShuffleBags.clear();saveState();render();
     toast(livingVoiceSourceSummary());

@@ -44,7 +44,7 @@ assert.ok(resultSource.includes("result.blackenedCorrectActorIds=[]"));
 assert.ok(resultSource.includes("result.hiddenBlackenedCorrectActorIds=roleId?state.actors"));
 assert.ok(resultSource.includes("if(animeComplete)blackened++"));
 assert.ok(resultSource.includes("else pendingBlackened++"));
-assert.ok(resultSource.includes('if(anime&&kind==="victim"&&roleId)lockChapterPredictions(chapter)'));
+assert.ok(html.includes('isChapterPredictionLocked(game.kind,trial,animeComplete,!!resultForChapter(chapter,false)?.victimRoleId)'));
 
 const pickerStart = html.indexOf("function renderGamePicker");
 const pickerEnd = html.indexOf("function showGamePicker", pickerStart);
@@ -68,7 +68,7 @@ assert.ok(html.includes("function renderPredictionChart"));
 assert.ok(html.includes('data-reveal-game="dr3anime"'));
 assert.ok(html.includes('sharedStateVersion<10'));
 assert.ok(sql.includes("'dr1', 'dr2', 'dr3anime', 'v3'"));
-assert.ok(html.includes("version:10"));
+assert.ok(html.includes("version:11"));
 assert.ok(html.includes(`const APP_BUILD = "${build.build}"`));
 assert.ok(hostRedirect.includes(`build=${build.build}`));
 assert.ok(html.includes("async function refreshOutdatedBuild()"));
