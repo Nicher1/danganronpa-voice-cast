@@ -1443,11 +1443,11 @@ body.mobile-dragging{user-select:none}
   <script src="supabase-config.js"></script>
   <script src="supabase-sync.js"></script>
   <script src="voice-clips.js?v=3"></script>
-  <script src="monopad-data.js?v=1"></script>
+  <script src="monopad-data.js?v=2"></script>
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.08.23.2";
+  const APP_BUILD = "2026.08.23.3";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -1768,7 +1768,7 @@ body.mobile-dragging{user-select:none}
         mkRole("Yasuhiro Hagakure","Ultimate Clairvoyant",IMG.yasuhiro),
         mkRole("Narrator","Narrator","",false,{voiceProfile:""}),
         mkRole("Junko Enoshima","Ultimate Despair",IMG.realJunko,true,{specialRole:"real-junko",voiceProfile:"Junko Enoshima (Real)",voiceRevealChapter:6}),
-        mkRole("Genocide Jack","Ultimate Murderous Fiend","",true,{voiceRevealChapter:2}),
+        mkRole("Genocide Jill","Ultimate Murderous Fiend","",true,{voiceProfile:"Genocide Jack",voiceRevealChapter:2}),
         ...createDr2Roles(),
         ...createAnimeRoles(),
         ...createV3Roles()
@@ -1894,7 +1894,7 @@ body.mobile-dragging{user-select:none}
     s.actors.forEach(a => {
       if(previousVersion<5&&actorNameMigrations[a.name])a.name=actorNameMigrations[a.name];
       a.hasPassword = typeof a.hasPassword === "boolean" ? a.hasPassword : !!a.passwordHash;
-      a.history = normaliseHistory(a.history);
+      a.history = normaliseHistory((Array.isArray(a.history)?a.history:[]).map(name=>name==="Genocide Jack"?"Genocide Jill":name));
       if(!Number.isFinite(a.deathCount)||a.deathCount<0)a.deathCount=0;
       a.deathCount=Math.floor(a.deathCount);
       if (typeof a.replacementToken !== "boolean") a.replacementToken = false;
@@ -1962,6 +1962,10 @@ body.mobile-dragging{user-select:none}
     });
     s.roles.forEach(r => {
       if(!GAME_IDS.includes(r.gameId))r.gameId="dr1";
+      if(r.gameId==="dr1"&&(r.name==="Genocide Jack"||r.name==="Genocide Jill")){
+        r.name="Genocide Jill";
+        if(!r.voiceProfile||r.voiceProfile==="Genocide Jill"||r.voiceProfile==="Genocide Jack")r.voiceProfile="Genocide Jack";
+      }
       const roleSettings=s.settings.games[r.gameId];
       if (typeof r.hiddenSpoiler !== "boolean") r.hiddenSpoiler = false;
       if (typeof r.revealed !== "boolean") r.revealed = !r.hiddenSpoiler;
@@ -1987,7 +1991,7 @@ body.mobile-dragging{user-select:none}
         actorId:String(x.actorId),lineId:String(x.lineId),chapter:Math.max(1,Math.min(maxChapter,Number(x.chapter)||1)),
         recordedAt:Number(x.recordedAt)||Date.now()
       }));
-      if(!Number.isFinite(r.voiceRevealChapter))r.voiceRevealChapter=r.name==="Genocide Jack"?2:1;
+      if(!Number.isFinite(r.voiceRevealChapter))r.voiceRevealChapter=r.name==="Genocide Jill"?2:1;
       r.voiceRevealChapter=Math.max(1,Math.min(maxChapter,Math.floor(r.voiceRevealChapter)));
       if(r.dead&&!Number.isFinite(r.voiceFinalChapter)){
         r.voiceFinalChapter=(r.gameId==="dr1"?LEGACY_DEATH_CHAPTERS[r.name]:null)||Math.max(1,roleSettings.voiceChapter-1);
@@ -2419,14 +2423,16 @@ body.mobile-dragging{user-select:none}
     return !!r.revealed;
   }
 
-  const monopadData = window.CAST_MONOPAD_DATA || {profileImages:{},bios:{},recaps:{},animeRecaps:[]};
+  const monopadData = window.CAST_MONOPAD_DATA || {profileImages:{},profileOverrides:{},bios:{},recaps:{},animeRecaps:[]};
 
   function profileImageForRole(role){
     if(!role)return "";
+    const override=monopadData.profileOverrides?.[role.gameId]?.[role.name]||"";
     if(role.specialRole==="junko-disguise"){
-      return role.name==="Mukuro Ikusaba"?(monopadData.profileImages["Mukuro Ikusaba"]||role.image):role.image;
+      return role.name==="Mukuro Ikusaba"?(monopadData.profileImages["Mukuro Ikusaba"]||role.image):(monopadData.profileOverrides?.dr1?.["Junko Enoshima"]||role.image);
     }
     if(role.specialRole==="real-junko")return monopadData.profileImages["Junko Enoshima"]||role.image;
+    if(override)return override;
     if(role.gameId==="dr2"&&role.name==="Byakuya Togami")return role.image;
     if(role.gameId==="dr3anime")return role.image||monopadData.profileImages[role.name]||"";
     return monopadData.profileImages[role.name]||role.image||"";

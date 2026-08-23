@@ -12,7 +12,7 @@
     "Chisa Yukizome":"https://static.wikia.nocookie.net/danganronpa/images/e/e8/Danganronpa_3_-_Chisa_Yukizome_%28Future%29_Sidebar.png/revision/latest?cb=20200830144353",
     "Daisaku Bandai":"https://static.wikia.nocookie.net/danganronpa/images/9/9f/Danganronpa_3_-_Daisaku_Bandai_Sidebar.png/revision/latest?cb=20200830144355",
     "Fuyuhiko Kuzuryu":"https://static.wikia.nocookie.net/danganronpa/images/3/3f/Fuyuhiko_Kuzuryu_Illustration.png/revision/latest?cb=20170704214532",
-    "Genocide Jack":"https://static.wikia.nocookie.net/danganronpa/images/4/4f/Genocide_Jack_Genocider_Syo_Illustration.png/revision/latest?cb=20170605013126",
+    "Genocide Jill":"https://static.wikia.nocookie.net/danganronpa/images/4/4f/Genocide_Jack_Genocider_Syo_Illustration.png/revision/latest?cb=20170605013126",
     "Gonta Gokuhara":"https://static.wikia.nocookie.net/danganronpa/images/e/ed/Gonta_Gokuhara_Illustration.png/revision/latest?cb=20170620185536",
     "Great Gozu":"https://static.wikia.nocookie.net/danganronpa/images/8/8f/Danganronpa_3_-_Great_Gozu_Sidebar.png/revision/latest?cb=20200830144357",
     "Gundham Tanaka":"https://static.wikia.nocookie.net/danganronpa/images/8/84/Danganronpa_2_Character_Illustration_-_Gundham_Tanaka.png/revision/latest?cb=20250624113333",
@@ -73,27 +73,49 @@
     "Yasuhiro Hagakure":"https://static.wikia.nocookie.net/danganronpa/images/1/19/Yasuhiro_Hagakure_Illustration.png/revision/latest?cb=20250114211952"
   };
 
+  const profileOverrides={
+    dr1:{
+      "Monokuma":"assets/monopad/dr1/monokuma.png",
+      "Makoto Naegi":"assets/monopad/dr1/makoto-naegi.png",
+      "Aoi Asahina":"assets/monopad/dr1/aoi-asahina.png",
+      "Byakuya Togami":"assets/monopad/dr1/byakuya-togami.png",
+      "Celestia Ludenberg":"assets/monopad/dr1/celestia-ludenberg.jpeg",
+      "Chihiro Fujisaki":"assets/monopad/dr1/chihiro-fujisaki.png",
+      "Hifumi Yamada":"assets/monopad/dr1/hifumi-yamada.png",
+      "Junko Enoshima":"assets/monopad/dr1/junko-disguise.png",
+      "Kiyotaka Ishimaru":"assets/monopad/dr1/kiyotaka-ishimaru.png",
+      "Kyoko Kirigiri":"assets/monopad/dr1/kyoko-kirigiri.png",
+      "Leon Kuwata":"assets/monopad/dr1/leon-kuwata.webp",
+      "Mondo Owada":"assets/monopad/dr1/mondo-owada.png",
+      "Sakura Ogami":"assets/monopad/dr1/sakura-ogami.jpg",
+      "Sayaka Maizono":"assets/monopad/dr1/sayaka-maizono.jpg",
+      "Toko Fukawa":"assets/monopad/dr1/toko-fukawa.jpg",
+      "Yasuhiro Hagakure":"assets/monopad/dr1/yasuhiro-hagakure.png",
+      "Genocide Jill":"assets/monopad/dr1/genocide-jill.jpg"
+    }
+  };
+
   const bios={
     dr1:{
-      "Monokuma":"The self-appointed headmaster is a black-and-white robotic bear with a taste for theatrical rules, cruel jokes, and sudden announcements. He controls the school and presents every new restriction with unsettling cheer.",
-      "Makoto Naegi":"An ordinary, earnest student admitted as the Ultimate Lucky Student. Makoto is approachable, stubbornly optimistic, and often becomes the steady listener who helps the group compare what everyone has noticed.",
-      "Aoi Asahina":"The Ultimate Swimming Pro is energetic, friendly, and happiest when food or exercise is involved. Aoi wears her feelings openly and quickly becomes protective of the people she trusts.",
-      "Byakuya Togami":"The aloof heir to the Togami conglomerate carries the title Ultimate Affluent Progeny. Brilliant and intensely competitive, Byakuya treats the situation as a contest he expects to dominate.",
-      "Celestia Ludenberg":"A poised gambler with an elaborate gothic style and an unreadable smile. Celeste values composure, adaptation, and the ability to keep a convincing story straight under pressure.",
-      "Chihiro Fujisaki":"The shy Ultimate Programmer speaks softly and tends to apologize before taking up space. Chihiro is considerate, technically gifted, and far more determined to improve than first impressions suggest.",
-      "Hifumi Yamada":"The Ultimate Fanfic Creator is an enthusiastic specialist in fan culture and self-published stories. Hifumi is verbose, dramatic, and often interprets events through the language of his favorite fictional worlds.",
-      "Junko Enoshima":"A famous fashion model known as the Ultimate Fashionista. Junko is outspoken, stylish, and immediately stands out from the more reserved students around her.",
-      "Kiyotaka Ishimaru":"The Ultimate Moral Compass believes rules, punctuality, and honest effort can solve nearly anything. Taka is loud and formal, but his intensity comes from a sincere desire to keep everyone working together.",
-      "Kyoko Kirigiri":"A calm, observant student whose Ultimate talent is initially unknown. Kyoko rarely speaks without purpose and has a habit of finding details that everyone else overlooked.",
-      "Leon Kuwata":"The Ultimate Baseball Star has natural athletic talent but dreams of leaving baseball behind for music. Leon is casual, image-conscious, and eager to reinvent himself on his own terms.",
-      "Mondo Owada":"The hot-blooded Ultimate Biker Gang Leader is intimidating, blunt, and quick to take offense. Behind the temper is a strong personal code centered on promises, courage, and loyalty.",
-      "Sakura Ogami":"The Ultimate Martial Artist is a disciplined fighter whose imposing appearance contrasts with her patient, thoughtful manner. Sakura values strength, honor, and protecting companions who cannot protect themselves.",
-      "Sayaka Maizono":"The cheerful center of a popular idol group holds the title Ultimate Pop Sensation. Sayaka is socially perceptive, hardworking, and one of the first people to offer Makoto familiar company.",
-      "Toko Fukawa":"The Ultimate Writing Prodigy is a successful romance novelist with a sharp tongue and a deeply suspicious outlook. Toko is easily flustered, assumes the worst of social situations, and keeps others at a defensive distance.",
-      "Yasuhiro Hagakure":"The easygoing Ultimate Clairvoyant claims his predictions are right about thirty percent of the time. Hiro is older than his classmates, deeply superstitious, and always ready with a bizarre theory.",
-      "Genocide Jack":"A flamboyant and dangerous personality with a fixation on handsome targets and dramatic entrances. Jack speaks without Toko's restraint and treats even serious situations like a stage built for her jokes.",
-      "Mukuro Ikusaba":"The Ultimate Soldier is a reserved combat specialist associated with the mercenary group Fenrir. Mukuro is exceptionally capable in dangerous situations and far less comfortable expressing ordinary emotions.",
-      "Junko Enoshima (Real)":"The real Ultimate Fashionista is charismatic, mercurial, and able to change her manner in an instant. Her talent for reading trends and people makes her an unusually commanding presence."
+      "Monokuma":"A talking black-and-white bear who claims to be Hope's Peak's headmaster. He is cheerful about the killing-game rules, enjoys bad jokes, and always seems happiest when everyone else is uncomfortable.",
+      "Makoto Naegi":"A completely average student who got into Hope's Peak through the school's lottery. He calls himself ordinary, but he is friendly, level-headed, and tries to keep going even when he is scared.",
+      "Aoi Asahina":"The Ultimate Swimming Pro, though she would rather everyone call her Hina. She is upbeat, straightforward, and seems to have almost as much energy for doughnuts as she does for sports.",
+      "Byakuya Togami":"The heir to the enormous Togami family fortune. He is intelligent, cold, and makes it very clear from the first conversation that he considers most people beneath him.",
+      "Celestia Ludenberg":"A mysterious gambler dressed like a gothic doll. She speaks very politely, keeps an excellent poker face, and claims she has never lost a bet.",
+      "Chihiro Fujisaki":"A small, soft-spoken programmer who seems nervous around new people. Chihiro apologizes a lot, but is kind and already famous for creating useful software.",
+      "Hifumi Yamada":"The Ultimate Fanfic Creator, best known for selling an enormous number of copies at a school festival. He talks at length, takes his interests very seriously, and strongly prefers the 2D world.",
+      "Junko Enoshima":"The Ultimate Fashionista, recognizable from magazines even though she looks a little different in person. She is casual, confident, and much easier to talk to than her celebrity image suggests.",
+      "Kiyotaka Ishimaru":"A painfully serious student who introduces himself at full volume. Taka believes in rules, effort, and proper conduct, and seems ready to turn every conversation into a disciplinary meeting.",
+      "Kyoko Kirigiri":"A quiet girl whose Ultimate talent is unknown. She says very little about herself, stays calm, and gives the impression that she notices much more than she explains.",
+      "Leon Kuwata":"The Ultimate Baseball Star, despite barely practicing and not wanting a baseball career. Leon would rather become a musician and is already trying to leave his old image behind.",
+      "Mondo Owada":"The leader of Japan's largest biker gang. He has a very short temper and looks ready to start a fight, but takes pride in strength, courage, and keeping his word.",
+      "Sakura Ogami":"The Ultimate Martial Artist, famous enough to be called the strongest human alive. She looks terrifying at first, but speaks calmly and carries herself with surprising patience.",
+      "Sayaka Maizono":"The center of a hugely popular idol group and someone Makoto recognizes from middle school. She is warm, observant, and quick to make him feel less alone among all the Ultimates.",
+      "Toko Fukawa":"A bestselling romance novelist who won awards while still in school. Toko is tense, suspicious, and so quick to assume she is being insulted that an ordinary introduction becomes difficult.",
+      "Yasuhiro Hagakure":"The Ultimate Clairvoyant—Hiro for short—who claims his predictions are right thirty percent of the time. He has been held back more than once, talks casually, and is completely serious about crystal balls and the occult.",
+      "Genocide Jill":"Toko's other personality and the serial killer everyone has heard about. Jill is loud, vulgar, obsessed with handsome men, and delighted to explain exactly how different she is from Toko.",
+      "Mukuro Ikusaba":"The mysterious sixteenth student and the Ultimate Soldier. She is a highly trained fighter connected to the mercenary group Fenrir, but reveals very little about what she actually wants.",
+      "Junko Enoshima (Real)":"The real Ultimate Fashionista and the person behind the killing game. She changes moods and mannerisms constantly, as though sticking to one personality would bore her."
     },
     dr2:{
       "Hajime Hinata":"A practical student who cannot remember what Ultimate talent brought him to Hope's Peak. Hajime questions strange claims, grounds the group in common sense, and is determined to recover the missing part of his identity.",
@@ -167,7 +189,7 @@
   const recaps={
     dr1:[
       {pretrial:"The students learned that Hope's Peak had become a sealed prison and that escape required murdering a classmate without being identified. Motive videos placed their loved ones in danger. Sayaka arranged to switch rooms with Makoto, and she was later found dead in his bathroom, forcing the class to investigate the first murder.",full:"The first Class Trial reconstructed Sayaka's failed attempt to frame Makoto. Leon had turned her own weapon against her, destroyed evidence in the incinerator, and left behind a dying message that pointed to him. The class voted correctly, and Monokuma executed Leon while making the cost of every future mistake unmistakable."},
-      {pretrial:"Monokuma threatened to expose everyone's secrets. After Chihiro was found in the girls' locker room, evidence involving the switching room posters, a missing extension cord, and the serial killer Genocide Jack made the crime look deliberately confusing. The investigation also exposed that the locker-room access rules were central to the setup.",full:"The Trial revealed that Mondo killed Chihiro after Chihiro asked him for help becoming stronger. Mondo moved the body and altered the scene to protect Chihiro's secret, while Byakuya later changed it again to test the group. Mondo was executed, Taka was devastated, and Chihiro's laptop program Alter Ego became a new source of help."},
+      {pretrial:"Monokuma threatened to expose everyone's secrets. After Chihiro was found in the girls' locker room, evidence involving the switching room posters, a missing extension cord, and the serial killer Genocide Jill made the crime look deliberately confusing. The investigation also exposed that the locker-room access rules were central to the setup.",full:"The Trial revealed that Mondo killed Chihiro after Chihiro asked him for help becoming stronger. Mondo moved the body and altered the scene to protect Chihiro's secret, while Byakuya later changed it again to test the group. Mondo was executed, Taka was devastated, and Chihiro's laptop program Alter Ego became a new source of help."},
       {pretrial:"Alter Ego began analyzing the school's files while Monokuma offered ten million dollars as a motive. A staged sequence of attacks involving Robo Justice ended with both Taka and Hifumi dead, Celeste apparently abducted, and the bodies moving between rooms. Conflicting eyewitness accounts made the order of events the key mystery.",full:"Celeste had manipulated Hifumi into killing Taka, then killed Hifumi and used the Robo Justice costume and false sightings to disguise the timeline. Hifumi's final words and Celeste's slips exposed the plan. After her execution, the group learned where she had hidden Alter Ego, only to discover that Monokuma had already taken it."},
       {pretrial:"Sakura confessed that Monokuma had forced her to act as the school's spy, fracturing the group's trust even after she rejected him. She invited several classmates to the recreation room and was later found dead inside the locked room after being struck and poisoned. Aoi's anger and a damaged suicide note pushed suspicion in several directions.",full:"Sakura had taken her own life to end the conflict and protect the others. Aoi hid the truth and deliberately led the class toward a wrong vote because she blamed everyone for Sakura's despair, while Monokuma replaced part of Sakura's note to deepen that anger. Sakura's real message reunited the survivors, and Alter Ego made one final act of resistance before being destroyed."},
       {pretrial:"Kyoko's investigations opened new areas of the school while her absence created tension with Makoto. A masked body was discovered in the garden and then destroyed by an explosion, leaving only limited physical evidence and clues identifying the victim as Mukuro Ikusaba, the mysterious sixteenth student.",full:"Monokuma rushed an incomplete Trial designed to condemn either Kyoko or Makoto. Makoto refused to expose Kyoko's lie and was sentenced, but Alter Ego interrupted the execution and dropped him into the refuse pit. Kyoko rescued him, and the survivors chose to confront the school's hidden truth in a final Trial."},
@@ -218,5 +240,5 @@
     "The rehabilitated Class 77-B students arrived to stop Ryota's broadcast and accepted public blame so the Future Foundation could rebuild. Kyoko was revived through Seiko's antidote, Makoto prepared to reopen Hope's Peak, and the survivors moved forward with hope based on choice rather than control."
   ];
 
-  window.CAST_MONOPAD_DATA={version:1,profileImages,bios,recaps,animeRecaps};
+  window.CAST_MONOPAD_DATA={version:2,profileImages,profileOverrides,bios,recaps,animeRecaps};
 })();
