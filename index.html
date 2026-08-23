@@ -548,8 +548,8 @@ body.mobile-dragging{user-select:none}
 }
 .role-card.expanded .role-expanded{display:block}
 .role-image{
-  width:100%;aspect-ratio:16/9;border-radius:11px;
-  background:#0f1117;object-fit:contain;
+  width:100%;height:min(430px,54vw);min-height:230px;border-radius:11px;
+  background:linear-gradient(145deg,rgba(112,184,255,.055),rgba(245,64,148,.035)),#0f1117;object-fit:contain;object-position:center top;
   border:1px solid rgba(255,255,255,.04)
 }
 .role-image.placeholder,.image-preview.placeholder{
@@ -560,6 +560,8 @@ body.mobile-dragging{user-select:none}
   font-size:.76rem;color:var(--muted);margin-top:8px;overflow-wrap:anywhere;
   background:rgba(255,255,255,.02);border-radius:8px;padding:7px 8px
 }
+.role-biography{font-size:.76rem;color:#d2d8e4;line-height:1.58;margin:9px 0 0;overflow-wrap:anywhere}
+.role-biography strong{display:block;color:var(--blue);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;margin-bottom:4px}
 .role-actions{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
 .role-actions button{font-size:.71rem;padding:.44rem .57rem}
 .danger-text{color:#ffacb0}
@@ -662,8 +664,6 @@ body.mobile-dragging{user-select:none}
 .player-mode .host-only,.player-mode .viewer-only{display:none!important}
 .viewer-mode .host-only,.viewer-mode .player-only,.viewer-mode .non-viewer{display:none!important}
 .viewer-mode .role-card{cursor:default}
-.viewer-mode .role-chevron{display:none}
-.viewer-mode .role-card.expanded .role-expanded{display:none}
 @media(max-width:1020px){
   .topbar{align-items:flex-start;flex-direction:column}
   .casting-layout,.casting-layout.anime-layout{grid-template-columns:1fr}
@@ -672,8 +672,7 @@ body.mobile-dragging{user-select:none}
 @media(max-width:620px){
   .topbar,.app-shell{padding-left:10px;padding-right:10px}
   .topbar::after{left:10px;right:10px}
-  .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;width:100%}
-  .host-mode .tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tabs,.host-mode .tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;width:100%}
   .tab{min-width:0;padding:9px 4px;gap:3px;font-size:.69rem;white-space:nowrap}
   .tab .counter{padding:.18rem .32rem;font-size:.58rem}
   .actors-grid{grid-template-columns:1fr}
@@ -682,8 +681,8 @@ body.mobile-dragging{user-select:none}
   .toggle-wrap{width:100%}
   .brand-mark{width:44px;height:44px}
   .control-strip{padding:8px}
-  .role-pool,.actors-panel,.memorial-hero,.stats-hero,.prediction-leaderboard,.population-panel{padding:12px}
-  .modal-card,.compact-modal,.practice-dialog-card,.game-picker-card{width:100%;max-width:100%}
+  .role-pool,.actors-panel,.memorial-hero,.stats-hero,.monopad-hero,.monopad-section,.prediction-leaderboard,.population-panel{padding:12px}
+  .modal-card,.compact-modal,.practice-dialog-card,.game-picker-card,.dossier-dialog-card{width:100%;max-width:100%}
   .anime-episode-tracker{align-items:stretch;flex-direction:column}.anime-episode-tracker button{width:100%}.anime-score-card{grid-template-columns:1fr 1fr}.anime-score-metric.total{grid-column:1/-1;grid-row:1}
 }
 
@@ -761,6 +760,15 @@ body.mobile-dragging{user-select:none}
 .prediction-chip.correct{box-shadow:inset 0 0 0 1px rgba(98,214,164,.55)}
 .role-card.prediction-target{border-color:white;box-shadow:0 0 0 2px rgba(112,184,255,.14)}
 .stats-hero{padding:22px;margin-bottom:14px}
+.monopad-hero{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:22px;margin-bottom:14px;background:linear-gradient(135deg,rgba(112,184,255,.07),transparent 48%),var(--panel)}
+.monopad-device{display:flex;align-items:center;gap:8px;color:var(--blue);font-size:.65rem;font-weight:950;letter-spacing:.11em;white-space:nowrap}.monopad-device::before{content:"◈";display:grid;place-items:center;width:32px;height:32px;border:1px solid rgba(112,184,255,.38);border-radius:9px;background:var(--blue-soft);font-size:.9rem}
+.monopad-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:14px;align-items:start}
+.monopad-section{padding:18px}.monopad-section h2{margin:3px 0 5px}.monopad-dossier-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(210px,100%),1fr));gap:10px;margin-top:15px}
+.dossier-card{display:grid;grid-template-columns:62px minmax(0,1fr);gap:10px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(135deg,rgba(255,255,255,.026),transparent),var(--panel-soft);min-width:0}
+.dossier-card img,.dossier-card .dossier-placeholder{width:62px;height:70px;object-fit:cover;object-position:center top;border-radius:9px;background:#0f1117;border:1px solid rgba(255,255,255,.06)}
+.dossier-card .dossier-placeholder{display:grid;place-items:center;color:var(--muted2);font-weight:950;font-size:1.15rem}.dossier-card-copy{min-width:0}.dossier-card h3{font-size:.8rem;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dossier-card p{font-size:.64rem;color:var(--muted);font-style:italic;margin:3px 0 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dossier-card button{font-size:.63rem;padding:.36rem .5rem;width:100%}
+.recap-feed{display:grid;gap:10px;margin-top:15px}.recap-entry{position:relative;margin:0;padding:13px 13px 13px 16px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018);color:#d6dbe5;font-size:.76rem;line-height:1.6;overflow-wrap:anywhere}.recap-entry::before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(var(--blue),var(--pink-hot))}.recap-empty{padding:15px;border:1px dashed var(--line);border-radius:11px;color:var(--muted);font-size:.74rem;line-height:1.5}
+.dossier-dialog-card{width:min(94vw,820px);padding:0;overflow:hidden}.dossier-dialog-body{display:grid;grid-template-columns:minmax(230px,.82fr) minmax(0,1.18fr);min-height:410px}.dossier-dialog-art{width:100%;height:100%;max-height:650px;min-height:410px;object-fit:contain;object-position:center top;background:linear-gradient(145deg,rgba(112,184,255,.08),rgba(245,64,148,.045)),#0d1016}.dossier-dialog-placeholder{display:grid;place-items:center;color:var(--muted2);font-size:3rem}.dossier-dialog-copy{padding:23px;align-self:center;min-width:0}.dossier-dialog-copy .modal-head{padding-bottom:14px}.dossier-dialog-copy h3{font-size:clamp(1.45rem,4vw,2.2rem);line-height:1}.dossier-dialog-talent{color:var(--blue);font-weight:850;font-size:.8rem;margin:12px 0}.dossier-dialog-bio{color:#d9dee8;font-size:.88rem;line-height:1.72;white-space:pre-line;overflow-wrap:anywhere}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:12px;margin-bottom:16px}
 .stats-card{padding:15px}
 .stats-name{font-size:1rem;font-weight:950;padding-bottom:9px;border-bottom:1px solid var(--line)}
@@ -837,6 +845,7 @@ body.mobile-dragging{user-select:none}
   .stats-game-row{grid-template-columns:minmax(86px,1.2fr) repeat(4,minmax(34px,.55fr));padding:7px 5px}.prediction-chart-row{grid-template-columns:78px minmax(120px,1fr) auto;gap:6px}
   .population-header{flex-direction:column}
   .game-lock-banner,.admin-hero{align-items:flex-start;flex-direction:column}
+  .monopad-hero{align-items:flex-start;flex-direction:column}.monopad-layout{grid-template-columns:1fr}.dossier-dialog-body{grid-template-columns:1fr}.dossier-dialog-art{height:310px;min-height:0}.dossier-dialog-copy{padding:17px}
 }
 @media(max-width:350px){
   .topbar,.app-shell{padding-left:8px;padding-right:8px}
@@ -895,6 +904,7 @@ body.mobile-dragging{user-select:none}
       <button class="tab active" data-tab="casting"><span class="tab-icon">◆</span> Assignments</button>
       <button class="tab" data-tab="memorial"><span class="tab-icon">☠</span> Memorial <span id="deadCount" class="counter">0</span></button>
       <button class="tab" data-tab="statistics"><span class="tab-icon">▥</span> Statistics</button>
+      <button class="tab" data-tab="monopad"><span class="tab-icon">◈</span> Monopad</button>
       <button class="tab host-only" data-tab="admin"><span class="tab-icon">⚙</span> Admin Tools</button>
     </nav>
 
@@ -1048,6 +1058,31 @@ body.mobile-dragging{user-select:none}
       </section>
     </section>
 
+    <section id="monopadTab" class="tab-panel">
+      <div class="monopad-hero panel">
+        <div>
+          <div class="section-kicker">STUDENT HANDBOOK</div>
+          <h2>Monopad</h2>
+          <p id="monopadHelp" class="muted small">Known character files and a recap limited to your current story progress.</p>
+        </div>
+        <div class="monopad-device">SPOILER-SAFE DATA</div>
+      </div>
+      <div class="monopad-layout">
+        <section class="monopad-section panel">
+          <div class="section-kicker">KNOWN PROFILES</div>
+          <h2>Character files</h2>
+          <p class="muted small">Open a file for a larger portrait and a brief, surface-level introduction.</p>
+          <div id="monopadDossierGrid" class="monopad-dossier-grid"></div>
+        </section>
+        <section class="monopad-section panel">
+          <div class="section-kicker">STORY MEMORY</div>
+          <h2 id="monopadRecapTitle">What happened so far</h2>
+          <p id="monopadRecapHelp" class="muted small"></p>
+          <div id="monopadRecapFeed" class="recap-feed"></div>
+        </section>
+      </div>
+    </section>
+
     <section id="adminTab" class="tab-panel host-only">
       <div class="admin-hero panel">
         <div><div class="section-kicker">SERIES CONTROL</div><h2>Admin Tools</h2><p class="muted small">Mark games complete to unlock the next board. Turning a completion off locks later games again without deleting their saved cast data.</p></div>
@@ -1056,6 +1091,22 @@ body.mobile-dragging{user-select:none}
       <div id="adminGamesGrid" class="admin-games"></div>
     </section>
   </main>
+
+  <dialog id="dossierDialog" class="modal">
+    <div class="modal-card dossier-dialog-card">
+      <div class="dossier-dialog-body">
+        <div id="dossierDialogArtWrap"></div>
+        <div class="dossier-dialog-copy">
+          <div class="modal-head">
+            <div><div class="eyebrow">MONOPAD PROFILE</div><h3 id="dossierDialogName">Character</h3></div>
+            <button type="button" class="icon-btn" data-close="dossierDialog">×</button>
+          </div>
+          <div id="dossierDialogTalent" class="dossier-dialog-talent"></div>
+          <div id="dossierDialogBio" class="dossier-dialog-bio"></div>
+        </div>
+      </div>
+    </div>
+  </dialog>
 
   <dialog id="gamePickerDialog" class="modal">
     <div class="modal-card game-picker-card">
@@ -1077,7 +1128,15 @@ body.mobile-dragging{user-select:none}
       <p class="muted small">Version history. Releases are newest first and collapsed until you open them.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">v0.11</span><span class="patch-release-title"><strong>Mobile layout and chapter predictions</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">v0.12</span><span class="patch-release-title"><strong>Monopad character files and recaps</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Character dossiers</h4><p>Every available board now includes public character files with larger artwork and short, surface-level biographies. Library cards also show the new artwork and description when expanded.</p></section>
+            <section class="patch-note"><h4>Progress-aware story memory</h4><p>The Monopad recap only displays events already reached by the current chapter and Trial state. Earlier completed Trials are remembered, while a current Trial shows only that chapter’s pre-Trial events.</p></section>
+            <section class="patch-note" data-reveal-game="dr3anime"><h4>Anime episode memory</h4><p>During Danganronpa 3, the Monopad follows the watch-order tracker and recalls only the immediately preceding episode.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.11</span><span class="patch-release-title"><strong>Mobile layout and chapter predictions</strong><small>Previous release</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Phone-sized boards stay on screen</h4><p>Navigation, cards, controls, statistics, Memorial layouts, and dialogs now shrink and wrap within narrow phone screens without creating a blank strip to the right.</p></section>
             <section class="patch-note"><h4>Fresh predictions for every chapter</h4><p>Each actor now begins a newly entered chapter with empty Victim and Blackened choices, while earlier chapter predictions remain available for history and Statistics.</p></section>
@@ -1384,10 +1443,11 @@ body.mobile-dragging{user-select:none}
   <script src="supabase-config.js"></script>
   <script src="supabase-sync.js"></script>
   <script src="voice-clips.js?v=3"></script>
+  <script src="monopad-data.js?v=1"></script>
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.08.23.1";
+  const APP_BUILD = "2026.08.23.2";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2359,6 +2419,97 @@ body.mobile-dragging{user-select:none}
     return !!r.revealed;
   }
 
+  const monopadData = window.CAST_MONOPAD_DATA || {profileImages:{},bios:{},recaps:{},animeRecaps:[]};
+
+  function profileImageForRole(role){
+    if(!role)return "";
+    if(role.specialRole==="junko-disguise"){
+      return role.name==="Mukuro Ikusaba"?(monopadData.profileImages["Mukuro Ikusaba"]||role.image):role.image;
+    }
+    if(role.specialRole==="real-junko")return monopadData.profileImages["Junko Enoshima"]||role.image;
+    if(role.gameId==="dr2"&&role.name==="Byakuya Togami")return role.image;
+    if(role.gameId==="dr3anime")return role.image||monopadData.profileImages[role.name]||"";
+    return monopadData.profileImages[role.name]||role.image||"";
+  }
+
+  function biographyForRole(role){
+    if(!role)return "No profile is available yet.";
+    const gameBios=monopadData.bios?.[role.gameId]||{};
+    if(role.specialRole==="real-junko")return gameBios["Junko Enoshima (Real)"]||gameBios[role.name]||"No profile is available yet.";
+    return gameBios[role.name]||`${role.name} is known as ${role.title||"a student connected to Hope's Peak"}. More surface-level profile information will be added when it becomes available.`;
+  }
+
+  function attachImageFallback(root,role,selector="[data-profile-art]"){
+    root.querySelectorAll(selector).forEach(image=>image.addEventListener("error",()=>{
+      const fallback=role.image?new URL(role.image,location.href).href:"";
+      if(fallback&&image.dataset.fallbackTried!=="1"&&image.src!==fallback){image.dataset.fallbackTried="1";image.src=fallback;return}
+      image.replaceWith(Object.assign(document.createElement("div"),{className:`${image.className} placeholder dossier-placeholder`,textContent:role.name.slice(0,1).toUpperCase()}));
+    }));
+  }
+
+  function knownMonopadRoles(){
+    return gameRoles().filter(role=>role.name!=="Narrator"&&currentRoleVisible(role)&&(!role.hiddenSpoiler||role.revealed||mode==="host"));
+  }
+
+  function visibleRecapParagraphs(){
+    const current=Number(chapterKey());
+    if(activeGameId==="dr3anime"){
+      const previous=monopadData.animeRecaps?.[current-2];
+      return previous?[previous]:[];
+    }
+    const chapters=monopadData.recaps?.[activeGameId]||[];
+    const visible=[];
+    for(let chapter=1;chapter<current;chapter++){
+      const full=chapters[chapter-1]?.full;
+      if(full)visible.push(full);
+    }
+    if(currentSettings().voiceInTrial){
+      const pretrial=chapters[current-1]?.pretrial;
+      if(pretrial)visible.push(pretrial);
+    }
+    return visible;
+  }
+
+  function openDossier(role){
+    if(!role||!currentRoleVisible(role))return;
+    const art=profileImageForRole(role);
+    const wrap=$("#dossierDialogArtWrap");
+    wrap.innerHTML=art?`<img class="dossier-dialog-art" data-profile-art src="${esc(art)}" alt="Full character artwork of ${esc(role.name)}" referrerpolicy="no-referrer">`:`<div class="dossier-dialog-art dossier-dialog-placeholder">${esc(role.name.slice(0,1).toUpperCase())}</div>`;
+    $("#dossierDialogName").textContent=role.name;
+    $("#dossierDialogTalent").textContent=role.title||"Profile";
+    $("#dossierDialogBio").textContent=biographyForRole(role);
+    attachImageFallback(wrap,role);
+    $("#dossierDialog").showModal();
+  }
+
+  function renderMonopad(){
+    const game=gameDefinition(activeGameId);
+    $("#monopadHelp").textContent=`Known ${game.kind==="anime"?"cast":"student"} files and story memory for ${game.title}. Future information stays outside the page.`;
+    const grid=$("#monopadDossierGrid");grid.innerHTML="";
+    const roles=knownMonopadRoles();
+    roles.forEach(role=>{
+      const art=profileImageForRole(role);
+      const card=document.createElement("article");card.className="dossier-card";
+      card.innerHTML=`${art?`<img data-profile-art src="${esc(art)}" alt="" referrerpolicy="no-referrer">`:`<div class="dossier-placeholder">${esc(role.name.slice(0,1).toUpperCase())}</div>`}<div class="dossier-card-copy"><h3>${esc(role.name)}</h3><p>${esc(role.title||"Profile")}</p><button type="button" class="ghost">Read description</button></div>`;
+      card.querySelector("button").onclick=()=>openDossier(role);
+      attachImageFallback(card,role);
+      grid.appendChild(card);
+    });
+    if(!roles.length)grid.innerHTML=`<div class="recap-empty">No character files have been revealed on this board yet.</div>`;
+
+    const anime=game.kind==="anime";
+    $("#monopadRecapTitle").textContent=anime?"Previous episode":"What happened so far";
+    $("#monopadRecapHelp").textContent=anime
+      ? `At ${animeWatchEntry(chapterKey()).label}, this recalls only the immediately previous watch-order episode.`
+      : currentSettings().voiceInTrial
+        ? "Completed earlier Trials are included, plus only the events before the current Trial."
+        : "Only completed earlier chapters are included; the current chapter remains unwritten until its Trial begins.";
+    const feed=$("#monopadRecapFeed");feed.innerHTML="";
+    const paragraphs=visibleRecapParagraphs();
+    paragraphs.forEach(text=>{const paragraph=document.createElement("p");paragraph.className="recap-entry";paragraph.textContent=text;feed.appendChild(paragraph)});
+    if(!paragraphs.length)feed.innerHTML=`<div class="recap-empty">No earlier story events are available at this point yet.</div>`;
+  }
+
   function selectGame(gameId,{announce=true}={}){
     if(!isGameUnlocked(gameId)){toast(`${gameDefinition(gameId).title} is still locked.`);return false}
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
@@ -2499,6 +2650,7 @@ body.mobile-dragging{user-select:none}
     renderActors();
     renderGraveyard(dead);
     renderStatistics();
+    renderMonopad();
     renderAdminTools();
     if(initialBoardLoadComplete&&availableGameIds().length>1&&!gamePickerShown){
       setTimeout(()=>{if(!gamePickerShown&&!document.querySelector("dialog[open]"))showGamePicker({automatic:true})},40);
@@ -3155,8 +3307,9 @@ body.mobile-dragging{user-select:none}
   });
 
   function roleCard(r,{assigned=false,locked=false,spoiler=false}={}){
-    const canExpand=!assigned && mode==="host";
+    const canExpand=!assigned;
     const isExpanded=canExpand && expanded.has(r.id);
+    const profileArt=profileImageForRole(r);
     const el=document.createElement("article");
     el.className=`role-card ${isExpanded?"expanded":""} ${locked?"locked":""} ${spoiler?"spoiler":""}`;
     el.dataset.roleId=r.id;
@@ -3186,16 +3339,18 @@ body.mobile-dragging{user-select:none}
       ${predictionMarkers(r)}
       ${canExpand?`
         <div class="role-expanded">
-          ${r.image?`<img class="role-image" src="${esc(r.image)}" alt="" referrerpolicy="no-referrer">`:`<div class="role-image placeholder">No image yet</div>`}
-          ${r.modifier?`<div class="role-detail"><strong>Modifier:</strong> ${esc(r.modifier)}</div>`:""}
-          <div class="role-actions">
+          ${profileArt?`<img class="role-image" data-profile-art src="${esc(profileArt)}" alt="Full character artwork of ${esc(r.name)}" referrerpolicy="no-referrer">`:`<div class="role-image placeholder">No image yet</div>`}
+          <p class="role-biography"><strong>Monopad profile</strong>${esc(biographyForRole(r))}</p>
+          ${mode==="host"&&r.modifier?`<div class="role-detail"><strong>Modifier:</strong> ${esc(r.modifier)}</div>`:""}
+          ${mode==="host"?`<div class="role-actions">
             <button type="button" data-action="edit-role">✎ Edit</button>
             <button type="button" data-action="kill-role" class="danger-text">☠ Mark dead</button>
             ${spoiler?`<button type="button" data-action="reveal-role">👁 Reveal to Library</button>`:""}
             <button type="button" data-action="delete-role" class="danger-text">× Delete</button>
-          </div>
+          </div>`:""}
         </div>`:""}
     `;
+    attachImageFallback(el,r);
 
     if(draggable){
       el.addEventListener("dragstart",e=>{
@@ -3229,6 +3384,12 @@ body.mobile-dragging{user-select:none}
       e.stopPropagation();openPracticeDialog(r,r.ownerId);
     });
 
+    const toggleExpanded=()=>{
+      if(!canExpand)return;
+      expanded.has(r.id)?expanded.delete(r.id):expanded.add(r.id);
+      render();
+    };
+
     if(mode==="host"){
       el.addEventListener("click",e=>{
         const action=e.target.closest("[data-action]")?.dataset.action;
@@ -3236,16 +3397,16 @@ body.mobile-dragging{user-select:none}
         if(action==="kill-role"){e.stopPropagation();killRole(r.id);return}
         if(action==="delete-role"){e.stopPropagation();deleteRole(r.id);return}
         if(action==="reveal-role"){e.stopPropagation();revealRole(r.id);return}
-        if(canExpand&&!e.target.closest("button")){
-          expanded.has(r.id)?expanded.delete(r.id):expanded.add(r.id);
-          render();
-        }
+        if(canExpand&&!e.target.closest("button"))toggleExpanded();
       });
     }else if(mode==="player"){
       el.addEventListener("click",e=>{
-        if(!selectedPredictionKind||e.target.closest("button"))return;
-        const kind=selectedPredictionKind;selectedPredictionKind=null;setPrediction(kind,r.id);
+        if(e.target.closest("button"))return;
+        if(selectedPredictionKind){const kind=selectedPredictionKind;selectedPredictionKind=null;setPrediction(kind,r.id);return}
+        toggleExpanded();
       });
+    }else{
+      el.addEventListener("click",e=>{if(!e.target.closest("button"))toggleExpanded()});
     }
     return el;
   }
