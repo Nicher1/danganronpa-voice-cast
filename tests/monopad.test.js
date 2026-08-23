@@ -39,6 +39,7 @@ assert.ok(html.includes('id="dossierDialog"'));
 assert.ok(html.includes("function renderMonopad()"));
 assert.ok(html.includes("const canExpand=!assigned;"), "Unassigned character details must be public");
 assert.ok(html.includes("for(let chapter=1;chapter<current;chapter++)"), "Only earlier game chapters should receive full recaps");
+assert.ok(html.includes("[completedChapter.pretrial,completedChapter.full]"), "A completed chapter recap must include both its pre-Trial events and its Trial outcome");
 assert.ok(html.includes("if(currentSettings().voiceInTrial)"), "The current pre-Trial recap must be gated by Trial state");
 assert.ok(html.includes("monopadData.animeRecaps?.[current-2]"), "Anime must show only the previous watch-order episode");
 assert.ok(html.includes('role.specialRole==="junko-disguise"'), "The reversible Junko/Mukuro identity needs a safe dossier override");

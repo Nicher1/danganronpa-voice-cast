@@ -1447,7 +1447,7 @@ body.mobile-dragging{user-select:none}
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.08.23.3";
+  const APP_BUILD = "2026.08.23.4";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2466,8 +2466,9 @@ body.mobile-dragging{user-select:none}
     const chapters=monopadData.recaps?.[activeGameId]||[];
     const visible=[];
     for(let chapter=1;chapter<current;chapter++){
-      const full=chapters[chapter-1]?.full;
-      if(full)visible.push(full);
+      const completedChapter=chapters[chapter-1]||{};
+      const completeRecap=[completedChapter.pretrial,completedChapter.full].filter(Boolean).join(" ");
+      if(completeRecap)visible.push(completeRecap);
     }
     if(currentSettings().voiceInTrial){
       const pretrial=chapters[current-1]?.pretrial;
@@ -2508,8 +2509,8 @@ body.mobile-dragging{user-select:none}
     $("#monopadRecapHelp").textContent=anime
       ? `At ${animeWatchEntry(chapterKey()).label}, this recalls only the immediately previous watch-order episode.`
       : currentSettings().voiceInTrial
-        ? "Completed earlier Trials are included, plus only the events before the current Trial."
-        : "Only completed earlier chapters are included; the current chapter remains unwritten until its Trial begins.";
+        ? "Earlier chapters include both their pre-Trial events and Trial outcomes; the current chapter includes only what happened before this Trial."
+        : "Each completed earlier chapter includes both its pre-Trial events and Trial outcome; the current chapter remains unwritten until its Trial begins.";
     const feed=$("#monopadRecapFeed");feed.innerHTML="";
     const paragraphs=visibleRecapParagraphs();
     paragraphs.forEach(text=>{const paragraph=document.createElement("p");paragraph.className="recap-entry";paragraph.textContent=text;feed.appendChild(paragraph)});
