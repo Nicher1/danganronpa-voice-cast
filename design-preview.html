@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Danganronpa Voice Cast — Gameful design preview</title>
+  <style>
+    :root{
+      color-scheme:dark;
+      --ink:#090b11;--panel:#111520;--panel-2:#171c28;--line:#303748;
+      --paper:#f5f1e9;--muted:#929bad;--pink:#ff2f91;--blue:#3bdcff;
+      --red:#ff4655;--lime:#b9ff51;--gold:#ffcf4a;
+    }
+    *{box-sizing:border-box}
+    html{background:var(--ink)}
+    body{
+      margin:0;min-height:100vh;color:var(--paper);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      background:
+        linear-gradient(118deg,transparent 0 72%,rgba(255,47,145,.08) 72% 72.6%,transparent 72.6%),
+        radial-gradient(circle at 85% 10%,rgba(59,220,255,.12),transparent 28%),
+        #090b11;
+    }
+    button{font:inherit;color:inherit;cursor:pointer}
+    .warning-tape{
+      height:9px;background:repeating-linear-gradient(135deg,var(--pink) 0 18px,#161927 18px 36px);
+      box-shadow:0 0 24px rgba(255,47,145,.35)
+    }
+    .shell{width:min(1480px,calc(100% - 40px));margin:auto;padding:24px 0 42px}
+    .topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:18px}
+    .logo-line{display:flex;align-items:center;gap:14px}
+    .crest{
+      position:relative;width:62px;height:62px;display:grid;place-items:center;border:2px solid var(--paper);
+      background:linear-gradient(135deg,var(--pink) 0 49%,#111 49% 51%,var(--blue) 51%);transform:rotate(-4deg);
+      box-shadow:7px 7px 0 #000;font-weight:1000;font-size:24px
+    }
+    .crest span{transform:rotate(4deg);text-shadow:2px 2px #000}
+    .kicker{color:var(--pink);font-size:.68rem;font-weight:1000;letter-spacing:.22em;text-transform:uppercase}
+    h1{font-size:clamp(2rem,5vw,4.4rem);line-height:.83;letter-spacing:-.075em;margin:5px 0 0;text-transform:uppercase}
+    h1 em{color:var(--blue);font-style:normal}
+    .master-stamp{padding:9px 14px;border:1px solid var(--pink);color:#ffd5e9;background:rgba(255,47,145,.1);font-size:.7rem;font-weight:1000;letter-spacing:.14em;transform:rotate(1deg)}
+    .command-bar{
+      position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:15px;padding:13px 16px;margin-bottom:14px;
+      border:1px solid var(--line);background:linear-gradient(100deg,rgba(255,47,145,.11),transparent 45%),var(--panel);
+      clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,14px 100%,0 calc(100% - 14px));
+    }
+    .chapter{font-size:1.12rem;font-weight:1000;text-transform:uppercase}.chapter b{color:var(--gold)}
+    .progress{height:7px;background:#282e3a;overflow:hidden;transform:skew(-18deg)}
+    .progress i{display:block;width:33%;height:100%;background:linear-gradient(90deg,var(--pink),var(--blue));box-shadow:0 0 13px var(--blue)}
+    .status{display:flex;align-items:center;gap:8px;font-size:.7rem;font-weight:950;letter-spacing:.09em}.dot{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime)}
+    .tabs{display:flex;gap:5px;margin:0 0 16px;overflow:auto}
+    .tabs button{border:1px solid var(--line);background:#0d1018;padding:9px 14px;font-size:.7rem;font-weight:950;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+    .tabs button.active{color:#071017;border-color:var(--blue);background:var(--blue);box-shadow:4px 4px 0 rgba(255,47,145,.7)}
+    .layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(330px,.55fr);gap:14px}
+    .panel{position:relative;border:1px solid var(--line);background:linear-gradient(145deg,rgba(255,255,255,.025),transparent),var(--panel);box-shadow:9px 9px 0 rgba(0,0,0,.28);overflow:hidden}
+    .panel::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:linear-gradient(var(--pink),var(--blue))}
+    .panel-head{display:flex;align-items:flex-end;justify-content:space-between;gap:15px;padding:16px 17px 13px;border-bottom:1px solid var(--line)}
+    .panel-head h2{margin:3px 0 0;font-size:1.22rem;text-transform:uppercase;letter-spacing:-.03em}.count{color:var(--blue);font-size:.72rem;font-weight:950}
+    .cast-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;padding:12px}
+    .actor-card{position:relative;padding:12px;border:1px solid #343c4e;background:var(--panel-2);clip-path:polygon(0 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%)}
+    .actor-card.online{border-color:rgba(185,255,81,.6)}.actor-card.online::after{content:"ONLINE";position:absolute;right:8px;top:8px;color:var(--lime);font-size:.55rem;font-weight:1000;letter-spacing:.1em}
+    .actor-name{font-weight:1000;font-size:1rem;padding-right:46px}.actor-meta{color:var(--muted);font-size:.62rem;margin-top:2px;text-transform:uppercase;letter-spacing:.07em}
+    .character{display:grid;grid-template-columns:58px 1fr;gap:9px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid #303747}
+    .character img{width:58px;height:68px;object-fit:cover;object-position:top;background:#080a0f;filter:saturate(.88);border:1px solid #3d4559}
+    .character strong{display:block;font-size:.76rem}.character span{display:block;color:var(--pink);font-size:.58rem;font-weight:900;margin-top:3px;text-transform:uppercase}
+    .score{display:flex;gap:5px;margin-top:8px}.score b{min-width:32px;padding:4px 6px;text-align:center;border:1px solid var(--line);font-size:.61rem}.score .hope{color:var(--blue)}.score .despair{color:var(--pink)}
+    .right-stack{display:grid;gap:14px;align-content:start}
+    .activity{padding:14px 16px 16px}.activity h2{margin:3px 0 3px;font-size:1.15rem;text-transform:uppercase}.activity-copy{color:var(--muted);font-size:.68rem;margin-bottom:13px}
+    .day{display:grid;grid-template-columns:48px 1fr auto;gap:8px;align-items:center;margin-top:10px}.day-label{font-size:.65rem;font-weight:1000}.day-track{height:15px;background:repeating-linear-gradient(90deg,#202634 0,#202634 calc(25% - 1px),#343b4b 25%);position:relative;overflow:hidden}.visit{position:absolute;top:3px;height:9px;min-width:3px;background:var(--blue);box-shadow:0 0 8px rgba(59,220,255,.7)}.visit.pink{background:var(--pink);box-shadow:0 0 8px rgba(255,47,145,.7)}.day-count{color:var(--muted);font-size:.58rem}
+    .session-list{display:grid;gap:6px;margin-top:14px}.session{display:grid;grid-template-columns:7px 1fr auto;gap:8px;align-items:center;padding:7px 8px;background:#0c0f17;border:1px solid #282e3a;font-size:.65rem}.session i{width:7px;height:7px;background:var(--blue);transform:rotate(45deg)}.session time{color:var(--muted)}
+    .role-pool{grid-column:1/-1}.roles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:12px}.role{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:9px;align-items:center;padding:7px;background:#0d1018;border:1px solid #303748}.role img{width:52px;height:59px;object-fit:cover;object-position:top;background:#080a0f}.role strong{font-size:.7rem}.role small{display:block;color:var(--muted);font-size:.57rem;margin-top:2px}.assign{border:1px solid var(--pink);background:rgba(255,47,145,.1);color:#ffd5e9;padding:6px 7px;font-size:.58rem;font-weight:950}
+    .concept-note{margin-top:18px;color:#747e90;font-size:.64rem;text-align:center}.concept-note b{color:#b4bdcb}
+    @media(max-width:980px){.layout{grid-template-columns:1fr}.cast-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.right-stack{grid-row:auto}.roles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:620px){.shell{width:min(100% - 18px,1480px);padding-top:15px}.topbar{align-items:flex-start;flex-direction:column}.master-stamp{align-self:flex-end;margin-top:-8px}.command-bar{grid-template-columns:1fr auto}.progress{grid-column:1/-1;grid-row:2}.cast-grid,.roles{grid-template-columns:1fr}.panel-head{align-items:flex-start}.crest{width:50px;height:50px}h1{font-size:2.25rem}.character{grid-template-columns:50px 1fr}.character img{width:50px;height:58px}}
+  </style>
+</head>
+<body>
+  <div class="warning-tape"></div>
+  <main class="shell">
+    <header class="topbar">
+      <div class="logo-line">
+        <div class="crest" aria-hidden="true"><span>V/C</span></div>
+        <div><div class="kicker">Hope's Peak casting protocol</div><h1>Voice <em>Cast</em></h1></div>
+      </div>
+      <div class="master-stamp">MASTER ACCESS // 11037</div>
+    </header>
+
+    <section class="command-bar" aria-label="Current game status">
+      <div class="chapter"><b>CH. 03</b> · Pre-Trial</div>
+      <div class="progress" aria-label="Series progress"><i></i></div>
+      <div class="status"><span class="dot"></span> DATABASE LIVE</div>
+    </section>
+
+    <nav class="tabs" aria-label="Preview navigation">
+      <button class="active">◆ Assignments</button><button>☠ Memorial</button><button>▥ Statistics</button><button>◈ Monopad</button><button>⚙ Admin Tools</button>
+    </nav>
+
+    <div class="layout">
+      <section class="panel">
+        <header class="panel-head"><div><div class="kicker">Current cast</div><h2>Who enters the killing game?</h2></div><div class="count">03 ACTORS // 06 ROLES</div></header>
+        <div class="cast-grid">
+          <article class="actor-card online">
+            <div class="actor-name">Nicolas</div><div class="actor-meta">2 characters · locked</div>
+            <div class="character"><img src="assets/monopad/dr1/celestia-ludenberg.jpeg" alt=""><div><strong>Celestia Ludenberg</strong><span>Ultimate Gambler</span><div class="score"><b class="hope">◆ 3</b><b class="despair">☠ 1</b></div></div></div>
+          </article>
+          <article class="actor-card">
+            <div class="actor-name">Alexander</div><div class="actor-meta">2 characters · ready</div>
+            <div class="character"><img src="assets/monopad/dr1/byakuya-togami.png" alt=""><div><strong>Byakuya Togami</strong><span>Ultimate Affluent Progeny</span><div class="score"><b class="hope">◆ 2</b><b class="despair">☠ 0</b></div></div></div>
+          </article>
+          <article class="actor-card online">
+            <div class="actor-name">Emil</div><div class="actor-meta">2 characters · locked</div>
+            <div class="character"><img src="assets/monopad/dr1/kyoko-kirigiri.png" alt=""><div><strong>Kyoko Kirigiri</strong><span>Ultimate ???</span><div class="score"><b class="hope">◆ 4</b><b class="despair">☠ 1</b></div></div></div>
+          </article>
+        </div>
+      </section>
+
+      <aside class="right-stack">
+        <section class="panel activity">
+          <div class="kicker">Master intelligence</div><h2>Seven-day activity</h2><div class="activity-copy">Exact sessions remain private to the master view.</div>
+          <div class="day"><div class="day-label">TODAY</div><div class="day-track"><i class="visit" style="left:68%;width:9%"></i><i class="visit pink" style="left:79%;width:5%"></i></div><div class="day-count">2 visits</div></div>
+          <div class="day"><div class="day-label">TUE</div><div class="day-track"><i class="visit pink" style="left:61%;width:15%"></i></div><div class="day-count">1 visit</div></div>
+          <div class="day"><div class="day-label">MON</div><div class="day-track"><i class="visit" style="left:72%;width:4%"></i><i class="visit pink" style="left:77%;width:11%"></i></div><div class="day-count">2 visits</div></div>
+          <div class="day"><div class="day-label">SUN</div><div class="day-track"></div><div class="day-count">0 visits</div></div>
+          <div class="day"><div class="day-label">SAT</div><div class="day-track"><i class="visit" style="left:41%;width:21%"></i></div><div class="day-count">1 visit</div></div>
+          <div class="session-list">
+            <div class="session"><i></i><strong>Nicolas · today</strong><time>18:21–20:32 · 2h 11m</time></div>
+            <div class="session"><i></i><strong>Emil · today</strong><time>19:04–20:14 · 1h 10m</time></div>
+            <div class="session"><i></i><strong>Alexander · Tue</strong><time>17:43–21:19 · 3h 36m</time></div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="panel role-pool">
+        <header class="panel-head"><div><div class="kicker">Open library</div><h2>Available characters</h2></div><div class="count">04 REVEALED</div></header>
+        <div class="roles">
+          <article class="role"><img src="assets/monopad/dr1/aoi-asahina.png" alt=""><div><strong>Aoi Asahina</strong><small>Ultimate Swimming Pro</small></div><button class="assign">ASSIGN</button></article>
+          <article class="role"><img src="assets/monopad/dr1/mondo-owada.png" alt=""><div><strong>Mondo Owada</strong><small>Ultimate Biker Gang Leader</small></div><button class="assign">ASSIGN</button></article>
+          <article class="role"><img src="assets/monopad/dr1/sakura-ogami.jpg" alt=""><div><strong>Sakura Ogami</strong><small>Ultimate Martial Artist</small></div><button class="assign">ASSIGN</button></article>
+          <article class="role"><img src="assets/monopad/dr1/yasuhiro-hagakure.png" alt=""><div><strong>Yasuhiro Hagakure</strong><small>Ultimate Clairvoyant</small></div><button class="assign">ASSIGN</button></article>
+        </div>
+      </section>
+    </div>
+    <p class="concept-note"><b>DESIGN CONCEPT ONLY</b> · Separate from the live board · No shared data is read or changed</p>
+  </main>
+</body>
+</html>

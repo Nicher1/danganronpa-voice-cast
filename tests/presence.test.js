@@ -4,8 +4,10 @@ const vm = require("node:vm");
 
 const source = fs.readFileSync("supabase-sync.js", "utf8");
 const html = fs.readFileSync("index.html", "utf8");
+const sql = fs.readFileSync("supabase-schema.sql", "utf8");
 
 const trackCalls = [];
+const rpcCalls = [];
 let untrackCalls = 0;
 const channel = {
   state: {},
@@ -38,7 +40,13 @@ const fakeClient = {
     this.channelOptions = options;
     return channel;
   },
-  removeChannel() {}
+  removeChannel() {},
+  async rpc(name, args) {
+    rpcCalls.push({ name, args });
+    if (name === "cast_presence_activity") return { data: [{ actor_id: "actor-a" }], error: null };
+    if (name === "cast_keep_alive") return { data: "2026-09-09T12:00:00Z", error: null };
+    return { data: "2026-09-09T12:00:00Z", error: null };
+  }
 };
 
 const context = {
@@ -50,7 +58,10 @@ const context = {
   Math,
   Object,
   Set,
-  String
+  String,
+  console,
+  setInterval,
+  clearInterval
 };
 vm.runInNewContext(source, context, { filename: "supabase-sync.js" });
 
@@ -68,6 +79,7 @@ vm.runInNewContext(source, context, { filename: "supabase-sync.js" });
 
   await channel.statusHandler("SUBSCRIBED");
   assert.equal(trackCalls.at(-1).actor_id, "actor-a");
+  assert.equal(rpcCalls.at(-1).name, "cast_presence_start");
 
   channel.state = {
     one: [{ actor_id: "actor-a" }],
@@ -86,14 +98,24 @@ vm.runInNewContext(source, context, { filename: "supabase-sync.js" });
 
   await sync.setPresenceActor("actor-c");
   assert.equal(trackCalls.at(-1).actor_id, "actor-c");
+  assert.ok(rpcCalls.some(call => call.name === "cast_presence_touch" && call.args.p_ended === true));
   await sync.setPresenceActor(null);
   assert.equal(untrackCalls, 1);
+
+  assert.equal(await sync.keepAlive(), "2026-09-09T12:00:00Z");
+  assert.deepEqual(Array.from(await sync.getPresenceActivity(7), row => row.actor_id), ["actor-a"]);
 
   assert.ok(html.includes(".actor-card.online"));
   assert.ok(html.includes("actor-online-indicator"));
   assert.ok(html.includes("Currently logged in"));
   assert.ok(html.includes("remoteSync.subscribePresence("));
-  console.log("Realtime actor presence checks passed.");
+  assert.ok(html.includes('id="activityOverview"'));
+  assert.ok(html.includes('id="wakeDatabaseBtn"'));
+  assert.ok(html.includes("function renderActivityOverview"));
+  assert.ok(sql.includes("create table if not exists public.cast_presence_sessions"));
+  assert.ok(sql.includes("public.cast_presence_activity"));
+  assert.ok(sql.includes("public.cast_keep_alive"));
+  console.log("Realtime and historical actor presence checks passed.");
 })().catch(error => {
   console.error(error);
   process.exitCode = 1;

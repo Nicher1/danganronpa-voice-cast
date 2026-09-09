@@ -1,9 +1,10 @@
 const assert = require("node:assert/strict");
+const crypto = require("node:crypto");
 const fs = require("node:fs");
 const vm = require("node:vm");
 
 const html = fs.readFileSync("index.html", "utf8");
-const librarySource = fs.readFileSync("voice-clips.js", "utf8");
+const librarySource = fs.readFileSync("voice-clips-v4.js", "utf8");
 
 const inlineScripts = html
   .split("<script")
@@ -16,7 +17,38 @@ inlineScripts.forEach((source, index) => new vm.Script(source, { filename: `inde
 const sandbox = { window: {} };
 vm.createContext(sandbox);
 vm.runInContext(librarySource, sandbox);
+assert.equal(sandbox.window.CAST_VOICE_LIBRARY.version, 4);
 const profiles = sandbox.window.CAST_VOICE_LIBRARY.profiles;
+const celestiaRope = profiles["Celestia Ludenberg"].chapters[2].highlights.find(
+  clip => clip.text === "It was some kind of rope, was it not?"
+);
+assert.equal(celestiaRope?.id, "Dr1_voice_hca_us.awb.04819");
+assert.equal(celestiaRope?.path, "9/99/Dr1_voice_hca_us.awb.04819.ogg");
+assert.ok(html.includes('<script src="voice-clips-v4.js"></script>'));
+
+const transcriptById = new Map();
+let checkedVoiceMappings = 0;
+for (const [name, profile] of Object.entries(profiles)) {
+  const clips = [
+    ...(profile.pretrial || []),
+    ...Object.values(profile.chapters || {}).flatMap(chapter => [
+      ...(chapter.reveal || []),
+      ...(chapter.highlights || [])
+    ])
+  ];
+  for (const clip of clips) {
+    const filename = `${clip.id}.ogg`;
+    const hash = crypto.createHash("md5").update(filename).digest("hex");
+    assert.equal(clip.path, `${hash[0]}/${hash.slice(0, 2)}/${filename}`, `${name}: ${clip.text}`);
+    if (transcriptById.has(clip.id)) {
+      assert.equal(transcriptById.get(clip.id), clip.text, `${clip.id} must not have two transcripts`);
+    } else {
+      transcriptById.set(clip.id, clip.text);
+    }
+    checkedVoiceMappings += 1;
+  }
+}
+assert.ok(checkedVoiceMappings >= 400, "The full built-in voice map should be covered by the integrity audit");
 
 for (const [name, profile] of Object.entries(profiles)) {
   assert.ok(profile.pretrial?.length, `${name} needs a non-trial field-dialogue fallback`);
@@ -82,8 +114,8 @@ assert.ok(poolSource.includes("voicePackForChapter(profile,target)"), "Normal pl
 assert.ok(poolSource.includes('customVoiceFor(r,target,"trial")'), "Host-uploaded Trial clips should use the same earlier-safe fallback");
 
 const versions = [...html.matchAll(/class="patch-version">(v[0-9.]+)/g)].map(match => match[1]);
-assert.deepEqual(versions, ["v0.12", "v0.11", "v0.10", "v0.9", "v0.8.1", "v0.8", "v0.7", "v0.6", "v0.5"]);
-assert.equal((html.match(/<details class="patch-release"/g) || []).length, 9);
+assert.deepEqual(versions, ["v0.13", "v0.12", "v0.11", "v0.10", "v0.9", "v0.8.1", "v0.8", "v0.7", "v0.6", "v0.5"]);
+assert.equal((html.match(/<details class="patch-release"/g) || []).length, 10);
 assert.equal((html.match(/<details class="patch-release" open>/g) || []).length, 0);
 assert.ok(html.includes("Point calculation for anime guessing"));
 const patchNotes = html.slice(html.indexOf('<dialog id="patchNotesDialog"'), html.indexOf('<dialog id="hostAuthDialog"'));

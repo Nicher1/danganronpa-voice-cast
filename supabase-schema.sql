@@ -51,6 +51,20 @@ create table if not exists public.cast_actor_sessions (
   primary key (board_slug, actor_id, user_id)
 );
 
+create table if not exists public.cast_presence_sessions (
+  board_slug text not null references public.cast_boards(slug) on delete cascade,
+  session_id text not null,
+  actor_id text not null,
+  user_id uuid not null,
+  started_at timestamptz not null default now(),
+  last_seen_at timestamptz not null default now(),
+  ended_at timestamptz,
+  primary key (board_slug, session_id)
+);
+
+create index if not exists cast_presence_sessions_recent_idx
+on public.cast_presence_sessions (board_slug, started_at desc);
+
 insert into public.cast_boards (slug)
 values ('danganronpa-main')
 on conflict (slug) do nothing;
@@ -69,6 +83,7 @@ alter table public.cast_board_secrets enable row level security;
 alter table public.cast_host_sessions enable row level security;
 alter table public.cast_actor_passwords enable row level security;
 alter table public.cast_actor_sessions enable row level security;
+alter table public.cast_presence_sessions enable row level security;
 
 drop policy if exists "cast public boards are readable" on public.cast_public_boards;
 create policy "cast public boards are readable"
@@ -82,6 +97,7 @@ revoke all on public.cast_board_secrets from anon, authenticated;
 revoke all on public.cast_host_sessions from anon, authenticated;
 revoke all on public.cast_actor_passwords from anon, authenticated;
 revoke all on public.cast_actor_sessions from anon, authenticated;
+revoke all on public.cast_presence_sessions from anon, authenticated;
 
 create or replace function public.cast_state_with_password_flags(p_slug text, p_state jsonb)
 returns jsonb
@@ -170,6 +186,121 @@ as $$
         and cas.user_id = auth.uid()
     )
   );
+$$;
+
+create or replace function public.cast_keep_alive(p_slug text)
+returns timestamptz
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.cast_is_host(p_slug) then raise exception 'Host access required'; end if;
+  if not exists (select 1 from public.cast_boards where slug = p_slug and initialized) then
+    raise exception 'Shared board is not initialized';
+  end if;
+  return clock_timestamp();
+end;
+$$;
+
+create or replace function public.cast_presence_start(
+  p_slug text,
+  p_actor_id text,
+  p_session_id text
+)
+returns timestamptz
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  started timestamptz;
+begin
+  if auth.uid() is null then raise exception 'Authentication required'; end if;
+  if coalesce(p_session_id, '') = '' then raise exception 'Session id is required'; end if;
+  if not public.cast_controls_actor(p_slug, p_actor_id) then
+    raise exception 'You do not control this actor';
+  end if;
+
+  delete from public.cast_presence_sessions
+  where board_slug = p_slug and last_seen_at < now() - interval '30 days';
+
+  insert into public.cast_presence_sessions (
+    board_slug, session_id, actor_id, user_id, started_at, last_seen_at, ended_at
+  ) values (
+    p_slug, p_session_id, p_actor_id, auth.uid(), now(), now(), null
+  )
+  on conflict (board_slug, session_id) do update
+  set last_seen_at = now(), ended_at = null
+  where cast_presence_sessions.actor_id = excluded.actor_id
+    and cast_presence_sessions.user_id = excluded.user_id
+  returning started_at into started;
+
+  if started is null then raise exception 'Presence session conflict'; end if;
+  return started;
+end;
+$$;
+
+create or replace function public.cast_presence_touch(
+  p_slug text,
+  p_actor_id text,
+  p_session_id text,
+  p_ended boolean default false
+)
+returns timestamptz
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  touched timestamptz;
+begin
+  if auth.uid() is null then raise exception 'Authentication required'; end if;
+
+  update public.cast_presence_sessions
+  set last_seen_at = now(),
+      ended_at = case when p_ended then now() else ended_at end
+  where board_slug = p_slug
+    and session_id = p_session_id
+    and actor_id = p_actor_id
+    and user_id = auth.uid()
+  returning last_seen_at into touched;
+
+  if touched is null then raise exception 'Presence session not found'; end if;
+  return touched;
+end;
+$$;
+
+create or replace function public.cast_presence_activity(p_slug text, p_days integer default 7)
+returns table (
+  session_id text,
+  actor_id text,
+  started_at timestamptz,
+  last_seen_at timestamptz,
+  ended_at timestamptz,
+  is_active boolean
+)
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+begin
+  if not public.cast_is_host(p_slug) then raise exception 'Host access required'; end if;
+
+  return query
+  select
+    cps.session_id,
+    cps.actor_id,
+    cps.started_at,
+    cps.last_seen_at,
+    cps.ended_at,
+    cps.ended_at is null and cps.last_seen_at > now() - interval '90 seconds'
+  from public.cast_presence_sessions cps
+  where cps.board_slug = p_slug
+    and cps.started_at >= now() - least(greatest(coalesce(p_days, 7), 1), 14) * interval '1 day'
+  order by cps.started_at desc;
+end;
 $$;
 
 drop policy if exists "cast board hosts can read full state" on public.cast_boards;
@@ -578,6 +709,10 @@ revoke all on function public.cast_state_with_password_flags(text, jsonb) from p
 revoke all on function public.cast_state_for_public(jsonb) from public, anon, authenticated;
 revoke all on function public.cast_is_host(text) from public, anon, authenticated;
 revoke all on function public.cast_controls_actor(text, text) from public, anon, authenticated;
+revoke all on function public.cast_keep_alive(text) from public, anon, authenticated;
+revoke all on function public.cast_presence_start(text, text, text) from public, anon, authenticated;
+revoke all on function public.cast_presence_touch(text, text, text, boolean) from public, anon, authenticated;
+revoke all on function public.cast_presence_activity(text, integer) from public, anon, authenticated;
 revoke all on function public.cast_initialize_board(text, text, text, jsonb) from public, anon, authenticated;
 revoke all on function public.cast_login_host(text, text) from public, anon, authenticated;
 revoke all on function public.cast_claim_actor(text, text, text) from public, anon, authenticated;
@@ -586,6 +721,10 @@ revoke all on function public.cast_set_actor_password(text, text, text) from pub
 revoke all on function public.cast_save_board(text, jsonb, bigint) from public, anon, authenticated;
 grant execute on function public.cast_is_host(text) to authenticated;
 grant execute on function public.cast_controls_actor(text, text) to authenticated;
+grant execute on function public.cast_keep_alive(text) to authenticated;
+grant execute on function public.cast_presence_start(text, text, text) to authenticated;
+grant execute on function public.cast_presence_touch(text, text, text, boolean) to authenticated;
+grant execute on function public.cast_presence_activity(text, integer) to authenticated;
 grant execute on function public.cast_initialize_board(text, text, text, jsonb) to authenticated;
 grant execute on function public.cast_login_host(text, text) to authenticated;
 grant execute on function public.cast_claim_actor(text, text, text) to authenticated;

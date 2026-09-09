@@ -832,6 +832,13 @@ body.mobile-dragging{user-select:none}
 .admin-game-card{position:relative;padding:16px;overflow:hidden}.admin-game-card.locked{filter:saturate(.45)}
 .admin-game-card h3{margin:3px 0 5px;font-size:1rem}.admin-game-card p{margin:0 0 12px;color:var(--muted);font-size:.73rem;line-height:1.45}
 .admin-game-state{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:11px}
+.admin-service-grid{display:grid;grid-template-columns:minmax(250px,.42fr) minmax(0,1.58fr);gap:12px;margin-top:12px;align-items:start}
+.database-service{padding:17px}.database-service h3,.activity-panel h3{margin:3px 0 5px}.database-service p{margin:0 0 13px;color:var(--muted);font-size:.72rem;line-height:1.5}.database-service button{width:100%}
+.database-check-result{min-height:1.3em;margin-top:9px;color:var(--muted);font-size:.66rem;line-height:1.4}.database-check-result.live{color:#bfffdc}.database-check-result.error{color:#ffb8bf}
+.activity-panel{padding:17px;overflow:hidden}.activity-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:13px}.activity-panel-head p{margin:0;color:var(--muted);font-size:.7rem;line-height:1.45}.activity-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:14px 0}.activity-metric{padding:9px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.018);color:var(--muted);font-size:.61rem;text-transform:uppercase;letter-spacing:.07em}.activity-metric strong{display:block;margin-top:3px;color:white;font-size:1.05rem;letter-spacing:0;text-transform:none}
+.activity-days{display:grid;gap:8px}.activity-day{padding:10px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.016)}.activity-day-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}.activity-day-head strong{font-size:.72rem}.activity-day-head span{color:var(--muted);font-size:.62rem}
+.activity-timeline{position:relative;height:24px;margin:0 0 5px;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) calc(25% - 1px),rgba(255,255,255,.1) 25%)}.activity-segment{position:absolute;top:5px;height:12px;min-width:3px;border-radius:4px;background:hsl(var(--activity-hue) 82% 61%);box-shadow:0 0 9px hsl(var(--activity-hue) 82% 61% / .34)}.activity-axis{display:grid;grid-template-columns:repeat(5,1fr);color:var(--muted2);font-size:.52rem}.activity-axis span:not(:first-child):not(:last-child){text-align:center}.activity-axis span:last-child{text-align:right}
+.activity-session-list{display:grid;gap:4px;margin-top:8px}.activity-session{display:grid;grid-template-columns:minmax(90px,.8fr) minmax(135px,1.2fr) auto;gap:8px;align-items:center;padding:6px 7px;border-radius:8px;background:#0e1118;color:var(--muted);font-size:.61rem}.activity-session strong{min-width:0;color:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.activity-session strong::before{content:"";display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:hsl(var(--activity-hue) 82% 61%);box-shadow:0 0 7px hsl(var(--activity-hue) 82% 61% / .4)}.activity-session time{font-variant-numeric:tabular-nums}.activity-session .active{color:#bfffdc;font-weight:900}.activity-empty{padding:12px;border:1px dashed var(--line);border-radius:9px;color:var(--muted);font-size:.69rem;line-height:1.5}
 .game-state-badge{padding:.28rem .48rem;border-radius:999px;font-size:.58rem;font-weight:950;letter-spacing:.09em;background:rgba(255,255,255,.06);color:var(--muted)}
 .game-state-badge.open{background:rgba(112,184,255,.13);color:#bfe0ff}.game-state-badge.complete{background:rgba(104,220,151,.13);color:#aaf1c6}
 .game-picker-card{width:min(94vw,720px)}
@@ -846,6 +853,7 @@ body.mobile-dragging{user-select:none}
   .stats-game-row{grid-template-columns:minmax(86px,1.2fr) repeat(4,minmax(34px,.55fr));padding:7px 5px}.prediction-chart-row{grid-template-columns:78px minmax(120px,1fr) auto;gap:6px}
   .population-header{flex-direction:column}
   .game-lock-banner,.admin-hero{align-items:flex-start;flex-direction:column}
+  .admin-service-grid{grid-template-columns:1fr}.activity-panel-head{flex-direction:column}.activity-panel-head button{width:100%}.activity-summary{grid-template-columns:1fr}.activity-session{grid-template-columns:1fr auto}.activity-session time{grid-column:1/-1}
   .monopad-hero{align-items:flex-start;flex-direction:column}.monopad-layout{grid-template-columns:1fr}.dossier-dialog-body{grid-template-columns:1fr}.dossier-dialog-art{height:310px;min-height:0}.dossier-dialog-copy{padding:17px}
 }
 @media(max-width:350px){
@@ -1090,6 +1098,22 @@ body.mobile-dragging{user-select:none}
         <button id="adminChooseGameBtn" class="ghost">Choose active game</button>
       </div>
       <div id="adminGamesGrid" class="admin-games"></div>
+      <div class="admin-service-grid">
+        <section class="database-service panel">
+          <div class="section-kicker">DATABASE STATUS</div>
+          <h3>Wake / check database</h3>
+          <p>This sends a lightweight authenticated query. It confirms an active project and counts as genuine database activity, but a fully paused project must still be resumed from Supabase.</p>
+          <button id="wakeDatabaseBtn" type="button" class="ghost">Wake and verify now</button>
+          <div id="databaseCheckResult" class="database-check-result">No manual check in this session yet.</div>
+        </section>
+        <section class="activity-panel panel">
+          <div class="activity-panel-head">
+            <div><div class="section-kicker">PRIVATE · MASTER ONLY</div><h3>Last seven days</h3><p>Each visit shows its start, end, and duration. Open sessions update while the actor remains online; an abrupt browser close may round the end to the latest 30-second heartbeat.</p></div>
+            <button id="refreshActivityBtn" type="button" class="ghost">Refresh activity</button>
+          </div>
+          <div id="activityOverview"><div class="activity-empty">Activity history will load when the shared database is connected.</div></div>
+        </section>
+      </div>
     </section>
   </main>
 
@@ -1129,7 +1153,15 @@ body.mobile-dragging{user-select:none}
       <p class="muted small">Version history. Releases are newest first and collapsed until you open them.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">v0.12</span><span class="patch-release-title"><strong>Monopad character files and recaps</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">v0.13</span><span class="patch-release-title"><strong>Private activity history</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Seven-day master overview</h4><p>Admin Tools records actor visits and shows each start time, end time, and duration on a private seven-day timeline.</p></section>
+            <section class="patch-note"><h4>Database health check</h4><p>The host can send a lightweight database query and immediately confirm whether the shared project is awake.</p></section>
+            <section class="patch-note"><h4>Fresh voice library</h4><p>The corrected official voice map now uses a new asset filename so an older browser cache cannot pair a practice transcript with the previous audio clip.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.12</span><span class="patch-release-title"><strong>Monopad character files and recaps</strong><small>Previous release</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Character dossiers</h4><p>Every available board now includes public character files with larger artwork and short, surface-level biographies. Library cards also show the new artwork and description when expanded.</p></section>
             <section class="patch-note"><h4>Progress-aware story memory</h4><p>The Monopad recap only displays events already reached by the current chapter and Trial state. Earlier completed Trials are remembered, while a current Trial shows only that chapter’s pre-Trial events.</p></section>
@@ -1443,12 +1475,12 @@ body.mobile-dragging{user-select:none}
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-sync.js"></script>
-  <script src="voice-clips.js?v=3"></script>
+  <script src="voice-clips-v4.js"></script>
   <script src="monopad-data.js?v=2"></script>
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.08.23.5";
+  const APP_BUILD = "2026.09.09.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -1787,6 +1819,11 @@ body.mobile-dragging{user-select:none}
   let selectedPredictionKind = null;
   let activeActorId = mode === "player" ? sessionStorage.getItem(SESSION_ACTOR_KEY) : null;
   let onlineActorIds = new Set(mode === "player" && activeActorId ? [activeActorId] : []);
+  let presenceActivity = [];
+  let presenceActivityLoading = false;
+  let presenceActivityLoadedAt = 0;
+  let presenceActivityError = "";
+  let presenceActivityRefresh = null;
   let remoteSync = null;
   let remoteReady = false;
   let remoteRevision = 0;
@@ -2104,6 +2141,114 @@ body.mobile-dragging{user-select:none}
     });
   }
 
+  function activityHue(actorId){
+    let hash=0;
+    for(const char of String(actorId||""))hash=(hash*31+char.charCodeAt(0))%360;
+    return (hash+185)%360;
+  }
+
+  function activitySessionEnd(session,now=new Date()){
+    const stillOnline=session.is_active===true&&onlineActorIds.has(String(session.actor_id));
+    const recorded=new Date(session.ended_at||session.last_seen_at||session.started_at);
+    return {date:stillOnline?now:recorded,stillOnline};
+  }
+
+  function activityClock(date){
+    return date.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+  }
+
+  function activityDuration(start,end){
+    const minutes=Math.max(0,Math.round((end-start)/60000));
+    if(minutes<1)return "under 1m";
+    const hours=Math.floor(minutes/60),rest=minutes%60;
+    return hours?`${hours}h${rest?` ${rest}m`:""}`:`${rest}m`;
+  }
+
+  function renderActivityOverview(){
+    if(mode!=="host")return;
+    const root=$("#activityOverview");
+    const refresh=$("#refreshActivityBtn");
+    const wake=$("#wakeDatabaseBtn");
+    if(refresh)refresh.disabled=presenceActivityLoading||!remoteReady;
+    if(wake)wake.disabled=!remoteReady;
+    if(!root)return;
+    if(presenceActivityLoading&&!presenceActivity.length){
+      root.innerHTML='<div class="activity-empty">Loading private activity history…</div>';
+      return;
+    }
+    if(!remoteReady){
+      root.innerHTML='<div class="activity-empty">Activity history is unavailable while the shared database is offline.</div>';
+      return;
+    }
+    if(presenceActivityError&&!presenceActivity.length){
+      root.innerHTML=`<div class="activity-empty">${esc(presenceActivityError)}</div>`;
+      return;
+    }
+
+    const now=new Date();
+    const dayStarts=Array.from({length:7},(_,index)=>{
+      const date=new Date(now);date.setHours(0,0,0,0);date.setDate(date.getDate()-index);return date;
+    });
+    const validSessions=presenceActivity.filter(session=>{
+      const start=new Date(session.started_at);
+      return Number.isFinite(start.getTime());
+    });
+    const totalMinutes=validSessions.reduce((sum,session)=>{
+      const start=new Date(session.started_at),end=activitySessionEnd(session,now).date;
+      return sum+Math.max(0,(end-start)/60000);
+    },0);
+    const uniqueActors=new Set(validSessions.map(session=>String(session.actor_id))).size;
+    const days=dayStarts.map((dayStart,index)=>{
+      const dayEnd=new Date(dayStart);dayEnd.setDate(dayEnd.getDate()+1);
+      const sessions=validSessions.filter(session=>{
+        const start=new Date(session.started_at),end=activitySessionEnd(session,now).date;
+        return start<dayEnd&&end>=dayStart;
+      }).sort((a,b)=>new Date(a.started_at)-new Date(b.started_at));
+      const dayLabel=index===0?"Today":dayStart.toLocaleDateString([], {weekday:"long",month:"short",day:"numeric"});
+      const segments=sessions.map(session=>{
+        const originalStart=new Date(session.started_at);
+        const {date:originalEnd,stillOnline}=activitySessionEnd(session,now);
+        const start=new Date(Math.max(originalStart,dayStart));
+        const end=new Date(Math.min(originalEnd,dayEnd));
+        const left=Math.max(0,Math.min(100,(start-dayStart)/86400000*100));
+        const width=Math.max(.22,Math.min(100-left,(end-start)/86400000*100));
+        const actor=actorById(session.actor_id);
+        const title=`${actor?.name||"Deleted actor"}: ${activityClock(originalStart)}–${stillOnline?"now":activityClock(originalEnd)} (${activityDuration(originalStart,originalEnd)})`;
+        return `<i class="activity-segment" style="left:${left.toFixed(3)}%;width:${width.toFixed(3)}%;--activity-hue:${activityHue(session.actor_id)}" title="${esc(title)}"></i>`;
+      }).join("");
+      const rows=sessions.length?sessions.map(session=>{
+        const start=new Date(session.started_at);
+        const {date:end,stillOnline}=activitySessionEnd(session,now);
+        const actor=actorById(session.actor_id);
+        return `<div class="activity-session" style="--activity-hue:${activityHue(session.actor_id)}"><strong>${esc(actor?.name||"Deleted actor")}</strong><time>${activityClock(start)}–${stillOnline?'<span class="active">now</span>':activityClock(end)}</time><span>${activityDuration(start,end)}</span></div>`;
+      }).join(""):'<div class="activity-empty">No visits recorded.</div>';
+      return `<section class="activity-day"><div class="activity-day-head"><strong>${esc(dayLabel)}</strong><span>${sessions.length} ${sessions.length===1?"visit":"visits"}</span></div><div class="activity-timeline">${segments}</div><div class="activity-axis"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div><div class="activity-session-list">${rows}</div></section>`;
+    }).join("");
+    const loaded=presenceActivityLoadedAt?` · updated ${activityClock(new Date(presenceActivityLoadedAt))}`:"";
+    root.innerHTML=`<div class="activity-summary"><div class="activity-metric">Visits<strong>${validSessions.length}</strong></div><div class="activity-metric">Actors<strong>${uniqueActors}</strong></div><div class="activity-metric">Open time<strong>${activityDuration(0,totalMinutes*60000)}</strong></div></div><div class="activity-days">${days}</div><div class="database-check-result">Times use this device’s time zone${loaded}.</div>`;
+  }
+
+  async function loadPresenceActivity({quiet=false}={}){
+    if(mode!=="host"||!remoteReady||!remoteSync?.getPresenceActivity)return;
+    presenceActivityLoading=true;
+    renderActivityOverview();
+    try{
+      presenceActivity=await remoteSync.getPresenceActivity(7);
+      presenceActivityLoadedAt=Date.now();
+      presenceActivityError="";
+    }catch(error){
+      const message=window.CastSupabaseSync?.errorMessage(error)||String(error);
+      presenceActivityError=message.includes("cast_presence_activity")
+        ? "Install the latest database schema to begin recording activity history."
+        : "The private activity history could not be loaded right now.";
+      if(!quiet)toast("Could not load the private activity history.");
+      console.warn("Presence activity unavailable:",message);
+    }finally{
+      presenceActivityLoading=false;
+      renderActivityOverview();
+    }
+  }
+
   function saveState() {
     cacheState();
     if(!remoteReady||applyingRemoteState||mode==="viewer")return;
@@ -2220,6 +2365,15 @@ body.mobile-dragging{user-select:none}
         mode==="player"&&actorById(activeActorId)?activeActorId:null,
         setOnlineActors
       );
+      if(mode==="host"){
+        await loadPresenceActivity({quiet:true});
+        clearInterval(presenceActivityRefresh);
+        presenceActivityRefresh=setInterval(()=>{
+          if(!$("#adminTab")?.classList.contains("active"))return;
+          if(!presenceActivityLoading&&Date.now()-presenceActivityLoadedAt>60000)loadPresenceActivity({quiet:true});
+          else renderActivityOverview();
+        },30000);
+      }
       setSyncStatus("LIVE","live");
       if(mode==="host"&&sharedStateVersion<10)saveState();
     }catch(error){
@@ -2603,6 +2757,7 @@ body.mobile-dragging{user-select:none}
       card.querySelector("[data-complete-game]")?.addEventListener("change",event=>setGameCompleted(game.id,event.target.checked));
       grid.appendChild(card);
     });
+    renderActivityOverview();
   }
 
   function render(){
@@ -4428,6 +4583,9 @@ body.mobile-dragging{user-select:none}
   function activateTab(tabName){
     $$(".tab").forEach(button=>button.classList.toggle("active",button.dataset.tab===tabName));
     $$(".tab-panel").forEach(panel=>panel.classList.toggle("active",panel.id===`${tabName}Tab`));
+    if(tabName==="admin"&&remoteReady&&!presenceActivityLoading&&Date.now()-presenceActivityLoadedAt>60000){
+      loadPresenceActivity({quiet:true});
+    }
   }
   $$(".tab").forEach(btn=>btn.onclick=()=>activateTab(btn.dataset.tab));
 
@@ -4439,6 +4597,31 @@ body.mobile-dragging{user-select:none}
   $("#gameSwitcherBtn").onclick=()=>showGamePicker();
   $("#adminChooseGameBtn").onclick=()=>showGamePicker();
   $("#lockedGameAdminBtn").onclick=()=>activateTab("admin");
+  $("#refreshActivityBtn").onclick=()=>loadPresenceActivity();
+  $("#wakeDatabaseBtn").onclick=async()=>{
+    if(!remoteReady||!remoteSync?.keepAlive)return toast("The shared database is not connected.");
+    const button=$("#wakeDatabaseBtn"),result=$("#databaseCheckResult");
+    button.disabled=true;button.textContent="Checking…";
+    result.className="database-check-result";result.textContent="Sending an authenticated database query…";
+    try{
+      const checkedAt=await remoteSync.keepAlive();
+      result.className="database-check-result live";
+      result.textContent=`Database awake · verified ${activityClock(new Date(checkedAt||Date.now()))}`;
+      toast("Database is awake and responding.");
+    }catch(error){
+      const message=window.CastSupabaseSync?.errorMessage(error)||String(error);
+      result.className="database-check-result error";
+      result.textContent=message.includes("cast_keep_alive")
+        ? "Install the latest database schema to enable this check."
+        : "No response. If the project is paused, resume it once in the Supabase dashboard.";
+    }finally{
+      button.textContent="Wake and verify now";button.disabled=!remoteReady;
+    }
+  };
+
+  window.addEventListener("pagehide",event=>{
+    if(!event.persisted)remoteSync?.endPresenceSession?.().catch(()=>{});
+  });
 
   function publicModeUrl(targetMode){
     const url=new URL(location.href);

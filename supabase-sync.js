@@ -26,7 +26,13 @@
       this.presenceChannel = null;
       this.presenceActorId = null;
       this.presenceSubscribed = false;
-      this.presenceSessionId = window.crypto?.randomUUID
+      this.presenceSessionId = this.createPresenceSessionId();
+      this.presenceActivityStarted = false;
+      this.presenceHeartbeat = null;
+    }
+
+    createPresenceSessionId() {
+      return window.crypto?.randomUUID
         ? window.crypto.randomUUID()
         : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
@@ -106,6 +112,21 @@
       });
       if (error) throw error;
       return data;
+    }
+
+    async keepAlive() {
+      const { data, error } = await this.client.rpc("cast_keep_alive", { p_slug: this.slug });
+      if (error) throw error;
+      return data;
+    }
+
+    async getPresenceActivity(days = 7) {
+      const { data, error } = await this.client.rpc("cast_presence_activity", {
+        p_slug: this.slug,
+        p_days: Math.max(1, Math.min(14, Number(days) || 7))
+      });
+      if (error) throw error;
+      return Array.isArray(data) ? data : [];
     }
 
     async saveBoard(state, expectedRevision) {
@@ -201,6 +222,9 @@
           onStatus?.(status);
           this.presenceSubscribed = status === "SUBSCRIBED";
           if (status === "SUBSCRIBED" && this.presenceActorId) {
+            await this.startPresenceActivity().catch(error => {
+              console.warn("Presence history unavailable:", messageOf(error));
+            });
             await this.presenceChannel.track({
               actor_id: this.presenceActorId,
               online_at: new Date().toISOString()
@@ -209,13 +233,66 @@
         });
     }
 
+    async startPresenceActivity() {
+      if (!this.presenceActorId || this.presenceActivityStarted) return false;
+      const { error } = await this.client.rpc("cast_presence_start", {
+        p_slug: this.slug,
+        p_actor_id: this.presenceActorId,
+        p_session_id: this.presenceSessionId
+      });
+      if (error) throw error;
+      this.presenceActivityStarted = true;
+      clearInterval(this.presenceHeartbeat);
+      this.presenceHeartbeat = setInterval(() => {
+        this.touchPresenceActivity(false).catch(error => {
+          console.warn("Presence heartbeat unavailable:", messageOf(error));
+        });
+      }, 30000);
+      this.presenceHeartbeat?.unref?.();
+      return true;
+    }
+
+    async touchPresenceActivity(ended = false) {
+      if (!this.presenceActorId || !this.presenceActivityStarted) return false;
+      const { error } = await this.client.rpc("cast_presence_touch", {
+        p_slug: this.slug,
+        p_actor_id: this.presenceActorId,
+        p_session_id: this.presenceSessionId,
+        p_ended: !!ended
+      });
+      if (error) throw error;
+      if (ended) {
+        clearInterval(this.presenceHeartbeat);
+        this.presenceHeartbeat = null;
+        this.presenceActivityStarted = false;
+      }
+      return true;
+    }
+
+    async endPresenceSession() {
+      return this.touchPresenceActivity(true);
+    }
+
     async setPresenceActor(actorId) {
-      this.presenceActorId = actorId || null;
+      const nextActorId = actorId || null;
+      if (this.presenceActorId && this.presenceActorId !== nextActorId) {
+        await this.endPresenceSession().catch(error => {
+          console.warn("Presence session close unavailable:", messageOf(error));
+        });
+      }
+      if (this.presenceActorId !== nextActorId) {
+        this.presenceSessionId = this.createPresenceSessionId();
+        this.presenceActivityStarted = false;
+      }
+      this.presenceActorId = nextActorId;
       if (!this.presenceChannel || !this.presenceSubscribed) return false;
       if (!this.presenceActorId) {
         await this.presenceChannel.untrack();
         return true;
       }
+      await this.startPresenceActivity().catch(error => {
+        console.warn("Presence history unavailable:", messageOf(error));
+      });
       await this.presenceChannel.track({
         actor_id: this.presenceActorId,
         online_at: new Date().toISOString()
