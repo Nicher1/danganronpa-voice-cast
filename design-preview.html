@@ -3,143 +3,446 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Danganronpa Voice Cast — Gameful design preview</title>
+  <title>Danganronpa Voice Cast — DR1 × V3 Interface Study</title>
   <style>
     :root{
       color-scheme:dark;
-      --ink:#090b11;--panel:#111520;--panel-2:#171c28;--line:#303748;
-      --paper:#f5f1e9;--muted:#929bad;--pink:#ff2f91;--blue:#3bdcff;
-      --red:#ff4655;--lime:#b9ff51;--gold:#ffcf4a;
+      --black:#08090e;--black-2:#11131c;--paper:#f4f0e7;--paper-2:#d9d5cd;
+      --ink:#12131a;--pink:#ff2d91;--cyan:#35d9ff;--violet:#9b73d7;
+      --yellow:#ffdc32;--lime:#baff52;--red:#ff315d;--muted:#8f96a6;
+      --hard-shadow:8px 8px 0 #000;
     }
     *{box-sizing:border-box}
-    html{background:var(--ink)}
+    html{background:var(--black)}
     body{
-      margin:0;min-height:100vh;color:var(--paper);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      margin:0;min-height:100vh;overflow-x:hidden;color:var(--paper);
+      font-family:"Arial Narrow","Roboto Condensed","Segoe UI",sans-serif;
       background:
-        linear-gradient(118deg,transparent 0 72%,rgba(255,47,145,.08) 72% 72.6%,transparent 72.6%),
-        radial-gradient(circle at 85% 10%,rgba(59,220,255,.12),transparent 28%),
-        #090b11;
+        radial-gradient(circle at 86% 8%,rgba(53,217,255,.11),transparent 25rem),
+        repeating-radial-gradient(circle at 20% 40%,rgba(255,255,255,.035) 0 1px,transparent 1px 7px),
+        linear-gradient(125deg,#07080d 0 55%,#111521 55% 100%);
     }
-    button{font:inherit;color:inherit;cursor:pointer}
-    .warning-tape{
-      height:9px;background:repeating-linear-gradient(135deg,var(--pink) 0 18px,#161927 18px 36px);
-      box-shadow:0 0 24px rgba(255,47,145,.35)
+    body::before{
+      content:"";position:fixed;inset:0;pointer-events:none;opacity:.2;z-index:20;
+      background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.04) 3px 4px);
+      mix-blend-mode:overlay;
     }
-    .shell{width:min(1480px,calc(100% - 40px));margin:auto;padding:24px 0 42px}
-    .topbar{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:18px}
-    .logo-line{display:flex;align-items:center;gap:14px}
+    button{font:inherit;color:inherit}
+    button:not(:disabled){cursor:pointer}
+    button:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+    .edge{position:fixed;z-index:15;pointer-events:none;background:var(--pink)}
+    .edge.top{inset:0 0 auto;height:6px}
+    .edge.right{inset:0 0 0 auto;width:7px;background:linear-gradient(var(--cyan),var(--pink))}
+
+    .app{display:grid;grid-template-columns:184px minmax(0,1fr);min-height:100vh}
+    .rail{
+      position:relative;z-index:4;padding:18px 0 28px;background:#090a0f;
+      border-right:4px solid var(--paper);box-shadow:13px 0 0 rgba(255,45,145,.8);
+    }
+    .rail::after{
+      content:"";position:absolute;inset:0;background:
+        linear-gradient(153deg,transparent 0 38%,rgba(255,255,255,.05) 38.2% 39%,transparent 39.2%),
+        repeating-linear-gradient(135deg,transparent 0 18px,rgba(255,255,255,.018) 18px 19px);
+      pointer-events:none;
+    }
     .crest{
-      position:relative;width:62px;height:62px;display:grid;place-items:center;border:2px solid var(--paper);
-      background:linear-gradient(135deg,var(--pink) 0 49%,#111 49% 51%,var(--blue) 51%);transform:rotate(-4deg);
-      box-shadow:7px 7px 0 #000;font-weight:1000;font-size:24px
+      position:relative;z-index:1;width:112px;height:90px;margin:4px auto 28px;display:grid;place-items:center;
+      transform:rotate(-5deg);background:var(--paper);color:var(--ink);border:4px solid #000;box-shadow:8px 8px 0 var(--pink);
+      clip-path:polygon(7% 0,100% 0,92% 89%,62% 89%,52% 100%,43% 89%,0 89%);
     }
-    .crest span{transform:rotate(4deg);text-shadow:2px 2px #000}
-    .kicker{color:var(--pink);font-size:.68rem;font-weight:1000;letter-spacing:.22em;text-transform:uppercase}
-    h1{font-size:clamp(2rem,5vw,4.4rem);line-height:.83;letter-spacing:-.075em;margin:5px 0 0;text-transform:uppercase}
-    h1 em{color:var(--blue);font-style:normal}
-    .master-stamp{padding:9px 14px;border:1px solid var(--pink);color:#ffd5e9;background:rgba(255,47,145,.1);font-size:.7rem;font-weight:1000;letter-spacing:.14em;transform:rotate(1deg)}
-    .command-bar{
-      position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:15px;padding:13px 16px;margin-bottom:14px;
-      border:1px solid var(--line);background:linear-gradient(100deg,rgba(255,47,145,.11),transparent 45%),var(--panel);
+    .crest b{font:1000 2.2rem/1 Impact,"Arial Black",sans-serif;letter-spacing:-.08em}
+    .crest b span{color:var(--pink)}
+    .nav{position:relative;z-index:2;display:grid;gap:9px}
+    .nav button{
+      position:relative;width:calc(100% + 18px);min-height:59px;padding:8px 28px 8px 18px;text-align:left;
+      border:0;border-top:1px solid #343743;border-bottom:1px solid #20222b;background:#11131b;
+      clip-path:polygon(0 0,88% 0,100% 50%,88% 100%,0 100%);
+      text-transform:uppercase;font-weight:1000;letter-spacing:.055em;transition:transform .16s,background .16s,color .16s;
+    }
+    .nav button::before{content:attr(data-no);display:block;color:#656b79;font:900 .58rem/1.1 monospace;letter-spacing:.16em}
+    .nav button:hover{transform:translateX(8px);background:#202431}
+    .nav button.active{z-index:2;color:#050609;background:var(--paper);transform:translateX(16px);box-shadow:0 6px 0 var(--pink)}
+    .nav button.active::before{color:var(--pink)}
+    .master-tag{position:absolute;z-index:2;left:17px;bottom:22px;color:#aeb4c2;font:900 .58rem/1.5 monospace;letter-spacing:.11em}
+    .master-tag b{color:var(--lime)}
+
+    .main{min-width:0;padding:20px clamp(16px,2.6vw,42px) 32px}
+    .masthead{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:14px}
+    .eyebrow{color:var(--pink);font:1000 .66rem/1 monospace;letter-spacing:.2em;text-transform:uppercase}
+    h1{margin:4px 0 0;font:1000 clamp(2.1rem,5.2vw,5.5rem)/.78 Impact,"Arial Black",sans-serif;letter-spacing:-.045em;text-transform:uppercase}
+    h1 .slash{color:var(--pink);text-shadow:5px 0 0 var(--cyan)}
+    .mode{
+      transform:rotate(1.5deg);padding:8px 13px;color:#0b0c11;background:var(--yellow);
+      border:3px solid #000;box-shadow:5px 5px 0 var(--pink);font:1000 .67rem/1 monospace;letter-spacing:.1em;
+    }
+
+    .casebar{
+      position:relative;display:grid;grid-template-columns:auto minmax(120px,1fr) auto;align-items:center;gap:14px;
+      min-height:58px;margin-bottom:17px;padding:10px 17px;background:#151824;border:1px solid #384052;
       clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,14px 100%,0 calc(100% - 14px));
+      box-shadow:0 0 0 3px #090a0f,7px 7px 0 rgba(0,0,0,.55);
     }
-    .chapter{font-size:1.12rem;font-weight:1000;text-transform:uppercase}.chapter b{color:var(--gold)}
-    .progress{height:7px;background:#282e3a;overflow:hidden;transform:skew(-18deg)}
-    .progress i{display:block;width:33%;height:100%;background:linear-gradient(90deg,var(--pink),var(--blue));box-shadow:0 0 13px var(--blue)}
-    .status{display:flex;align-items:center;gap:8px;font-size:.7rem;font-weight:950;letter-spacing:.09em}.dot{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime)}
-    .tabs{display:flex;gap:5px;margin:0 0 16px;overflow:auto}
-    .tabs button{border:1px solid var(--line);background:#0d1018;padding:9px 14px;font-size:.7rem;font-weight:950;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
-    .tabs button.active{color:#071017;border-color:var(--blue);background:var(--blue);box-shadow:4px 4px 0 rgba(255,47,145,.7)}
-    .layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(330px,.55fr);gap:14px}
-    .panel{position:relative;border:1px solid var(--line);background:linear-gradient(145deg,rgba(255,255,255,.025),transparent),var(--panel);box-shadow:9px 9px 0 rgba(0,0,0,.28);overflow:hidden}
-    .panel::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:linear-gradient(var(--pink),var(--blue))}
-    .panel-head{display:flex;align-items:flex-end;justify-content:space-between;gap:15px;padding:16px 17px 13px;border-bottom:1px solid var(--line)}
-    .panel-head h2{margin:3px 0 0;font-size:1.22rem;text-transform:uppercase;letter-spacing:-.03em}.count{color:var(--blue);font-size:.72rem;font-weight:950}
-    .cast-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;padding:12px}
-    .actor-card{position:relative;padding:12px;border:1px solid #343c4e;background:var(--panel-2);clip-path:polygon(0 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%)}
-    .actor-card.online{border-color:rgba(185,255,81,.6)}.actor-card.online::after{content:"ONLINE";position:absolute;right:8px;top:8px;color:var(--lime);font-size:.55rem;font-weight:1000;letter-spacing:.1em}
-    .actor-name{font-weight:1000;font-size:1rem;padding-right:46px}.actor-meta{color:var(--muted);font-size:.62rem;margin-top:2px;text-transform:uppercase;letter-spacing:.07em}
-    .character{display:grid;grid-template-columns:58px 1fr;gap:9px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid #303747}
-    .character img{width:58px;height:68px;object-fit:cover;object-position:top;background:#080a0f;filter:saturate(.88);border:1px solid #3d4559}
-    .character strong{display:block;font-size:.76rem}.character span{display:block;color:var(--pink);font-size:.58rem;font-weight:900;margin-top:3px;text-transform:uppercase}
-    .score{display:flex;gap:5px;margin-top:8px}.score b{min-width:32px;padding:4px 6px;text-align:center;border:1px solid var(--line);font-size:.61rem}.score .hope{color:var(--blue)}.score .despair{color:var(--pink)}
-    .right-stack{display:grid;gap:14px;align-content:start}
-    .activity{padding:14px 16px 16px}.activity h2{margin:3px 0 3px;font-size:1.15rem;text-transform:uppercase}.activity-copy{color:var(--muted);font-size:.68rem;margin-bottom:13px}
-    .day{display:grid;grid-template-columns:48px 1fr auto;gap:8px;align-items:center;margin-top:10px}.day-label{font-size:.65rem;font-weight:1000}.day-track{height:15px;background:repeating-linear-gradient(90deg,#202634 0,#202634 calc(25% - 1px),#343b4b 25%);position:relative;overflow:hidden}.visit{position:absolute;top:3px;height:9px;min-width:3px;background:var(--blue);box-shadow:0 0 8px rgba(59,220,255,.7)}.visit.pink{background:var(--pink);box-shadow:0 0 8px rgba(255,47,145,.7)}.day-count{color:var(--muted);font-size:.58rem}
-    .session-list{display:grid;gap:6px;margin-top:14px}.session{display:grid;grid-template-columns:7px 1fr auto;gap:8px;align-items:center;padding:7px 8px;background:#0c0f17;border:1px solid #282e3a;font-size:.65rem}.session i{width:7px;height:7px;background:var(--blue);transform:rotate(45deg)}.session time{color:var(--muted)}
-    .role-pool{grid-column:1/-1}.roles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:12px}.role{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:9px;align-items:center;padding:7px;background:#0d1018;border:1px solid #303748}.role img{width:52px;height:59px;object-fit:cover;object-position:top;background:#080a0f}.role strong{font-size:.7rem}.role small{display:block;color:var(--muted);font-size:.57rem;margin-top:2px}.assign{border:1px solid var(--pink);background:rgba(255,47,145,.1);color:#ffd5e9;padding:6px 7px;font-size:.58rem;font-weight:950}
-    .concept-note{margin-top:18px;color:#747e90;font-size:.64rem;text-align:center}.concept-note b{color:#b4bdcb}
-    @media(max-width:980px){.layout{grid-template-columns:1fr}.cast-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.right-stack{grid-row:auto}.roles{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:620px){.shell{width:min(100% - 18px,1480px);padding-top:15px}.topbar{align-items:flex-start;flex-direction:column}.master-stamp{align-self:flex-end;margin-top:-8px}.command-bar{grid-template-columns:1fr auto}.progress{grid-column:1/-1;grid-row:2}.cast-grid,.roles{grid-template-columns:1fr}.panel-head{align-items:flex-start}.crest{width:50px;height:50px}h1{font-size:2.25rem}.character{grid-template-columns:50px 1fr}.character img{width:50px;height:58px}}
+    .casebar::before{content:"";position:absolute;inset:auto 0 0;height:3px;background:linear-gradient(90deg,var(--pink),var(--cyan),transparent)}
+    .phase{white-space:nowrap;color:var(--paper);font:1000 clamp(.8rem,1.5vw,1.05rem)/1 monospace;text-transform:uppercase}
+    .phase b{color:var(--yellow)}
+    .progress-wrap{position:relative;height:14px;transform:skew(-14deg);background:#292d39;overflow:hidden;border:1px solid #444b5a}
+    .progress-fill{height:100%;width:48%;background:linear-gradient(90deg,var(--pink),#a66fc3 48%,var(--cyan));box-shadow:0 0 15px var(--cyan);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+    .progress-steps{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr)}
+    .progress-steps i{border-right:2px solid rgba(8,9,14,.55)}
+    .db{display:flex;align-items:center;gap:8px;white-space:nowrap;font:1000 .64rem/1 monospace;letter-spacing:.08em}
+    .db i{width:9px;height:9px;background:var(--lime);border-radius:50%;box-shadow:0 0 13px var(--lime);animation:pulse 1.8s infinite}
+    @keyframes pulse{50%{opacity:.45;transform:scale(.78)}}
+
+    .view{display:none;animation:slam .28s cubic-bezier(.2,.8,.2,1)}
+    .view.active{display:block}
+    @keyframes slam{from{opacity:0;transform:translateX(22px) skewX(-1deg)}to{opacity:1;transform:none}}
+    .section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:3px 0 12px}
+    .section-title h2{margin:2px 0 0;font:1000 clamp(1.5rem,2.8vw,2.7rem)/.9 Impact,"Arial Black",sans-serif;text-transform:uppercase;letter-spacing:.015em}
+    .section-title p{margin:0;color:#9ea5b4;font-size:.75rem;max-width:48ch}
+    .stamp{padding:6px 10px;border:2px solid var(--cyan);color:var(--cyan);font:900 .62rem/1 monospace;letter-spacing:.1em;transform:rotate(-2deg)}
+
+    .stage{display:grid;grid-template-columns:minmax(270px,.82fr) minmax(420px,1.18fr);gap:14px}
+    .spotlight{
+      position:relative;min-height:408px;overflow:hidden;background:var(--paper);color:var(--ink);
+      border:4px solid #000;box-shadow:var(--hard-shadow);clip-path:polygon(0 0,96% 0,100% 7%,100% 100%,8% 100%,0 92%);
+    }
+    .spotlight::before{
+      content:"GAMBLER";position:absolute;z-index:0;left:-22px;top:62px;color:rgba(0,0,0,.07);
+      font:1000 clamp(4.2rem,9vw,8.3rem)/.72 Impact,sans-serif;letter-spacing:-.06em;transform:rotate(-7deg);
+    }
+    .spotlight::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(0,0,0,.16) 1px,transparent 1.5px);background-size:7px 7px;opacity:.38;mix-blend-mode:multiply}
+    .spotlight img{position:absolute;z-index:1;inset:0;width:100%;height:100%;object-fit:cover;filter:contrast(1.08) saturate(.72)}
+    .spotlight .slash-panel{position:absolute;z-index:2;inset:auto 0 0;padding:42px 18px 17px;background:linear-gradient(172deg,transparent 0 23%,rgba(7,8,12,.95) 23.5%);color:white}
+    .actor-ribbon{position:absolute;z-index:3;top:18px;left:-4px;padding:8px 20px;background:var(--pink);color:white;transform:skew(-12deg);font:1000 .7rem/1 monospace;letter-spacing:.1em}
+    .spot-name{font:1000 clamp(1.7rem,3.3vw,3.1rem)/.84 Impact,"Arial Black",sans-serif;text-transform:uppercase}
+    .spot-talent{color:var(--cyan);font:900 .67rem/1.3 monospace;letter-spacing:.12em;text-transform:uppercase}
+
+    .cast-panel{position:relative;padding:12px;background:#12151f;border:1px solid #343a48;box-shadow:var(--hard-shadow)}
+    .microhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;color:#aeb5c3;font:900 .62rem/1 monospace;letter-spacing:.11em}
+    .microhead b{color:var(--yellow)}
+    .actor-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+    .actor{
+      position:relative;min-height:189px;padding:0;border:2px solid #333846;background:#080a10;overflow:hidden;text-align:left;
+      clip-path:polygon(0 0,100% 0,100% 91%,88% 100%,0 100%);transition:transform .15s,border-color .15s;
+    }
+    .actor:hover{transform:translateY(-4px);border-color:var(--cyan)}
+    .actor.selected{border-color:var(--pink);box-shadow:inset 0 -5px 0 var(--pink)}
+    .actor img{width:100%;height:120px;object-fit:cover;object-position:top;filter:grayscale(.55) contrast(1.15);transition:filter .2s,transform .2s}
+    .actor:hover img,.actor.selected img{filter:none;transform:scale(1.03)}
+    .actor-copy{padding:8px 9px 11px}.actor-copy strong{display:block;text-transform:uppercase;font-weight:1000}.actor-copy small{display:block;margin-top:2px;color:#9199a8;font:700 .57rem/1.3 monospace}
+    .online{position:absolute;right:7px;top:7px;width:9px;height:9px;border:1px solid #050608;border-radius:50%;background:var(--lime);box-shadow:0 0 8px var(--lime)}
+    .selection-help{margin:12px 2px 0;color:#828a9b;font-size:.68rem}
+    .selection-help b{color:var(--cyan)}
+
+    .pool{margin-top:16px;background:var(--paper);color:var(--ink);border:4px solid #000;box-shadow:var(--hard-shadow)}
+    .pool-head{display:flex;align-items:end;justify-content:space-between;gap:12px;padding:12px 15px;background:var(--yellow);border-bottom:4px solid #000}
+    .pool-head h3{margin:0;font:1000 1.15rem/1 Impact,sans-serif;text-transform:uppercase;letter-spacing:.05em}
+    .pool-head span{font:900 .62rem/1 monospace}
+    .roles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+    .role{position:relative;display:grid;grid-template-columns:68px minmax(0,1fr);gap:9px;align-items:center;min-height:104px;padding:9px;border-right:2px solid #111;border-bottom:2px solid #111}
+    .role:nth-child(4n){border-right:0}.role img{width:68px;height:82px;object-fit:cover;object-position:top;filter:contrast(1.12) saturate(.8)}
+    .role strong{display:block;font-size:.76rem;text-transform:uppercase}.role small{display:block;color:#575b66;font-size:.58rem;margin-top:2px}
+    .role-owner{min-height:1em;margin:6px 0 5px;color:#a10f56;font:900 .55rem/1 monospace;text-transform:uppercase}
+    .assign{border:2px solid #0b0c10;background:#11131a;color:#fff;padding:6px 8px;font:1000 .58rem/1 monospace;letter-spacing:.08em;transition:background .15s,color .15s}
+    .assign:hover{background:var(--pink)}.role.assigned{background:#ecdcea}.role.assigned .assign{background:var(--pink)}
+
+    .paper-panel{position:relative;padding:18px;background:var(--paper);color:var(--ink);border:4px solid #000;box-shadow:var(--hard-shadow);overflow:hidden}
+    .paper-panel::before{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(0,0,0,.11) 1px,transparent 1px);background-size:6px 6px;pointer-events:none;opacity:.25}
+    .paper-panel>*{position:relative}
+    .empty-memorial{display:grid;grid-template-columns:170px 1fr;align-items:center;gap:24px;min-height:370px}
+    .seal{width:150px;aspect-ratio:1;display:grid;place-items:center;border:9px double var(--ink);border-radius:50%;font:1000 3.6rem/1 Impact,sans-serif;transform:rotate(-11deg);box-shadow:inset 0 0 0 7px var(--pink)}
+    .empty-copy h3,.dossier-copy h3{margin:0;font:1000 clamp(2.2rem,5vw,5.2rem)/.8 Impact,sans-serif;text-transform:uppercase}
+    .empty-copy h3 span{color:var(--pink)}.empty-copy p{max-width:54ch;color:#4b4d56}
+    .chapter-log{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:26px}
+    .chapter-log article{padding:12px;background:#151721;color:white;clip-path:polygon(0 0,94% 0,100% 22%,100% 100%,0 100%)}
+    .chapter-log b{display:block;color:var(--cyan);font:900 .6rem monospace}.chapter-log span{font-weight:900;text-transform:uppercase}
+
+    .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .stat-card{padding:16px;background:#12141d;border:1px solid #343846;box-shadow:6px 6px 0 #000}
+    .stat-card .big{font:1000 3.5rem/1 Impact,sans-serif;color:var(--yellow)}.stat-card .label{font:900 .62rem/1.4 monospace;color:#aab1bf;text-transform:uppercase}
+    .ranking{grid-column:1/-1;padding:18px;background:var(--paper);color:var(--ink);border:4px solid #000;box-shadow:var(--hard-shadow)}
+    .rank-row{display:grid;grid-template-columns:32px 130px 1fr 42px;gap:10px;align-items:center;margin-top:12px}
+    .rank-row b{font:1000 1.4rem/1 Impact,sans-serif}.bar{height:17px;background:#c4c1ba;transform:skew(-12deg);overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pink),var(--cyan))}
+
+    .monopad{display:grid;grid-template-columns:220px 1fr;min-height:470px;background:#10121a;border:1px solid #363b48;box-shadow:var(--hard-shadow)}
+    .student-list{padding:11px;background:#08090e;border-right:4px solid var(--pink)}
+    .student-list button{display:block;width:100%;margin-bottom:8px;padding:10px;border:1px solid #303540;background:#151822;text-align:left;text-transform:uppercase;font-weight:1000}
+    .student-list button.active{background:var(--cyan);color:#071016;transform:translateX(7px)}
+    .dossier{position:relative;display:grid;grid-template-columns:minmax(230px,.78fr) 1.22fr;overflow:hidden;background:var(--paper);color:var(--ink)}
+    .dossier::after{content:"CLASSIFIED";position:absolute;right:-18px;top:30px;color:rgba(255,45,145,.16);font:1000 5.5rem/1 Impact,sans-serif;transform:rotate(11deg)}
+    .dossier img{width:100%;height:100%;min-height:470px;object-fit:cover;object-position:top;filter:contrast(1.12) saturate(.7)}
+    .dossier-copy{z-index:1;padding:36px 26px;background:linear-gradient(108deg,rgba(244,240,231,.88),var(--paper) 42%)}
+    .dossier-copy .talent{color:var(--pink);font:1000 .72rem/1.4 monospace;letter-spacing:.11em;text-transform:uppercase}
+    .facts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:24px}.fact{padding:10px;border:2px solid #17181d}.fact b{display:block;font:900 .57rem/1 monospace;color:#6b6d74;text-transform:uppercase}.fact span{font-weight:1000}
+
+    .admin-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
+    .dark-panel{padding:16px;background:#11141d;border:1px solid #363b49;box-shadow:var(--hard-shadow)}
+    .game-art{position:relative;height:154px;margin:-16px -16px 15px;overflow:hidden;border-bottom:4px solid var(--yellow);background:#08090e}
+    .game-art img{width:100%;height:100%;object-fit:cover;object-position:center 34%;filter:contrast(1.12) saturate(.72)}
+    .game-art::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,9,14,.05),rgba(8,9,14,.1) 45%,rgba(8,9,14,.88))}
+    .game-art span{position:absolute;z-index:1;right:14px;bottom:12px;text-align:right;font:1000 1.45rem/.85 Impact,sans-serif;text-transform:uppercase;text-shadow:3px 3px #000}.game-art span b{display:block;color:var(--yellow);font:900 .58rem/1.4 monospace;letter-spacing:.12em}
+    .game-cards{display:grid;gap:9px;margin-top:14px}.game-card{display:grid;grid-template-columns:54px 1fr auto;gap:12px;align-items:center;padding:10px;border:2px solid #303643;background:#080a10;text-align:left}
+    .game-card .number{display:grid;place-items:center;width:48px;height:48px;background:#202431;font:1000 1.8rem Impact,sans-serif;transform:skew(-8deg)}
+    .game-card strong{display:block;text-transform:uppercase}.game-card small{color:#858d9e}.game-card.active{border-color:var(--yellow);box-shadow:inset 5px 0 0 var(--yellow)}.game-card.active .number{background:var(--yellow);color:#08090e}
+    .game-card:disabled{opacity:.46;cursor:not-allowed}.lock{font:900 .58rem monospace;color:#abb1be}
+    .admin-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+    .action{padding:11px;border:2px solid var(--paper);background:transparent;font:1000 .62rem/1 monospace;text-transform:uppercase;letter-spacing:.08em}
+    .action:hover{background:var(--paper);color:#090a0f}.action.primary{border-color:var(--pink);background:var(--pink)}
+    .activity-days{display:grid;gap:10px;margin-top:14px}.activity-day{display:grid;grid-template-columns:45px 1fr 55px;gap:8px;align-items:center;font:900 .58rem/1 monospace}
+    .track{position:relative;height:15px;background:repeating-linear-gradient(90deg,#252a36 0,#252a36 calc(25% - 1px),#414756 25%);overflow:hidden}
+    .visit{position:absolute;top:3px;height:9px;background:var(--cyan);box-shadow:0 0 7px var(--cyan)}.visit.pink{background:var(--pink);box-shadow:0 0 7px var(--pink)}
+    .sessions{margin-top:15px;border-top:1px solid #363b48}.session{display:flex;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px solid #292e3a;font-size:.68rem}.session time{color:#9aa2b1}
+
+    .toast{position:fixed;z-index:40;right:24px;bottom:24px;max-width:340px;padding:13px 17px;background:var(--yellow);color:#08090e;border:3px solid #000;box-shadow:7px 7px 0 var(--pink);font-weight:1000;transform:translateY(140%);transition:transform .25s}
+    .toast.show{transform:translateY(0)}
+    .concept{margin:22px 0 0;color:#767e8d;text-align:center;font:900 .59rem/1.5 monospace;letter-spacing:.07em}
+    .concept b{color:#b9c0cd}
+
+    @media(max-width:1100px){
+      .app{grid-template-columns:142px 1fr}.nav button{font-size:.72rem;padding-left:12px}.stage{grid-template-columns:1fr}.spotlight{min-height:340px}.spotlight img{object-position:center 34%}.roles{grid-template-columns:repeat(2,1fr)}.role:nth-child(2n){border-right:0}.admin-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:720px){
+      .app{display:block}.rail{position:sticky;top:0;z-index:30;padding:0 8px;border:0;border-bottom:4px solid var(--paper);box-shadow:0 6px 0 var(--pink)}.crest,.master-tag{display:none}.nav{display:flex;overflow:auto;gap:3px}.nav button{width:auto;min-width:118px;min-height:50px;padding:7px 12px;clip-path:none;text-align:center}.nav button.active{transform:none;box-shadow:inset 0 -5px var(--pink)}.main{padding:17px 12px 28px}.masthead{align-items:flex-start}.mode{display:none}.casebar{grid-template-columns:1fr auto}.progress-wrap{grid-column:1/-1;grid-row:2}.stage{display:block}.cast-panel{margin-top:14px}.actor-grid{grid-template-columns:repeat(3,minmax(135px,1fr));overflow:auto}.roles{grid-template-columns:1fr}.role{border-right:0}.empty-memorial{grid-template-columns:1fr}.chapter-log,.stat-grid{grid-template-columns:1fr}.monopad{grid-template-columns:1fr}.student-list{display:flex;gap:7px;overflow:auto;border-right:0;border-bottom:4px solid var(--pink)}.student-list button{min-width:145px;margin:0}.dossier{grid-template-columns:1fr}.dossier img{height:260px;min-height:260px}.rank-row{grid-template-columns:26px 90px 1fr 35px}
+    }
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   </style>
 </head>
 <body>
-  <div class="warning-tape"></div>
-  <main class="shell">
-    <header class="topbar">
-      <div class="logo-line">
-        <div class="crest" aria-hidden="true"><span>V/C</span></div>
-        <div><div class="kicker">Hope's Peak casting protocol</div><h1>Voice <em>Cast</em></h1></div>
-      </div>
-      <div class="master-stamp">MASTER ACCESS // 11037</div>
-    </header>
+  <div class="edge top"></div><div class="edge right"></div>
+  <div class="app">
+    <aside class="rail">
+      <div class="crest" aria-label="Voice Cast"><b>V<span>/</span>C</b></div>
+      <nav class="nav" aria-label="Prototype navigation">
+        <button class="active" data-view="assignments" data-no="FILE 01">◆ Assignments</button>
+        <button data-view="memorial" data-no="FILE 02">☠ Memorial</button>
+        <button data-view="statistics" data-no="FILE 03">▥ Statistics</button>
+        <button data-view="monopad" data-no="FILE 04">◈ Monopad</button>
+        <button data-view="admin" data-no="MASTER">⚙ Admin Tools</button>
+      </nav>
+      <div class="master-tag"><b>●</b> MASTER ACCESS<br>BOARD / 11037</div>
+    </aside>
 
-    <section class="command-bar" aria-label="Current game status">
-      <div class="chapter"><b>CH. 03</b> · Pre-Trial</div>
-      <div class="progress" aria-label="Series progress"><i></i></div>
-      <div class="status"><span class="dot"></span> DATABASE LIVE</div>
-    </section>
+    <main class="main">
+      <header class="masthead">
+        <div><div class="eyebrow">Hope's Peak · Casting Control</div><h1>Voice <span class="slash">/</span> Cast</h1></div>
+        <div class="mode">DESIGN STUDY · DR1 × V3</div>
+      </header>
 
-    <nav class="tabs" aria-label="Preview navigation">
-      <button class="active">◆ Assignments</button><button>☠ Memorial</button><button>▥ Statistics</button><button>◈ Monopad</button><button>⚙ Admin Tools</button>
-    </nav>
-
-    <div class="layout">
-      <section class="panel">
-        <header class="panel-head"><div><div class="kicker">Current cast</div><h2>Who enters the killing game?</h2></div><div class="count">03 ACTORS // 06 ROLES</div></header>
-        <div class="cast-grid">
-          <article class="actor-card online">
-            <div class="actor-name">Nicolas</div><div class="actor-meta">2 characters · locked</div>
-            <div class="character"><img src="assets/monopad/dr1/celestia-ludenberg.jpeg" alt=""><div><strong>Celestia Ludenberg</strong><span>Ultimate Gambler</span><div class="score"><b class="hope">◆ 3</b><b class="despair">☠ 1</b></div></div></div>
-          </article>
-          <article class="actor-card">
-            <div class="actor-name">Alexander</div><div class="actor-meta">2 characters · ready</div>
-            <div class="character"><img src="assets/monopad/dr1/byakuya-togami.png" alt=""><div><strong>Byakuya Togami</strong><span>Ultimate Affluent Progeny</span><div class="score"><b class="hope">◆ 2</b><b class="despair">☠ 0</b></div></div></div>
-          </article>
-          <article class="actor-card online">
-            <div class="actor-name">Emil</div><div class="actor-meta">2 characters · locked</div>
-            <div class="character"><img src="assets/monopad/dr1/kyoko-kirigiri.png" alt=""><div><strong>Kyoko Kirigiri</strong><span>Ultimate ???</span><div class="score"><b class="hope">◆ 4</b><b class="despair">☠ 1</b></div></div></div>
-          </article>
-        </div>
+      <section class="casebar" aria-label="Current game progress">
+        <div class="phase"><b id="chapterLabel">CH. 03</b> · <span id="phaseLabel">PRE-TRIAL</span></div>
+        <div class="progress-wrap" aria-label="48 percent through the current game"><div class="progress-fill" id="progressFill"></div><div class="progress-steps"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+        <div class="db"><i></i><span id="databaseStatus">DATABASE LIVE</span></div>
       </section>
 
-      <aside class="right-stack">
-        <section class="panel activity">
-          <div class="kicker">Master intelligence</div><h2>Seven-day activity</h2><div class="activity-copy">Exact sessions remain private to the master view.</div>
-          <div class="day"><div class="day-label">TODAY</div><div class="day-track"><i class="visit" style="left:68%;width:9%"></i><i class="visit pink" style="left:79%;width:5%"></i></div><div class="day-count">2 visits</div></div>
-          <div class="day"><div class="day-label">TUE</div><div class="day-track"><i class="visit pink" style="left:61%;width:15%"></i></div><div class="day-count">1 visit</div></div>
-          <div class="day"><div class="day-label">MON</div><div class="day-track"><i class="visit" style="left:72%;width:4%"></i><i class="visit pink" style="left:77%;width:11%"></i></div><div class="day-count">2 visits</div></div>
-          <div class="day"><div class="day-label">SUN</div><div class="day-track"></div><div class="day-count">0 visits</div></div>
-          <div class="day"><div class="day-label">SAT</div><div class="day-track"><i class="visit" style="left:41%;width:21%"></i></div><div class="day-count">1 visit</div></div>
-          <div class="session-list">
-            <div class="session"><i></i><strong>Nicolas · today</strong><time>18:21–20:32 · 2h 11m</time></div>
-            <div class="session"><i></i><strong>Emil · today</strong><time>19:04–20:14 · 1h 10m</time></div>
-            <div class="session"><i></i><strong>Alexander · Tue</strong><time>17:43–21:19 · 3h 36m</time></div>
+      <section class="view active" id="view-assignments">
+        <div class="section-title">
+          <div><div class="eyebrow">Current game · Trigger Happy Havoc</div><h2>Cast Assignment</h2></div>
+          <div class="stamp">03 ACTORS / 06 ROLES</div>
+        </div>
+        <div class="stage">
+          <article class="spotlight">
+            <div class="actor-ribbon">CONTROLLED BY <span id="spotActor">NICOLAS</span></div>
+            <img id="spotImage" src="assets/monopad/dr1/celestia-ludenberg.jpeg" alt="Celestia Ludenberg">
+            <div class="slash-panel"><div class="spot-name" id="spotName">Celestia Ludenberg</div><div class="spot-talent" id="spotTalent">Ultimate Gambler · Locked role</div></div>
+          </article>
+          <section class="cast-panel">
+            <div class="microhead"><span>SELECT ACTIVE ACTOR</span><b id="selectedActorLabel">NICOLAS SELECTED</b></div>
+            <div class="actor-grid">
+              <button class="actor selected" data-actor="Nicolas" data-character="Celestia Ludenberg" data-talent="Ultimate Gambler" data-image="assets/monopad/dr1/celestia-ludenberg.jpeg">
+                <i class="online"></i><img src="assets/monopad/dr1/celestia-ludenberg.jpeg" alt=""><span class="actor-copy"><strong>Nicolas</strong><small><span data-actor-count="Nicolas">2</span>/3 ROLES · ONLINE</small></span>
+              </button>
+              <button class="actor" data-actor="Alexander" data-character="Byakuya Togami" data-talent="Ultimate Affluent Progeny" data-image="assets/monopad/dr1/byakuya-togami.png">
+                <img src="assets/monopad/dr1/byakuya-togami.png" alt=""><span class="actor-copy"><strong>Alexander</strong><small><span data-actor-count="Alexander">2</span>/3 ROLES · READY</small></span>
+              </button>
+              <button class="actor" data-actor="Emil" data-character="Kyoko Kirigiri" data-talent="Ultimate ???" data-image="assets/monopad/dr1/kyoko-kirigiri.png">
+                <i class="online"></i><img src="assets/monopad/dr1/kyoko-kirigiri.png" alt=""><span class="actor-copy"><strong>Emil</strong><small><span data-actor-count="Emil">2</span>/3 ROLES · ONLINE</small></span>
+              </button>
+            </div>
+            <p class="selection-help">Choose an actor, then assign an open character below. Selected: <b id="selectedActorInline">Nicolas</b>.</p>
+          </section>
+        </div>
+
+        <section class="pool">
+          <header class="pool-head"><h3>◆ Open Character File</h3><span><b id="openCount">04</b> REVEALED / SAFE TO CAST</span></header>
+          <div class="roles">
+            <article class="role" data-role="Aoi Asahina"><img src="assets/monopad/dr1/aoi-asahina.png" alt=""><div><strong>Aoi Asahina</strong><small>Ultimate Swimming Pro</small><div class="role-owner">OPEN SLOT</div><button class="assign">ASSIGN</button></div></article>
+            <article class="role" data-role="Mondo Owada"><img src="assets/monopad/dr1/mondo-owada.png" alt=""><div><strong>Mondo Owada</strong><small>Ultimate Biker Gang Leader</small><div class="role-owner">OPEN SLOT</div><button class="assign">ASSIGN</button></div></article>
+            <article class="role" data-role="Sakura Ogami"><img src="assets/monopad/dr1/sakura-ogami.jpg" alt=""><div><strong>Sakura Ogami</strong><small>Ultimate Martial Artist</small><div class="role-owner">OPEN SLOT</div><button class="assign">ASSIGN</button></div></article>
+            <article class="role" data-role="Yasuhiro Hagakure"><img src="assets/monopad/dr1/yasuhiro-hagakure.png" alt=""><div><strong>Yasuhiro Hagakure</strong><small>Ultimate Clairvoyant</small><div class="role-owner">OPEN SLOT</div><button class="assign">ASSIGN</button></div></article>
           </div>
         </section>
-      </aside>
+      </section>
 
-      <section class="panel role-pool">
-        <header class="panel-head"><div><div class="kicker">Open library</div><h2>Available characters</h2></div><div class="count">04 REVEALED</div></header>
-        <div class="roles">
-          <article class="role"><img src="assets/monopad/dr1/aoi-asahina.png" alt=""><div><strong>Aoi Asahina</strong><small>Ultimate Swimming Pro</small></div><button class="assign">ASSIGN</button></article>
-          <article class="role"><img src="assets/monopad/dr1/mondo-owada.png" alt=""><div><strong>Mondo Owada</strong><small>Ultimate Biker Gang Leader</small></div><button class="assign">ASSIGN</button></article>
-          <article class="role"><img src="assets/monopad/dr1/sakura-ogami.jpg" alt=""><div><strong>Sakura Ogami</strong><small>Ultimate Martial Artist</small></div><button class="assign">ASSIGN</button></article>
-          <article class="role"><img src="assets/monopad/dr1/yasuhiro-hagakure.png" alt=""><div><strong>Yasuhiro Hagakure</strong><small>Ultimate Clairvoyant</small></div><button class="assign">ASSIGN</button></article>
+      <section class="view" id="view-memorial">
+        <div class="section-title"><div><div class="eyebrow">Restricted archive</div><h2>Student Memorial</h2></div><div class="stamp">NO RECORDS</div></div>
+        <div class="paper-panel empty-memorial">
+          <div class="seal">00</div>
+          <div class="empty-copy"><div class="eyebrow">Monokuma File · Sealed</div><h3>Nobody has been <span>lost.</span></h3><p>This prototype mirrors the real spoiler-safe behavior: the memorial stays sealed until the master records an outcome. No future character information is exposed.</p>
+            <div class="chapter-log"><article><b>CHAPTER 01</b><span>Record sealed</span></article><article><b>CHAPTER 02</b><span>Record sealed</span></article><article><b>CHAPTER 03</b><span>Trial pending</span></article></div>
+          </div>
         </div>
       </section>
-    </div>
-    <p class="concept-note"><b>DESIGN CONCEPT ONLY</b> · Separate from the live board · No shared data is read or changed</p>
-  </main>
+
+      <section class="view" id="view-statistics">
+        <div class="section-title"><div><div class="eyebrow">Performance file</div><h2>Cast Statistics</h2></div><div class="stamp">LIVE TOTALS</div></div>
+        <div class="stat-grid">
+          <article class="stat-card"><div class="big">06</div><div class="label">Roles currently assigned</div></article>
+          <article class="stat-card"><div class="big">03</div><div class="label">Active voice actors</div></article>
+          <article class="stat-card"><div class="big">09</div><div class="label">Predictions submitted</div></article>
+          <section class="ranking"><div class="eyebrow">Hope fragment ranking</div>
+            <div class="rank-row"><b>01</b><strong>Emil</strong><div class="bar"><i style="width:88%"></i></div><b>4</b></div>
+            <div class="rank-row"><b>02</b><strong>Nicolas</strong><div class="bar"><i style="width:67%"></i></div><b>3</b></div>
+            <div class="rank-row"><b>03</b><strong>Alexander</strong><div class="bar"><i style="width:44%"></i></div><b>2</b></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-monopad">
+        <div class="section-title"><div><div class="eyebrow">Hope's Peak student database</div><h2>Electronic Handbook</h2></div><div class="stamp">DR1 DOSSIERS</div></div>
+        <div class="monopad">
+          <div class="student-list">
+            <button class="active" data-student="Aoi Asahina" data-talent="Ultimate Swimming Pro" data-image="assets/monopad/dr1/aoi-asahina.png" data-height="160 cm" data-status="Available">Aoi Asahina</button>
+            <button data-student="Mondo Owada" data-talent="Ultimate Biker Gang Leader" data-image="assets/monopad/dr1/mondo-owada.png" data-height="187 cm" data-status="Available">Mondo Owada</button>
+            <button data-student="Sakura Ogami" data-talent="Ultimate Martial Artist" data-image="assets/monopad/dr1/sakura-ogami.jpg" data-height="192 cm" data-status="Available">Sakura Ogami</button>
+            <button data-student="Yasuhiro Hagakure" data-talent="Ultimate Clairvoyant" data-image="assets/monopad/dr1/yasuhiro-hagakure.png" data-height="180 cm" data-status="Available">Yasuhiro Hagakure</button>
+          </div>
+          <article class="dossier">
+            <img id="dossierImage" src="assets/monopad/dr1/aoi-asahina.png" alt="Aoi Asahina">
+            <div class="dossier-copy"><div class="talent" id="dossierTalent">Ultimate Swimming Pro</div><h3 id="dossierName">Aoi<br>Asahina</h3>
+              <div class="facts"><div class="fact"><b>Height</b><span id="dossierHeight">160 cm</span></div><div class="fact"><b>Casting state</b><span id="dossierStatus">Available</span></div><div class="fact"><b>Game</b><span>Trigger Happy Havoc</span></div><div class="fact"><b>File access</b><span>Revealed</span></div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="view-admin">
+        <div class="section-title"><div><div class="eyebrow">Private · Master only</div><h2>Admin Tools</h2></div><div class="stamp">ACCESS 11037</div></div>
+        <div class="admin-grid">
+          <section class="dark-panel">
+            <div class="game-art"><img src="assets/monopad/dr1/monokuma.png" alt="Monokuma in Hope's Peak Academy"><span><b>Active killing game</b>Trigger Happy Havoc</span></div>
+            <div class="microhead"><span>CURRENT GAME</span><b>SET BY MASTER</b></div>
+            <div class="game-cards">
+              <button class="game-card active"><span class="number">01</span><span><strong>Trigger Happy Havoc</strong><small>Current board · Chapter 03</small></span><span class="lock">ACTIVE</span></button>
+              <button class="game-card" disabled><span class="number">02</span><span><strong>Goodbye Despair</strong><small>Unlock after game completion</small></span><span class="lock">LOCKED</span></button>
+              <button class="game-card" disabled><span class="number">V3</span><span><strong>Killing Harmony</strong><small>UI inspiration · future board</small></span><span class="lock">LOCKED</span></button>
+            </div>
+            <div class="admin-actions"><button class="action primary" id="wakeButton">Wake / check database</button><button class="action" id="advanceButton">Preview next phase</button><button class="action" id="refreshButton">Refresh activity</button><button class="action" id="resetButton">Reset prototype</button></div>
+          </section>
+          <section class="dark-panel">
+            <div class="microhead"><span>SEVEN-DAY ACTIVITY</span><b id="activityChecked">JUST UPDATED</b></div>
+            <div class="activity-days">
+              <div class="activity-day"><span>TODAY</span><div class="track"><i class="visit" style="left:68%;width:9%"></i><i class="visit pink" style="left:79%;width:5%"></i></div><span>2 VISITS</span></div>
+              <div class="activity-day"><span>TUE</span><div class="track"><i class="visit pink" style="left:61%;width:15%"></i></div><span>1 VISIT</span></div>
+              <div class="activity-day"><span>MON</span><div class="track"><i class="visit" style="left:72%;width:4%"></i><i class="visit pink" style="left:77%;width:11%"></i></div><span>2 VISITS</span></div>
+              <div class="activity-day"><span>SUN</span><div class="track"></div><span>0 VISITS</span></div>
+              <div class="activity-day"><span>SAT</span><div class="track"><i class="visit" style="left:41%;width:21%"></i></div><span>1 VISIT</span></div>
+            </div>
+            <div class="sessions"><div class="session"><strong>Nicolas · today</strong><time>18:21–20:32 · 2h 11m</time></div><div class="session"><strong>Emil · today</strong><time>19:04–20:14 · 1h 10m</time></div><div class="session"><strong>Alexander · Tue</strong><time>17:43–21:19 · 3h 36m</time></div></div>
+          </section>
+        </div>
+      </section>
+
+      <p class="concept"><b>INTERACTIVE DESIGN PROTOTYPE</b> · DR1 CONTENT WITH V3-INSPIRED COMPOSITION · NO SHARED DATA IS READ OR CHANGED</p>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const navButtons=[...document.querySelectorAll('.nav button')];
+      const views=[...document.querySelectorAll('.view')];
+      const toast=document.getElementById('toast');
+      let toastTimer;
+      let selectedActor='Nicolas';
+      const baseCounts={Nicolas:2,Alexander:2,Emil:2};
+      const owners=new Map();
+      let phaseIndex=0;
+      const phases=[
+        {chapter:'CH. 03',phase:'PRE-TRIAL',progress:'48%'},
+        {chapter:'CH. 03',phase:'CLASS TRIAL',progress:'61%'},
+        {chapter:'CH. 03',phase:'VERDICT',progress:'67%'}
+      ];
+
+      function notify(message){
+        toast.textContent=message;toast.classList.add('show');
+        clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2200);
+      }
+      function showView(name){
+        navButtons.forEach(button=>button.classList.toggle('active',button.dataset.view===name));
+        views.forEach(view=>view.classList.toggle('active',view.id===`view-${name}`));
+        history.replaceState(null,'',`#${name}`);
+      }
+      navButtons.forEach(button=>button.addEventListener('click',()=>showView(button.dataset.view)));
+
+      function selectActor(button){
+        selectedActor=button.dataset.actor;
+        document.querySelectorAll('.actor').forEach(card=>card.classList.toggle('selected',card===button));
+        document.getElementById('selectedActorLabel').textContent=`${selectedActor.toUpperCase()} SELECTED`;
+        document.getElementById('selectedActorInline').textContent=selectedActor;
+        document.getElementById('spotActor').textContent=selectedActor.toUpperCase();
+        document.getElementById('spotName').textContent=button.dataset.character;
+        document.getElementById('spotTalent').textContent=`${button.dataset.talent} · Locked role`;
+        const image=document.getElementById('spotImage');image.src=button.dataset.image;image.alt=button.dataset.character;
+      }
+      document.querySelectorAll('.actor').forEach(button=>button.addEventListener('click',()=>selectActor(button)));
+
+      function refreshCounts(){
+        Object.keys(baseCounts).forEach(actor=>{
+          const assigned=[...owners.values()].filter(owner=>owner===actor).length;
+          document.querySelector(`[data-actor-count="${actor}"]`).textContent=baseCounts[actor]+assigned;
+        });
+        document.getElementById('openCount').textContent=String(4-owners.size).padStart(2,'0');
+      }
+      document.querySelectorAll('.role').forEach(card=>{
+        const button=card.querySelector('.assign');
+        button.addEventListener('click',()=>{
+          const role=card.dataset.role;
+          if(owners.has(role)){
+            const previous=owners.get(role);owners.delete(role);card.classList.remove('assigned');
+            card.querySelector('.role-owner').textContent='OPEN SLOT';button.textContent='ASSIGN';
+            notify(`${role} returned from ${previous}.`);
+          }else{
+            const actorTotal=baseCounts[selectedActor]+[...owners.values()].filter(owner=>owner===selectedActor).length;
+            if(actorTotal>=3){notify(`${selectedActor} already has the prototype limit of 3 roles.`);return;}
+            owners.set(role,selectedActor);card.classList.add('assigned');
+            card.querySelector('.role-owner').textContent=`CAST: ${selectedActor.toUpperCase()}`;button.textContent='RETURN';
+            notify(`${role} assigned to ${selectedActor}.`);
+          }
+          refreshCounts();
+        });
+      });
+
+      document.querySelectorAll('.student-list button').forEach(button=>button.addEventListener('click',()=>{
+        document.querySelectorAll('.student-list button').forEach(item=>item.classList.toggle('active',item===button));
+        const image=document.getElementById('dossierImage');image.src=button.dataset.image;image.alt=button.dataset.student;
+        document.getElementById('dossierTalent').textContent=button.dataset.talent;
+        document.getElementById('dossierName').innerHTML=button.dataset.student.replace(' ','<br>');
+        document.getElementById('dossierHeight').textContent=button.dataset.height;
+        document.getElementById('dossierStatus').textContent=button.dataset.status;
+      }));
+
+      document.getElementById('wakeButton').addEventListener('click',()=>{
+        const status=document.getElementById('databaseStatus');status.textContent='CHECKING…';
+        setTimeout(()=>{status.textContent='DATABASE LIVE';notify('Prototype database check completed.');},650);
+      });
+      document.getElementById('advanceButton').addEventListener('click',()=>{
+        phaseIndex=(phaseIndex+1)%phases.length;const phase=phases[phaseIndex];
+        document.getElementById('chapterLabel').textContent=phase.chapter;
+        document.getElementById('phaseLabel').textContent=phase.phase;
+        document.getElementById('progressFill').style.width=phase.progress;
+        notify(`Progress preview: ${phase.phase}.`);
+      });
+      document.getElementById('refreshButton').addEventListener('click',()=>{
+        const now=new Date();document.getElementById('activityChecked').textContent=`UPDATED ${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;notify('Activity preview refreshed.');
+      });
+      document.getElementById('resetButton').addEventListener('click',()=>{
+        owners.clear();phaseIndex=0;document.querySelectorAll('.role').forEach(card=>{card.classList.remove('assigned');card.querySelector('.role-owner').textContent='OPEN SLOT';card.querySelector('.assign').textContent='ASSIGN';});
+        document.getElementById('chapterLabel').textContent=phases[0].chapter;document.getElementById('phaseLabel').textContent=phases[0].phase;document.getElementById('progressFill').style.width=phases[0].progress;refreshCounts();notify('Prototype reset.');
+      });
+
+      const requested=location.hash.slice(1);
+      if(navButtons.some(button=>button.dataset.view===requested))showView(requested);
+    })();
+  </script>
 </body>
 </html>
