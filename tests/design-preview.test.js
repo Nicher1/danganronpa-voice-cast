@@ -34,13 +34,29 @@ assert.ok(html.includes('data-assigned-role="'), "Actor cards must render their 
 assert.ok(html.includes('data-unassign="'), "Every assigned role must expose its own unassign control");
 assert.ok(html.includes('data-revive="'), "Memorial entries must expose revive controls");
 assert.ok(html.includes("trialByChapter"), "Each chapter must preserve its own Trial state");
-assert.ok(html.includes("dvc-design-preview:v3"), "The isolated preview must use its own storage namespace");
+assert.ok(html.includes("dvc-design-preview:v4"), "The isolated preview must use its own storage namespace");
+assert.ok(html.includes("function moveRoleToActor("), "Replacement transfers need one normalized move function");
+assert.ok(html.includes("data-take-role=\""), "Eligible unavailable roles need a replacement-star control");
+assert.ok(html.includes("target.replacementToken=false"), "A replacement takeover must consume the star");
+assert.ok(html.includes("source.lockedRoleId===r.id"), "Locked roles must stay protected from replacement takeovers");
+assert.ok(html.includes("data-drag-role=\""), "Character portraits must expose the phone drag interaction");
+assert.ok(html.includes('data-open-profile="'), "Character portraits must open their Monopad entry");
+assert.ok(html.includes('addEventListener("pointermove"'), "Phone drag needs pointer-based movement support");
+assert.ok(html.includes('id="mobileActorDock"'), "Phone drag needs visible sticky actor drop targets");
+assert.ok(html.includes('addEventListener("dragstart"') && html.includes('addEventListener("drop"'), "Native drag fallback is required");
+assert.ok(html.includes("function actorScore("), "Actor-level Hope/Despair scoring is required");
+assert.ok(html.includes("function renderHopeTimeline("), "Chapter-by-chapter Hope graph is required");
+assert.ok(html.includes("function renderPopulation("), "Editable population statistics are required");
+assert.ok(html.includes("data-pop-step=\""), "Master population values need direct controls");
+assert.ok(html.includes("completedChapters"), "Story recaps must distinguish active and completed chapters");
+assert.ok(html.includes("CAST_MONOPAD_DATA.recaps"), "Monopad must use the full story summaries");
+assert.ok(html.includes("@keyframes float-in"), "Section changes need restrained motion");
 
 const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((match) => match[1]);
 assert.strictEqual(scripts.length, 1, "Expected one inline prototype script");
 new vm.Script(scripts[0]);
 
 const production = fs.readFileSync("index.html", "utf8");
-assert.ok(!production.includes("dvc-design-preview:v3"), "Prototype state must never leak into the live interface");
+assert.ok(!production.includes("dvc-design-preview:v4"), "Prototype state must never leak into the live interface");
 
 console.log("Interactive Danganronpa design preview checks passed.");

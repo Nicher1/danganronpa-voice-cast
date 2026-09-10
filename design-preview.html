@@ -10,7 +10,7 @@
       --void:#07090e;--surface:#111520;--surface-2:#171c28;--surface-3:#202635;
       --paper:#f3f0e9;--ink:#11131a;--line:#343b4c;--muted:#98a0b1;
       --pink:#ff2f91;--cyan:#35d9ff;--yellow:#ffdc36;--lime:#baff55;--red:#ff4161;
-      --shadow:8px 8px 0 rgba(0,0,0,.72);
+      --shadow:7px 9px 0 rgba(0,0,0,.64);--shape:18px 4px 18px 4px;
     }
     *{box-sizing:border-box}
     html{background:var(--void)}
@@ -47,7 +47,7 @@
     .badge{padding:7px 10px;border:1px solid var(--cyan);color:var(--cyan);font:900 .6rem/1 monospace;letter-spacing:.1em;text-transform:uppercase}
     .top-actions button,.top-actions select,.tool,.mini-action{
       min-height:34px;padding:7px 10px;border:1px solid #3c4353;background:#131722;color:#f4f1ea;
-      font:900 .64rem/1 monospace;text-transform:uppercase;letter-spacing:.045em;
+      border-radius:10px 2px 10px 2px;font:900 .64rem/1 monospace;text-transform:uppercase;letter-spacing:.045em;
     }
     .top-actions button:hover,.tool:hover,.mini-action:hover{border-color:var(--cyan);background:#202738}
     .top-actions select{max-width:145px}
@@ -74,11 +74,12 @@
     .tab:first-child{clip-path:polygon(0 0,92% 0,100% 50%,92% 100%,0 100%)}
     .tab:hover{transform:translateY(-2px);border-color:var(--cyan)}.tab.active{color:#06080d;background:var(--cyan);box-shadow:inset 0 -5px 0 var(--pink)}
     .tab .counter{margin-left:5px;padding:2px 5px;background:#07090e;color:white}
-    .tab-panel{display:none;animation:enter .22s ease}.tab-panel.active{display:block}
+    .tab-panel{display:none;animation:enter .28s cubic-bezier(.2,.8,.2,1)}.tab-panel.active{display:block}.tab-panel.active>*{animation:float-in .32s cubic-bezier(.2,.8,.2,1) both}.tab-panel.active>*:nth-child(2){animation-delay:.035s}.tab-panel.active>*:nth-child(3){animation-delay:.07s}.tab-panel.active>*:nth-child(4){animation-delay:.105s}
     @keyframes enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    @keyframes float-in{from{opacity:.35;transform:translateY(9px) rotate(.15deg)}to{opacity:1;transform:none}}
 
-    .panel{background:linear-gradient(145deg,rgba(255,255,255,.02),transparent 35%),var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
-    .control-strip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px;margin-bottom:11px;background:#121620;border:1px solid #353c4b}
+    .panel{background:linear-gradient(145deg,rgba(255,255,255,.025),transparent 36%),var(--surface);border:1px solid var(--line);border-radius:var(--shape);box-shadow:var(--shadow)}
+    .control-strip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px;margin-bottom:11px;background:#121620;border:1px solid #353c4b;border-radius:14px 3px 14px 3px}
     .primary{background:var(--pink)!important;border-color:var(--pink)!important;color:white!important}
     .control-group{display:flex;align-items:center;gap:6px;padding:5px 8px;border-left:1px solid #3a4150;color:#aeb6c5;font-size:.68rem}
     .control-group strong{color:white}.control-group select,.control-group input[type=number]{height:31px;border:1px solid #444c5e;background:#090c12;color:white;padding:4px 7px}
@@ -95,44 +96,48 @@
     .count{display:inline-grid;place-items:center;min-width:36px;height:27px;padding:0 8px;background:var(--yellow);color:#0b0c11;font:1000 .68rem/1 monospace;transform:skew(-8deg)}
     .library-help{margin:0;padding:10px 14px;color:#9fa6b5;font-size:.68rem;border-bottom:1px solid #2d3340}
     .library-list{display:grid;gap:8px;padding:10px;min-height:190px}
-    .role-card{position:relative;border:1px solid #3a4150;background:#0b0e15;overflow:hidden}
+    .role-card{position:relative;border:1px solid #3a4150;border-radius:3px 17px 3px 17px;background:#0b0e15;overflow:hidden;transition:transform .18s,border-color .18s}
+    .role-card:nth-child(even){border-radius:17px 3px 17px 3px}.role-card:hover{border-color:#596278;transform:translateX(3px)}
     .role-main{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:9px;align-items:center;padding:7px}
     .role-main img,.role-placeholder{width:58px;height:66px;object-fit:cover;object-position:top;background:#232837}
+    .portrait-button{display:block;padding:0;border:0;background:#232837;overflow:hidden;border-radius:12px 2px 12px 2px;line-height:0;cursor:zoom-in}.portrait-button:hover{outline:2px solid var(--pink);outline-offset:1px}.portrait-button img{display:block}.role-main>.portrait-button{width:58px;height:66px}.role-main>.portrait-button .role-placeholder{width:100%;height:100%}
     .role-placeholder{display:grid;place-items:center;color:var(--pink);font:1000 1.8rem Impact,sans-serif}
     .role-name{font-weight:1000;text-transform:uppercase}.role-title{margin-top:2px;color:#929aab;font-size:.61rem}
     .role-buttons{display:grid;gap:5px}.role-buttons button{padding:6px 8px;border:1px solid #414858;background:#171c28;font:900 .57rem/1 monospace;text-transform:uppercase}
     .role-buttons button:hover{background:var(--pink);border-color:var(--pink)}
     .role-detail{display:none;padding:10px;border-top:1px solid #343a48;background:#171b26;color:#aeb5c2;font-size:.66rem}.role-card.expanded .role-detail{display:block}
-    .spoiler-vault{margin:0 10px 10px;border:1px solid #70324f;background:#180d15}.spoiler-vault summary{padding:10px;color:#ff95c2;font:900 .65rem/1 monospace;text-transform:uppercase}.vault-list{display:grid;gap:6px;padding:0 9px 9px}
+    .spoiler-vault{margin:0 10px 10px;border:1px solid #70324f;border-radius:12px 3px 12px 3px;background:#180d15}.spoiler-vault summary{padding:10px;color:#ff95c2;font:900 .65rem/1 monospace;text-transform:uppercase}.vault-list{display:grid;gap:6px;padding:0 9px 9px}
+    .unavailable-zone{margin:0 10px 10px;padding-top:9px;border-top:1px solid #303644}.unavailable-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:7px}.unavailable-head strong{font:1000 .62rem monospace;text-transform:uppercase}.replacement-hint{margin:0 0 8px;padding:8px 9px;border-left:3px solid var(--yellow);background:#1b1920;color:#bdc4d0;font-size:.62rem;line-height:1.4}.unavailable-list{display:grid;gap:5px}.unavailable-role{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:7px;align-items:center;padding:5px 6px;border:1px solid #303746;border-radius:11px 2px 11px 2px;background:#0c0f16}.unavailable-role .portrait-button,.unavailable-role img,.unavailable-role .role-placeholder{width:34px;height:39px}.unavailable-role small{display:block;color:#8d96a7;font-size:.56rem}.unavailable-role button.take-role{min-width:67px;padding:6px;border:1px solid #756826;border-radius:9px 2px;background:#211e10;color:var(--yellow);font:900 .53rem monospace;text-transform:uppercase}.unavailable-role button:disabled{opacity:.45}
 
     .actors-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:10px}
-    .actor-card{border:1px solid #3a4150;background:#0b0e15;min-width:0;transition:border-color .15s}.actor-card.selected{border-color:var(--cyan);box-shadow:inset 4px 0 0 var(--cyan)}
+    .actor-card{border:1px solid #3a4150;border-radius:22px 3px 22px 3px;background:#0b0e15;min-width:0;overflow:hidden;transition:border-color .15s,transform .18s}.actor-card:nth-child(even){border-radius:3px 22px 3px 22px}.actor-card:hover{transform:translateY(-2px)}.actor-card.selected{border-color:var(--cyan);box-shadow:inset 4px 0 0 var(--cyan)}
     .actor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:11px 12px;border-bottom:1px solid #303645;background:#151925}
     .actor-head-button{padding:0;border:0;background:none;text-align:left;color:white}.actor-head-button:hover .actor-name{color:var(--cyan)}
     .actor-name{font:1000 1.1rem/1 Impact,sans-serif;text-transform:uppercase;letter-spacing:.035em}.actor-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;color:#9aa2b2;font-size:.57rem}
     .actor-meta span{padding:3px 5px;border:1px solid #343b4a}.online-dot{display:inline-block;width:7px;height:7px;margin-left:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px var(--lime)}
     .actor-slots{display:grid;gap:7px;padding:9px;min-height:96px}.empty{display:grid;place-items:center;min-height:76px;color:#737c8d;border:1px dashed #353c4a;font-size:.68rem}
     .assigned-role{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px;background:#151a25;border:1px solid #333a49}
-    .assigned-role img,.assigned-role .role-placeholder{width:48px;height:54px}
+    .assigned-role .portrait-button,.assigned-role img,.assigned-role .role-placeholder{width:48px;height:54px}
     .assigned-actions{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.assigned-actions button{padding:5px 6px;border:1px solid #444c5c;background:#0b0e14;font:900 .52rem/1 monospace;text-transform:uppercase}.assigned-actions button:hover{border-color:var(--cyan)}.assigned-actions .danger:hover{background:var(--red);border-color:var(--red)}
     .lock-badge{color:var(--yellow);font:900 .56rem/1 monospace}.token{color:var(--yellow)!important;border-color:#776b28!important}
     .history{padding:9px 11px;border-top:1px solid #2e3441;background:#10141d}.history b{display:block;color:var(--pink);font:900 .54rem/1 monospace;letter-spacing:.12em}.history span{display:block;margin-top:5px;color:#a3aab8;font-size:.62rem;line-height:1.35}
 
     .hero{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:17px;margin-bottom:12px;overflow:hidden}.hero p{max-width:70ch;margin:6px 0 0;color:#9ea6b5;font-size:.7rem}
     .graveyard{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
-    .memorial-card{position:relative;overflow:hidden;background:var(--paper);color:var(--ink);border:3px solid #000;box-shadow:var(--shadow)}
-    .memorial-art{height:185px;background:#bbb;overflow:hidden;filter:grayscale(1)}.memorial-art img{width:100%;height:100%;object-fit:cover;object-position:top}
+    .memorial-card{position:relative;overflow:hidden;background:var(--paper);color:var(--ink);border:3px solid #000;border-radius:28px 4px 28px 4px;box-shadow:var(--shadow)}
+    .memorial-art{height:185px;background:#bbb;overflow:hidden;filter:grayscale(1)}.memorial-art .portrait-button,.memorial-art img{width:100%;height:100%;border-radius:0;object-fit:cover;object-position:top}
     .memorial-art::after{content:"×";position:absolute;right:5px;top:-20px;color:rgba(255,49,93,.8);font:1000 11rem/.8 Impact,sans-serif;transform:rotate(12deg)}
     .memorial-copy{position:relative;padding:10px}.memorial-copy h3{font:1000 1.15rem/1 Impact,sans-serif}.memorial-copy p{margin:4px 0;color:#575b64;font-size:.62rem}
     .result-badges{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}.result-badge{padding:4px 6px;background:#11131a;color:white;font:900 .55rem/1 monospace}.result-badge.victim{background:var(--cyan);color:#071016}.result-badge.blackened{background:var(--pink)}
     .memorial-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px}.memorial-actions button{padding:6px;border:1px solid #181a20;background:transparent;color:#111;font:900 .53rem/1 monospace;text-transform:uppercase}.memorial-actions button:hover{background:#111;color:white}
 
-    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.metric{padding:15px}.metric strong{display:block;color:var(--yellow);font:1000 2.8rem/1 Impact,sans-serif}.metric span{color:#a6adbb;font:900 .58rem/1.4 monospace;text-transform:uppercase}
-    .leaderboard{padding:15px}.rank{display:grid;grid-template-columns:30px 130px 1fr 36px;gap:9px;align-items:center;margin-top:11px}.rank>strong:first-child{font:1000 1.3rem Impact,sans-serif}.rank-bar{height:15px;background:#2a303d;transform:skew(-12deg);overflow:hidden}.rank-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pink),var(--cyan))}
-    .population{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:14px}.population article{padding:10px;background:#0b0e15;border:1px solid #343b4a}.population b{display:block;color:var(--cyan);font:900 .58rem monospace}.population strong{font:1000 1.7rem Impact,sans-serif}.population small{color:#8f98aa}
+    .score-rules{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 0}.score-rules span{padding:6px 8px;border:1px solid #3a4251;border-radius:9px 2px;background:#0b0e15;color:#aeb6c4;font:900 .58rem monospace}.score-rules b{color:var(--yellow)}
+    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}.actor-stat{position:relative;padding:15px;overflow:hidden}.actor-stat::after{content:attr(data-rank);position:absolute;right:-7px;top:-18px;color:rgba(255,255,255,.035);font:1000 6rem Impact,sans-serif;transform:rotate(8deg)}.actor-stat-head{position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.actor-stat-name{font:1000 1.35rem Impact,sans-serif;text-transform:uppercase}.hope-score{padding:7px 9px;border-radius:12px 2px;background:var(--yellow);color:#0b0d12;font:1000 .68rem monospace;white-space:nowrap}.hope-score.negative{background:var(--red);color:white}.stat-breakdown{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:12px}.stat-breakdown div{padding:8px;border:1px solid #343b49;border-radius:10px 2px;background:#0b0e15;color:#929bab;font-size:.57rem;text-transform:uppercase}.stat-breakdown strong{display:block;margin-top:3px;color:white;font:1000 1.2rem Impact,sans-serif}.stat-breakdown .victim strong{color:var(--cyan)}.stat-breakdown .blackened strong{color:var(--pink)}.stat-breakdown .deaths strong{color:var(--red)}
+    .leaderboard,.hope-timeline{padding:15px}.rank{display:grid;grid-template-columns:minmax(78px,130px) minmax(180px,1fr) auto;gap:9px;align-items:center;margin-top:11px}.rank>strong:first-child{font-size:.72rem}.rank-track{position:relative;height:25px;border:1px solid #3d4555;border-radius:13px 2px;background:#0a0d13;overflow:hidden}.rank-track::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:#697184}.rank-positive,.rank-negative{position:absolute;top:4px;height:15px;display:flex;align-items:center;font:900 .55rem monospace;color:#06080b}.rank-positive{left:50%;background:linear-gradient(90deg,var(--cyan),var(--pink));border-radius:0 9px 9px 0}.rank-negative{right:50%;justify-content:flex-start;background:var(--red);color:white;border-radius:9px 0 0 9px}.rank-total{font:1000 .63rem monospace;white-space:nowrap}.chart-wrap{margin-top:13px;padding:9px;border:1px solid #343b49;border-radius:16px 3px;background:#090c12;overflow-x:auto}.hope-svg{display:block;width:100%;min-width:570px;height:auto}.hope-grid{stroke:#303746;stroke-width:1}.hope-zero{stroke:#7b8495;stroke-width:1.5;stroke-dasharray:5 5}.hope-axis{fill:#8f98a9;font:700 11px monospace}.hope-line{fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:900;animation:draw-line .75s ease both}.hope-dot{stroke:#090c12;stroke-width:3}.hope-legend{display:flex;gap:11px;flex-wrap:wrap;margin-top:9px;color:#a5adbb;font-size:.62rem}.hope-legend i{display:inline-block;width:11px;height:11px;margin-right:5px;border-radius:50%;vertical-align:-2px}@keyframes draw-line{from{stroke-dashoffset:900}to{stroke-dashoffset:0}}
+    .population{display:grid;gap:8px;margin-top:14px}.population-row{display:grid;grid-template-columns:58px minmax(160px,1fr) auto;gap:9px;align-items:center;padding:8px;border:1px solid #343b4a;border-radius:13px 3px 13px 3px;background:#0b0e15}.population-row>b{color:var(--cyan);font:900 .6rem monospace}.population-stack{display:flex;height:25px;border-radius:13px 3px;overflow:hidden;background:#242a36}.population-segment{display:grid;place-items:center;min-width:0;color:#080a0e;font:1000 .58rem monospace}.population-segment.alive{background:var(--cyan)}.population-segment.dead{background:var(--red);color:white}.population-segment.unknown{background:#a5adba}.population-controls{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.population-step{display:grid;grid-template-columns:auto 27px 27px;align-items:center;border:1px solid #363d4b;border-radius:9px 2px;overflow:hidden;color:#9ca5b5;font:900 .52rem monospace}.population-step span{padding:0 6px}.population-step button{height:27px;border:0;border-left:1px solid #363d4b;background:#171c27;color:white}.population-step button:hover{background:var(--pink)}
 
-    .monopad-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}.profiles,.recap{padding:14px}.profile-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.profile{padding:0;border:1px solid #39404f;background:#0b0e15;text-align:left;overflow:hidden}.profile img,.profile .role-placeholder{width:100%;height:135px;object-fit:cover;object-position:top}.profile strong,.profile small{display:block;padding:7px 8px 0;text-transform:uppercase}.profile small{padding:2px 8px 9px;color:#929aab;font-size:.55rem}.profile:hover{border-color:var(--pink)}
-    .recap-feed{display:grid;gap:8px;margin-top:12px}.recap-entry{margin:0;padding:10px;border-left:3px solid var(--cyan);background:#0b0e15;color:#b6bdc9;font-size:.68rem;line-height:1.45}
+    .monopad-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}.profiles,.recap{padding:14px}.profile-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.profile{padding:0;border:1px solid #39404f;border-radius:22px 3px 22px 3px;background:#0b0e15;text-align:left;overflow:hidden;transition:transform .18s}.profile:nth-child(even){border-radius:3px 22px 3px 22px}.profile img,.profile .role-placeholder{width:100%;height:135px;object-fit:cover;object-position:top}.profile strong,.profile small{display:block;padding:7px 8px 0;text-transform:uppercase}.profile small{padding:2px 8px 9px;color:#929aab;font-size:.55rem}.profile:hover{border-color:var(--pink);transform:translateY(-3px) rotate(-.3deg)}
+    .recap-feed{display:grid;gap:10px;margin-top:12px}.recap-entry{position:relative;margin:0;padding:13px 14px 13px 17px;border-left:4px solid var(--cyan);border-radius:3px 17px 3px 17px;background:#0b0e15;color:#b6bdc9;font-size:.68rem;line-height:1.55}.recap-entry.complete{border-color:var(--pink)}.recap-entry strong{display:block;margin-bottom:6px;color:white;font:1000 .65rem monospace;text-transform:uppercase}.recap-entry em{display:inline-block;margin-left:6px;color:var(--yellow);font-style:normal}
 
     .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.admin-section{padding:15px}.game-list{display:grid;gap:8px;margin-top:12px}.game-row{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;padding:9px;background:#0b0e15;border:1px solid #343b49}.game-row.active{border-color:var(--yellow)}.game-no{display:grid;place-items:center;width:44px;height:44px;background:#252b39;font:1000 1.4rem Impact,sans-serif}.game-row.active .game-no{background:var(--yellow);color:#08090e}.game-row small{display:block;color:#8f98a9}.status-chip{color:#aab2c0;font:900 .55rem monospace}
     .service-actions{display:flex;gap:7px;margin-top:12px}.service-result{margin-top:9px;color:#9ea7b6;font-size:.65rem}
@@ -143,10 +148,12 @@
     .game-picker{display:grid;gap:8px}.game-choice{display:grid;grid-template-columns:45px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid #39404e;background:#171b26;text-align:left}.game-choice:disabled{opacity:.45}.game-choice:not(:disabled):hover{border-color:var(--cyan)}
     .dossier{display:grid;grid-template-columns:220px 1fr}.dossier img{width:100%;height:330px;object-fit:cover;object-position:top}.dossier-copy{padding:22px}.dossier-copy h2{font-size:2.2rem}.dossier-copy .talent{color:var(--pink);font-weight:1000}.dossier-copy p{color:#b2b9c5;font-size:.72rem;line-height:1.55}
     .toast{position:fixed;z-index:80;right:22px;bottom:22px;max-width:370px;padding:12px 16px;background:var(--yellow);color:#090a0f;border:3px solid #000;box-shadow:7px 7px 0 var(--pink);font-weight:1000;transform:translateY(150%);transition:transform .22s}.toast.show{transform:none}
+    .mobile-drag-ghost{position:fixed;z-index:100;pointer-events:none;padding:9px 12px;border:2px solid var(--yellow);border-radius:15px 3px;background:#10141e;color:white;box-shadow:6px 6px 0 var(--pink);font:1000 .65rem monospace;text-transform:uppercase;transform:translate(-50%,-125%) rotate(-2deg)}.actor-card.drag-target{border-color:var(--yellow);box-shadow:inset 0 0 0 3px rgba(255,220,54,.2)}.mobile-drag-hint{display:none;margin:8px 12px 0;color:var(--yellow);font:900 .57rem monospace;text-transform:uppercase}
+    .mobile-actor-dock{display:none}.mobile-actor-target.drag-target{border-color:var(--yellow)!important;background:#332d12!important;color:var(--yellow)!important}
     .concept{margin:21px 0 0;text-align:center;color:#747d8d;font:900 .58rem/1.5 monospace;letter-spacing:.065em}.concept b{color:#b7bfcc}
 
     @media(max-width:1080px){.casting-layout,.monopad-layout,.admin-grid{grid-template-columns:1fr}.graveyard{grid-template-columns:repeat(2,1fr)}.profile-grid{grid-template-columns:repeat(3,1fr)}.top-inner{align-items:flex-start}.top-actions{max-width:48%}}
-    @media(max-width:720px){.topbar{padding:15px 12px}.top-inner{display:block}.monokuma-mark{width:60px;height:60px;flex-basis:60px}.top-actions{max-width:none;justify-content:flex-start;margin-top:14px}.shell{width:calc(100% - 16px)}.casebar{grid-template-columns:1fr auto}.progress{grid-column:1/-1;grid-row:2}.tabs{gap:2px}.tab{min-width:112px;padding:10px 9px}.control-strip{align-items:stretch}.control-group{border:0;width:100%;justify-content:space-between}.actors-grid,.stats-grid{grid-template-columns:1fr}.graveyard{grid-template-columns:1fr}.profile-grid{grid-template-columns:repeat(2,1fr)}.prediction-dock{grid-template-columns:1fr}.population{grid-template-columns:repeat(2,1fr)}.dossier{grid-template-columns:1fr}.dossier img{height:250px}.rank{grid-template-columns:26px 84px 1fr 30px}}
+    @media(max-width:720px){.topbar{padding:15px 12px}.top-inner{display:block}.monokuma-mark{width:60px;height:60px;flex-basis:60px}.top-actions{max-width:none;justify-content:flex-start;margin-top:14px}.top-actions>*{flex:1 1 auto}.shell{width:calc(100% - 16px)}.casebar{grid-template-columns:1fr auto}.progress{grid-column:1/-1;grid-row:2}.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;overflow:visible}.tab{min-width:0;padding:11px 7px}.tab:last-child{grid-column:1/-1}.control-strip{align-items:stretch}.control-strip .tool{min-height:42px}.control-group{border:0;width:100%;justify-content:space-between}.mobile-actor-dock{position:sticky;z-index:30;top:5px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:8px 0;padding:6px;border:1px solid #465064;border-radius:16px 3px;background:rgba(9,12,18,.94);backdrop-filter:blur(8px)}.mobile-actor-target{min-height:45px;padding:5px;border:1px solid #3c4557;border-radius:12px 2px;background:#171c28;color:white;font:900 .55rem monospace;text-transform:uppercase}.mobile-actor-target.selected{border-color:var(--cyan);color:var(--cyan)}.mobile-actor-target small{display:block;margin-top:3px;color:#9ca5b5;font-size:.5rem}.actors-grid,.stats-grid{grid-template-columns:1fr}.graveyard{grid-template-columns:1fr}.profile-grid{grid-template-columns:repeat(2,1fr)}.prediction-dock{grid-template-columns:1fr}.population-row{grid-template-columns:46px 1fr}.population-controls{grid-column:1/-1;justify-content:flex-start}.dossier{grid-template-columns:1fr}.dossier img{height:250px}.rank{grid-template-columns:75px minmax(130px,1fr);gap:6px}.rank-total{grid-column:2;text-align:right}.assigned-actions button,.role-buttons button{min-height:36px}.mobile-drag-hint{display:block}.drag-source{touch-action:none;cursor:grab}.session{align-items:flex-start;flex-direction:column}.memorial-actions button{min-height:39px}}
     @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   </style>
 </head>
@@ -206,13 +213,16 @@
         <button class="tool host-only" id="expandButton">Expand library</button>
       </div>
       <div class="rule-banner" id="ruleBanner"></div>
+      <div class="mobile-actor-dock" id="mobileActorDock" aria-label="Phone assignment drop targets"></div>
       <section class="prediction-dock hidden" id="predictionDock"></section>
       <div class="casting-layout">
         <aside class="panel">
           <header class="panel-head"><div><div class="kicker">Open library</div><h2>Available characters</h2></div><span class="count" id="availableCount">0</span></header>
           <p class="library-help" id="libraryHelp"></p>
+          <p class="mobile-drag-hint">↕ On phone: drag a character portrait onto an actor card</p>
           <div class="library-list" id="rolePool"></div>
           <details class="spoiler-vault host-only" id="spoilerVault"><summary>⚠ Host-only spoiler vault · <span id="spoilerCount">0</span></summary><div class="vault-list" id="spoilerList"></div></details>
+          <section class="unavailable-zone"><div class="unavailable-head"><strong>Currently unavailable</strong><span class="count" id="unavailableCount">0</span></div><p class="replacement-hint" id="replacementHint"></p><div class="unavailable-list" id="unavailableList"></div></section>
         </aside>
         <section class="panel">
           <header class="panel-head"><div><div class="kicker">Current cast</div><h2>Voice actors</h2></div><span class="count" id="actorCount">0</span></header>
@@ -227,17 +237,18 @@
     </section>
 
     <section class="tab-panel" id="statisticsTab">
-      <div class="hero panel"><div><div class="kicker">Player records</div><h2>Statistics</h2><p>All totals are derived from the same assignment and Memorial data used everywhere else in this prototype.</p></div></div>
+      <div class="hero panel"><div><div class="kicker">Player records · tracking from now</div><h2>Statistics</h2><p>Each actor gets a full breakdown. Hope score is intentionally simple and every number is labelled.</p><div class="score-rules"><span><b>+1</b> correct Victim</span><span><b>+1</b> correct Blackened</span><span><b>−1</b> assigned character death</span></div></div></div>
       <div class="stats-grid" id="statsMetrics"></div>
-      <section class="leaderboard panel"><div class="kicker">Hope vs. despair</div><h2>Actor comparison</h2><div id="leaderboard"></div></section>
-      <section class="leaderboard panel" style="margin-top:12px"><div class="kicker">Known population</div><h2>Chapter progression</h2><div class="population" id="population"></div></section>
+      <section class="leaderboard panel"><div class="kicker">Hope vs. despair</div><h2>Actor comparison</h2><p class="library-help" style="padding-left:0">Correct guesses extend right from zero; character deaths pull left. The final label is the actual Hope score.</p><div id="leaderboard"></div></section>
+      <section class="hope-timeline panel" style="margin-top:12px"><div class="kicker">Chapter history</div><h2>Hope meter over time</h2><p class="library-help" style="padding-left:0">The line starts at zero. Existing deaths are included now; new correct guesses and deaths move it chapter by chapter.</p><div class="chart-wrap" id="hopeTimeline"></div><div class="hope-legend" id="hopeLegend"></div></section>
+      <section class="leaderboard panel" style="margin-top:12px"><div class="kicker">Known population · Master editable</div><h2>Chapter progression</h2><p class="library-help" style="padding-left:0">Alive, dead, and unknown are separate. Master can correct every value with the controls beside each bar.</p><div class="population" id="population"></div></section>
     </section>
 
     <section class="tab-panel" id="monopadTab">
       <div class="hero panel"><div><div class="kicker">Student handbook</div><h2>Monopad</h2><p>Every revealed profile remains available whether the character is assigned, free, or in Memorial. Recaps respect the selected chapter and Trial phase.</p></div><span class="badge">SPOILER-SAFE</span></div>
       <div class="monopad-layout">
         <section class="profiles panel"><div class="kicker">Known profiles</div><h2>Character files</h2><div class="profile-grid" id="profileGrid"></div></section>
-        <section class="recap panel"><div class="kicker">Story memory</div><h2>What happened so far</h2><div class="recap-feed" id="recapFeed"></div></section>
+        <section class="recap panel"><div class="kicker">Story memory</div><h2>What happened so far</h2><p class="library-help" style="padding-left:0">The current chapter stays spoiler-safe. Its complete case paragraph appears only after you move to the next chapter.</p><div class="recap-feed" id="recapFeed"></div></section>
       </div>
     </section>
 
@@ -254,7 +265,7 @@
   </main>
 
   <dialog id="gameDialog"><div class="modal-head"><div><div class="kicker">Series boards</div><h2>Choose active game</h2></div><button data-close="gameDialog" aria-label="Close">×</button></div><div class="modal-body"><div class="game-picker" id="gamePicker"></div></div></dialog>
-  <dialog id="patchDialog"><div class="modal-head"><div><div class="kicker">Prototype notes</div><h2>What this version preserves</h2></div><button data-close="patchDialog" aria-label="Close">×</button></div><div class="modal-body"><p>Normalized assignments, individual unassign controls, role locking, replacement tokens, Memorial lifecycle, direct chapter selection with saved Trial state, predictions, profiles, recaps, statistics, game progression, activity, import/export, and preview modes.</p><p>This remains an isolated design example and does not read or write shared data.</p></div></dialog>
+  <dialog id="patchDialog"><div class="modal-head"><div><div class="kicker">Prototype notes</div><h2>What this version preserves</h2></div><button data-close="patchDialog" aria-label="Close">×</button></div><div class="modal-body"><p>Normalized assignments, individual unassign controls, one-use replacement takeovers, phone drag/drop, portrait-to-Monopad links, Memorial lifecycle, direct chapter selection, predictions, complete spoiler-safe recaps, actor score breakdowns, Hope history, editable population, game progression, activity, import/export, and preview modes.</p><p>This remains an isolated design example and does not read or write shared data.</p></div></dialog>
   <dialog id="actorDialog"><form id="actorForm"><div class="modal-head"><div><div class="kicker">Cast control</div><h2>Add voice actor</h2></div><button type="button" data-close="actorDialog" aria-label="Close">×</button></div><div class="modal-body"><label>Name<input id="actorNameInput" required maxlength="30" autocomplete="off"></label><div class="modal-actions"><button type="button" class="tool" data-close="actorDialog">Cancel</button><button class="tool primary">Add actor</button></div></div></form></dialog>
   <dialog id="roleDialog"><form id="roleForm"><div class="modal-head"><div><div class="kicker">Character file</div><h2>Add character</h2></div><button type="button" data-close="roleDialog" aria-label="Close">×</button></div><div class="modal-body"><label>Character name<input id="roleNameInput" required maxlength="50" autocomplete="off"></label><label>Ultimate talent / title<input id="roleTitleInput" maxlength="70" autocomplete="off"></label><div class="modal-actions"><button type="button" class="tool" data-close="roleDialog">Cancel</button><button class="tool primary">Add to Library</button></div></div></form></dialog>
   <dialog id="dossierDialog"><div class="modal-head"><div><div class="kicker">Monopad profile</div><h2 id="dossierHeading">Student file</h2></div><button data-close="dossierDialog" aria-label="Close">×</button></div><div class="dossier"><div id="dossierArt"></div><div class="dossier-copy"><div class="talent" id="dossierTalent"></div><p id="dossierBio"></p></div></div></dialog>
@@ -264,7 +275,7 @@
   <script>
   (function(){
     "use strict";
-    var STORAGE_KEY="dvc-design-preview:v3";
+    var STORAGE_KEY="dvc-design-preview:v4";
     var IMG={
       aoi:"assets/monopad/dr1/aoi-asahina.png",byakuya:"assets/monopad/dr1/byakuya-togami.png",
       celestia:"assets/monopad/dr1/celestia-ludenberg.jpeg",chihiro:"assets/monopad/dr1/chihiro-fujisaki.png",
@@ -292,12 +303,12 @@
 
     function initialState(){
       return {
-        version:3,activeTab:"assignments",mode:"host",selectedActorId:"nicolas",expanded:false,
-        settings:{maxPerActor:3,gameActive:true,currentChapter:3,trialByChapter:{"1":true,"2":true,"3":false},visited:{"1":true,"2":true,"3":true},completedGames:{dr1:false,dr2:false,dr3anime:false,v3:false}},
+        version:4,activeTab:"assignments",mode:"host",selectedActorId:"nicolas",expanded:false,
+        settings:{maxPerActor:3,gameActive:true,currentChapter:3,trackingSinceChapter:3,trialByChapter:{"1":true,"2":true,"3":false},completedChapters:{"1":true,"2":true},visited:{"1":true,"2":true,"3":true},completedGames:{dr1:false,dr2:false,dr3anime:false,v3:false}},
         actors:[
-          {id:"nicolas",name:"Nicolas",lockedRoleId:"celestia",replacementToken:false,deathCount:0,online:true,history:["Celestia Ludenberg","Hifumi Yamada"]},
-          {id:"alexander",name:"Alexander",lockedRoleId:"byakuya",replacementToken:false,deathCount:0,online:false,history:["Byakuya Togami","Toko Fukawa"]},
-          {id:"emil",name:"Emil",lockedRoleId:"kyoko",replacementToken:false,deathCount:0,online:true,history:["Kyoko Kirigiri","Makoto Naegi"]}
+          {id:"nicolas",name:"Nicolas",lockedRoleId:"celestia",replacementToken:false,deathCount:2,online:true,history:["Celestia Ludenberg","Hifumi Yamada","Sayaka Maizono","Mondo Owada"]},
+          {id:"alexander",name:"Alexander",lockedRoleId:"byakuya",replacementToken:false,deathCount:1,online:false,history:["Byakuya Togami","Toko Fukawa","Leon Kuwata"]},
+          {id:"emil",name:"Emil",lockedRoleId:"kyoko",replacementToken:false,deathCount:1,online:true,history:["Kyoko Kirigiri","Makoto Naegi","Chihiro Fujisaki"]}
         ],
         roles:[
           role("celestia","Celestia Ludenberg","Ultimate Gambler",IMG.celestia,"nicolas"),
@@ -311,22 +322,23 @@
           role("yasuhiro","Yasuhiro Hagakure","Ultimate Clairvoyant",IMG.yasuhiro,null),
           role("taka","Kiyotaka Ishimaru","Ultimate Moral Compass",IMG.taka,null),
           role("junko","Junko Enoshima","Ultimate Fashionista",IMG.junko,null),
-          deadRole("sayaka","Sayaka Maizono","Ultimate Pop Sensation",IMG.sayaka,"Fae",1,"victim",1700000001000),
-          deadRole("leon","Leon Kuwata","Ultimate Baseball Star",IMG.leon,"MD",1,"blackened",1700000002000),
-          deadRole("chihiro","Chihiro Fujisaki","Ultimate Programmer",IMG.chihiro,"Angel",2,"victim",1700000003000),
-          deadRole("mondo","Mondo Owada","Ultimate Biker Gang Leader",IMG.mondo,"Reika",2,"blackened",1700000004000),
+          deadRole("sayaka","Sayaka Maizono","Ultimate Pop Sensation",IMG.sayaka,"Nicolas","nicolas",1,"victim",1700000001000),
+          deadRole("leon","Leon Kuwata","Ultimate Baseball Star",IMG.leon,"Alexander","alexander",1,"blackened",1700000002000),
+          deadRole("chihiro","Chihiro Fujisaki","Ultimate Programmer",IMG.chihiro,"Emil","emil",2,"victim",1700000003000),
+          deadRole("mondo","Mondo Owada","Ultimate Biker Gang Leader",IMG.mondo,"Nicolas","nicolas",2,"blackened",1700000004000),
           {id:"mukuro",name:"Mukuro Ikusaba",title:"Ultimate Soldier",image:"",ownerId:null,dead:false,revealed:false,hiddenSpoiler:true,deathRecord:null}
         ],
         results:{"1":{victim:"sayaka",blackened:"leon"},"2":{victim:"chihiro",blackened:"mondo"}},
-        predictions:{}
+        predictions:{},
+        population:{"0":{alive:15,dead:0,unknown:0},"1":{alive:13,dead:2,unknown:0},"2":{alive:11,dead:4,unknown:0},"3":{alive:11,dead:4,unknown:0},"4":{alive:0,dead:0,unknown:0},"5":{alive:0,dead:0,unknown:0},"6":{alive:0,dead:0,unknown:0}}
       };
     }
     function role(id,name,title,image,ownerId){return {id:id,name:name,title:title,image:image,ownerId:ownerId,dead:false,revealed:true,hiddenSpoiler:false,deathRecord:null};}
-    function deadRole(id,name,title,image,lastActorName,chapter,kind,at){
-      var r=role(id,name,title,image,null);r.dead=true;r.deathRecord={lastActorId:null,lastActorName:lastActorName,chapter:chapter,phase:kind==="blackened"?"trial":"pretrial",kind:kind,at:at};return r;
+    function deadRole(id,name,title,image,lastActorName,lastActorId,chapter,kind,at){
+      var r=role(id,name,title,image,null);r.dead=true;r.deathRecord={lastActorId:lastActorId,lastActorName:lastActorName,chapter:chapter,phase:kind==="blackened"?"trial":"pretrial",kind:kind,at:at};return r;
     }
     function cloneInitial(){return initialState();}
-    function validState(candidate){return candidate&&candidate.version===3&&Array.isArray(candidate.actors)&&Array.isArray(candidate.roles)&&candidate.settings;}
+    function validState(candidate){return candidate&&candidate.version===4&&Array.isArray(candidate.actors)&&Array.isArray(candidate.roles)&&candidate.settings&&candidate.population;}
     function loadState(){try{var saved=JSON.parse(localStorage.getItem(STORAGE_KEY));return validState(saved)?saved:cloneInitial();}catch(_){return cloneInitial();}}
     var state=loadState();
     var toastTimer=null;
@@ -340,10 +352,25 @@
     function deadRoles(){return state.roles.filter(function(r){return r.dead&&r.revealed;}).sort(function(a,b){return (b.deathRecord&&b.deathRecord.at||0)-(a.deathRecord&&a.deathRecord.at||0);});}
     function hiddenRoles(){return state.roles.filter(function(r){return !r.dead&&!r.revealed&&r.hiddenSpoiler;});}
     function imageMarkup(r,cls){return r.image?'<img class="'+(cls||"")+'" src="'+esc(r.image)+'" alt="">':'<div class="role-placeholder">'+esc(r.name.slice(0,1))+'</div>';}
+    function profilePortrait(r,draggable){return '<button type="button" class="portrait-button '+(draggable?'drag-source':'')+'" data-open-profile="'+r.id+'" '+(draggable?'draggable="true" data-drag-role="'+r.id+'"':'')+' aria-label="Open '+esc(r.name)+' in Monopad">'+imageMarkup(r,"")+'</button>';}
     function addHistory(actor,name){if(actor&&actor.history.indexOf(name)<0)actor.history.push(name);}
     function currentTrial(){return !!state.settings.trialByChapter[String(state.settings.currentChapter)];}
     function canEdit(){return state.mode!=="viewer";}
     function isHost(){return state.mode==="host";}
+    function roleOwner(r){return actorById(r&&r.ownerId);}
+    function isLockedRole(r){var owner=roleOwner(r);return !!(owner&&owner.lockedRoleId===r.id);}
+    function predictionCounts(actorId){
+      var victim=0,blackened=0;
+      Object.keys(state.results||{}).forEach(function(chapter){var result=state.results[chapter]||{},guess=state.predictions[actorId]&&state.predictions[actorId][chapter]||{};if(result.victim&&guess.victim===result.victim)victim++;if(result.blackened&&guess.blackened===result.blackened)blackened++;});
+      return {victim:victim,blackened:blackened};
+    }
+    function actorScore(actor){var correct=predictionCounts(actor.id);return {victim:correct.victim,blackened:correct.blackened,deaths:actor.deathCount||0,score:correct.victim+correct.blackened-(actor.deathCount||0)};}
+    function chapterDelta(actor,chapter){
+      var key=String(chapter),result=state.results[key]||{},guess=state.predictions[actor.id]&&state.predictions[actor.id][key]||{},points=0;
+      if(result.victim&&guess.victim===result.victim)points++;if(result.blackened&&guess.blackened===result.blackened)points++;
+      points-=state.roles.filter(function(r){var d=r.deathRecord;return d&&Number(d.chapter)===chapter&&(d.lastActorId===actor.id||!d.lastActorId&&d.lastActorName===actor.name);}).length;
+      return points;
+    }
 
     function updateChrome(){
       var chapter=state.settings.currentChapter,trial=currentTrial();
@@ -375,7 +402,7 @@
       var dock=document.getElementById("predictionDock");
       if(state.mode!=="player"){dock.classList.add("hidden");dock.innerHTML="";return;}
       dock.classList.remove("hidden");
-      var key=String(state.settings.currentChapter),record=state.predictions[key]||{victim:"",blackened:""};
+      var key=String(state.settings.currentChapter),actor=actorById(state.selectedActorId),record=actor&&state.predictions[actor.id]&&state.predictions[actor.id][key]||{victim:"",blackened:""};
       var eligible=state.roles.filter(function(r){return !r.dead&&r.revealed;});
       var options='<option value="">No prediction</option>'+eligible.map(function(r){return '<option value="'+r.id+'">'+esc(r.name)+'</option>';}).join("");
       dock.innerHTML='<div><div class="kicker">Chapter '+key+' predictions</div><strong>'+(currentTrial()?"LOCKED IN TRIAL":"EDITABLE")+'</strong></div><label>Victim prediction<select data-prediction="victim" '+(currentTrial()?"disabled":"")+'>'+options+'</select></label><label>Blackened prediction<select data-prediction="blackened" '+(currentTrial()?"disabled":"")+'>'+options+'</select></label>';
@@ -383,7 +410,7 @@
       dock.querySelector('[data-prediction="blackened"]').value=record.blackened||"";
     }
     function roleCardMarkup(r){
-      return '<article class="role-card '+(state.expanded?"expanded":"")+'" data-role-card="'+r.id+'"><div class="role-main">'+imageMarkup(r,"")+'<div><div class="role-name">'+esc(r.name)+'</div><div class="role-title">'+esc(r.title)+'</div></div><div class="role-buttons">'+(canEdit()?'<button data-assign="'+r.id+'">Assign to '+esc(actorById(state.selectedActorId).name)+'</button>':'')+'<button data-expand="'+r.id+'">'+(state.expanded?"Less":"Profile")+'</button></div></div><div class="role-detail">'+esc(bioFor(r))+'</div></article>';
+      return '<article class="role-card '+(state.expanded?"expanded":"")+'" data-role-card="'+r.id+'"><div class="role-main">'+profilePortrait(r,true)+'<div><div class="role-name">'+esc(r.name)+'</div><div class="role-title">'+esc(r.title)+'</div></div><div class="role-buttons">'+(canEdit()?'<button data-assign="'+r.id+'">Assign to '+esc(actorById(state.selectedActorId).name)+'</button>':'')+'<button data-expand="'+r.id+'">'+(state.expanded?"Less":"Profile text")+'</button></div></div><div class="role-detail">'+esc(bioFor(r))+'</div></article>';
     }
     function renderPool(){
       var roles=openRoles(),pool=document.getElementById("rolePool");
@@ -392,16 +419,29 @@
       pool.innerHTML=roles.length?roles.map(roleCardMarkup).join(""):'<div class="empty">No available characters.</div>';
       var hidden=hiddenRoles();document.getElementById("spoilerCount").textContent=hidden.length;
       document.getElementById("spoilerList").innerHTML=hidden.length?hidden.map(function(r){return '<div class="assigned-role"><div class="role-placeholder">?</div><div><div class="role-name">Hidden file</div><div class="role-title">Unrevealed spoiler character</div></div><button class="mini-action" data-reveal="'+r.id+'">Reveal</button></div>';}).join(""):'<div class="empty">Vault empty.</div>';
+      renderUnavailable();
+    }
+    function renderUnavailable(){
+      var list=document.getElementById("unavailableList"),selected=actorById(state.selectedActorId),roles=state.roles.filter(function(r){return !r.dead&&r.revealed&&r.ownerId;});
+      document.getElementById("unavailableCount").textContent=roles.length;
+      var hint=document.getElementById("replacementHint");
+      hint.innerHTML=selected&&selected.replacementToken?'<b>★ '+esc(selected.name)+' has one replacement.</b> Any other actor\'s unlocked character can be taken once; that character becomes the new locked role.':'Locked roles stay protected. If a locked character dies, the replacement star unlocks a one-time takeover of another actor\'s non-locked character.';
+      list.innerHTML=roles.map(function(r){
+        var owner=roleOwner(r),own=selected&&owner&&owner.id===selected.id,locked=isLockedRole(r),canTake=!!(canEdit()&&selected&&selected.replacementToken&&!own&&!locked&&rolesForActor(selected.id).length<state.settings.maxPerActor);
+        var action=own?'<span class="status-chip">YOURS</span>':canTake?'<button class="take-role" data-take-role="'+r.id+'">Use ★</button>':'<button class="take-role" disabled>'+(locked?'LOCKED':'CAST')+'</button>';
+        return '<div class="unavailable-role">'+profilePortrait(r,true)+'<div><strong>'+esc(r.name)+'</strong><small>'+esc(owner?owner.name:"Unknown")+(own?' · your assignment':locked?' · locked':' · can transfer with ★')+'</small></div>'+action+'</div>';
+      }).join("");
     }
     function assignedRoleMarkup(r,actor){
       var locked=actor.lockedRoleId===r.id;
       var actions="";
       if(isHost())actions='<div class="assigned-actions"><button data-lock="'+r.id+'">'+(locked?"Unlock":"Lock")+'</button><button data-unassign="'+r.id+'">Unassign</button><button class="danger" data-kill="'+r.id+'">☠ Memorial</button></div>';
       else if(state.mode==="player"&&actor.id===state.selectedActorId)actions='<div class="assigned-actions"><button data-unassign="'+r.id+'">Unassign</button></div>';
-      return '<div class="assigned-role" data-assigned-role="'+r.id+'">'+imageMarkup(r,"")+'<div><div class="role-name">'+esc(r.name)+'</div><div class="role-title">'+esc(r.title)+'</div>'+(locked?'<div class="lock-badge">🔒 LOCKED CHARACTER</div>':'')+'</div>'+actions+'</div>';
+      return '<div class="assigned-role" data-assigned-role="'+r.id+'">'+profilePortrait(r,true)+'<div><div class="role-name">'+esc(r.name)+'</div><div class="role-title">'+esc(r.title)+'</div>'+(locked?'<div class="lock-badge">🔒 LOCKED CHARACTER</div>':'')+'</div>'+actions+'</div>';
     }
     function renderActors(){
       var grid=document.getElementById("actorsGrid");document.getElementById("actorCount").textContent=state.actors.length;
+      document.getElementById("mobileActorDock").innerHTML=state.actors.map(function(actor){return '<button class="mobile-actor-target '+(actor.id===state.selectedActorId?'selected':'')+'" data-select-actor="'+actor.id+'" data-drop-actor="'+actor.id+'">'+esc(actor.name)+'<small>'+rolesForActor(actor.id).length+'/'+state.settings.maxPerActor+(actor.replacementToken?' · ★ READY':'')+'</small></button>';}).join('');
       grid.innerHTML=state.actors.map(function(actor){
         var assigned=rolesForActor(actor.id);
         return '<article class="actor-card '+(actor.id===state.selectedActorId?"selected":"")+'" data-actor-card="'+actor.id+'"><header class="actor-head"><button class="actor-head-button" data-select-actor="'+actor.id+'"><span class="actor-name">'+esc(actor.name)+(actor.online?'<i class="online-dot"></i>':'')+'</span><span class="actor-meta"><span>'+assigned.length+'/'+state.settings.maxPerActor+' characters</span><span>'+(actor.lockedRoleId?"🔒 locked":"no locked character")+'</span><span>☠ '+actor.deathCount+' deaths</span>'+(actor.replacementToken?'<span class="token">★ replacement</span>':'')+'</span></button></header><div class="actor-slots">'+(assigned.length?assigned.map(function(r){return assignedRoleMarkup(r,actor);}).join(""):'<div class="empty">No characters assigned.</div>')+'</div><div class="history"><b>VOICE HISTORY</b><span>'+esc(actor.history.length?actor.history.join(", "):"No previous characters recorded.")+'</span></div></article>';
@@ -413,28 +453,44 @@
       grave.innerHTML=roles.length?roles.map(function(r){
         var d=r.deathRecord||{},result=state.results[String(d.chapter)]||{};
         var victim=result.victim===r.id,blackened=result.blackened===r.id;
-        return '<article class="memorial-card" data-memorial-role="'+r.id+'"><div class="memorial-art">'+imageMarkup(r,"")+'</div><div class="memorial-copy"><h3>'+esc(r.name)+'</h3><p>'+esc(r.title)+'</p><p>Last voiced by: <strong>'+esc(d.lastActorName||"None")+'</strong></p><div class="result-badges"><span class="result-badge">CH. '+esc(d.chapter||"?")+'</span>'+(victim?'<span class="result-badge victim">VICTIM</span>':'')+(blackened?'<span class="result-badge blackened">BLACKENED</span>':'')+'</div>'+(isHost()?'<div class="memorial-actions"><button data-revive="'+r.id+'">↩ Revive</button><button data-result="victim|'+r.id+'">'+(victim?"Clear victim":"Set victim")+'</button><button data-result="blackened|'+r.id+'" '+(!state.settings.trialByChapter[String(d.chapter)]?"disabled":"")+'>'+(blackened?"Clear blackened":"Set blackened")+'</button></div>':'')+'</div></article>';
+        return '<article class="memorial-card" data-memorial-role="'+r.id+'"><div class="memorial-art">'+profilePortrait(r,false)+'</div><div class="memorial-copy"><h3>'+esc(r.name)+'</h3><p>'+esc(r.title)+'</p><p>Last voiced by: <strong>'+esc(d.lastActorName||"None")+'</strong></p><div class="result-badges"><span class="result-badge">CH. '+esc(d.chapter||"?")+'</span>'+(victim?'<span class="result-badge victim">VICTIM</span>':'')+(blackened?'<span class="result-badge blackened">BLACKENED</span>':'')+'</div>'+(isHost()?'<div class="memorial-actions"><button data-revive="'+r.id+'">↩ Revive</button><button data-result="victim|'+r.id+'">'+(victim?"Clear victim":"Set victim")+'</button><button data-result="blackened|'+r.id+'" '+(!state.settings.trialByChapter[String(d.chapter)]?"disabled":"")+'>'+(blackened?"Clear blackened":"Set blackened")+'</button></div>':'')+'</div></article>';
       }).join(""):'<div class="panel empty" style="grid-column:1/-1;min-height:150px">The Graveyard is empty. For now.</div>';
     }
     function renderStatistics(){
-      var assigned=state.roles.filter(function(r){return !r.dead&&r.ownerId;}).length,open=openRoles().length,deaths=deadRoles().length;
-      document.getElementById("statsMetrics").innerHTML=metric(assigned,"Assigned characters")+metric(open,"Open Library")+metric(state.actors.length,"Voice actors")+metric(deaths,"Recorded deaths");
-      var max=Math.max.apply(null,state.actors.map(function(a){return rolesForActor(a.id).length+a.deathCount;} ).concat([1]));
-      document.getElementById("leaderboard").innerHTML=state.actors.map(function(a,index){var score=rolesForActor(a.id).length+a.deathCount;return '<div class="rank"><strong>0'+(index+1)+'</strong><strong>'+esc(a.name)+'</strong><div class="rank-bar"><i style="width:'+Math.round(score/max*100)+'%"></i></div><strong>'+score+'</strong></div>';}).join("");
-      var initial=15;document.getElementById("population").innerHTML=[1,2,3,4,5,6].map(function(ch){var knownDeaths=deadRoles().filter(function(r){return Number(r.deathRecord&&r.deathRecord.chapter)<=ch;}).length;return '<article><b>CHAPTER '+ch+'</b><strong>'+Math.max(0,initial-knownDeaths)+'</strong><small> alive · '+knownDeaths+' dead</small></article>';}).join("");
+      var rows=state.actors.map(function(actor){return {actor:actor,counts:actorScore(actor)};});
+      document.getElementById("statsMetrics").innerHTML=rows.map(function(row,index){var a=row.actor,c=row.counts;return '<article class="actor-stat panel" data-rank="0'+(index+1)+'"><div class="actor-stat-head"><div><div class="actor-stat-name">'+esc(a.name)+'</div><div class="role-title">Individual record</div></div><span class="hope-score '+(c.score<0?'negative':'')+'">HOPE '+(c.score>0?'+':'')+c.score+'</span></div><div class="stat-breakdown"><div>Roles ever held<strong>'+a.history.length+'</strong></div><div>Current cast<strong>'+rolesForActor(a.id).length+'</strong></div><div class="deaths">Character deaths<strong>'+c.deaths+'</strong></div><div class="victim">Correct Victims<strong>'+c.victim+'</strong></div><div class="blackened">Correct Blackened<strong>'+c.blackened+'</strong></div><div>Total correct<strong>'+(c.victim+c.blackened)+'</strong></div></div></article>';}).join("");
+      var maximum=Math.max.apply(null,rows.map(function(row){return Math.max(row.counts.victim+row.counts.blackened,row.counts.deaths);}).concat([1]));
+      document.getElementById("leaderboard").innerHTML=rows.slice().sort(function(a,b){return b.counts.score-a.counts.score||a.actor.name.localeCompare(b.actor.name);}).map(function(row){var c=row.counts,positive=c.victim+c.blackened;return '<div class="rank"><strong>'+esc(row.actor.name)+'</strong><div class="rank-track" aria-label="'+esc(row.actor.name)+': '+positive+' correct guesses and '+c.deaths+' deaths"><i class="rank-negative" style="width:'+(c.deaths/maximum*50)+'%">'+(c.deaths||'')+'</i><i class="rank-positive" style="width:'+(positive/maximum*50)+'%">'+(positive||'')+'</i></div><span class="rank-total">HOPE '+(c.score>0?'+':'')+c.score+'</span></div>';}).join("");
+      renderHopeTimeline();renderPopulation();
     }
-    function metric(value,label){return '<article class="metric panel"><strong>'+value+'</strong><span>'+label+'</span></article>';}
+    function renderHopeTimeline(){
+      var maxChapter=Math.max(1,state.settings.currentChapter),colors=["#35d9ff","#ff2f91","#ffdc36","#baff55"],series=state.actors.map(function(actor,index){var values=[0],running=0;for(var chapter=1;chapter<=maxChapter;chapter++){running+=chapterDelta(actor,chapter);values.push(running);}return {actor:actor,values:values,color:colors[index%colors.length]};});
+      var all=[0];series.forEach(function(item){all=all.concat(item.values);});var min=Math.min.apply(null,all),max=Math.max.apply(null,all);if(min===max){min--;max++;}else{min--;max++;}var range=max-min,width=720,height=250,left=48,right=18,top=19,bottom=38,plotW=width-left-right,plotH=height-top-bottom;
+      function x(ch){return left+(ch/maxChapter)*plotW;}function y(value){return top+(max-value)/range*plotH;}
+      var grid="";for(var tick=min;tick<=max;tick++){grid+='<line class="'+(tick===0?'hope-zero':'hope-grid')+'" x1="'+left+'" y1="'+y(tick)+'" x2="'+(width-right)+'" y2="'+y(tick)+'"></line><text class="hope-axis" x="'+(left-10)+'" y="'+(y(tick)+4)+'" text-anchor="end">'+tick+'</text>';}
+      for(var chapter=0;chapter<=maxChapter;chapter++){grid+='<line class="hope-grid" x1="'+x(chapter)+'" y1="'+top+'" x2="'+x(chapter)+'" y2="'+(height-bottom)+'"></line><text class="hope-axis" x="'+x(chapter)+'" y="'+(height-14)+'" text-anchor="middle">'+(chapter?'CH '+chapter:'START')+'</text>';}
+      var lines=series.map(function(item){var points=item.values.map(function(value,index){return x(index)+','+y(value);}).join(' '),dots=item.values.map(function(value,index){return '<circle class="hope-dot" cx="'+x(index)+'" cy="'+y(value)+'" r="5" fill="'+item.color+'"><title>'+esc(item.actor.name)+' · '+(index?'Chapter '+index:'Start')+': '+value+'</title></circle>';}).join('');return '<polyline class="hope-line" points="'+points+'" stroke="'+item.color+'"></polyline>'+dots;}).join('');
+      document.getElementById("hopeTimeline").innerHTML='<svg class="hope-svg" viewBox="0 0 '+width+' '+height+'" role="img" aria-label="Hope score by actor across chapters">'+grid+lines+'</svg>';
+      document.getElementById("hopeLegend").innerHTML=series.map(function(item){return '<span><i style="background:'+item.color+'"></i>'+esc(item.actor.name)+' · '+item.values[item.values.length-1]+'</span>';}).join('');
+    }
+    function renderPopulation(){
+      var maximum=Math.max.apply(null,Object.keys(state.population).map(function(key){var p=state.population[key];return p.alive+p.dead+p.unknown;}).concat([1]));
+      document.getElementById("population").innerHTML=[0,1,2,3,4,5,6].map(function(chapter){var item=state.population[String(chapter)],total=item.alive+item.dead+item.unknown;function segment(field,label){return item[field]?'<span class="population-segment '+field+'" style="width:'+(item[field]/maximum*100)+'%" title="'+label+': '+item[field]+'">'+item[field]+'</span>':'';}var controls=isHost()?'<div class="population-controls">'+["alive","dead","unknown"].map(function(field){return '<div class="population-step"><span>'+field.toUpperCase()+' '+item[field]+'</span><button data-pop-step="'+chapter+'|'+field+'|-1" '+(!item[field]?'disabled':'')+' aria-label="Remove one '+field+' from '+(chapter?'Chapter '+chapter:'Start')+'">−</button><button data-pop-step="'+chapter+'|'+field+'|1" aria-label="Add one '+field+' to '+(chapter?'Chapter '+chapter:'Start')+'">+</button></div>';}).join('')+'</div>':'';return '<article class="population-row"><b>'+(chapter?'CH. '+chapter:'START')+'</b><div class="population-stack" aria-label="'+(chapter?'Chapter '+chapter:'Start')+': '+item.alive+' alive, '+item.dead+' dead, '+item.unknown+' unknown">'+(total?segment('alive','Alive')+segment('dead','Dead')+segment('unknown','Unknown'):'<span class="role-title" style="padding:7px">No values yet</span>')+'</div>'+controls+'</article>';}).join('');
+    }
     function bioFor(r){
       var bios=window.CAST_MONOPAD_DATA&&window.CAST_MONOPAD_DATA.bios;
-      return bios&&bios[r.name]||r.name+" is listed in the Hope's Peak student database as the "+r.title+".";
+      return bios&&bios.dr1&&bios.dr1[r.name]||r.name+" is listed in the Hope's Peak student database as the "+r.title+".";
     }
     function renderMonopad(){
       var roles=state.roles.filter(function(r){return r.revealed;});
       document.getElementById("profileGrid").innerHTML=roles.map(function(r){return '<button class="profile" data-profile="'+r.id+'">'+imageMarkup(r,"")+'<strong>'+esc(r.name)+'</strong><small>'+esc(r.title)+'</small></button>';}).join("");
-      var chapter=state.settings.currentChapter,entries=[];
-      for(var c=1;c<chapter;c++){entries.push(RECAPS[c].pre);entries.push(RECAPS[c].trial);}
-      if(currentTrial())entries.push(RECAPS[chapter].pre);
-      document.getElementById("recapFeed").innerHTML=entries.length?entries.map(function(text){return '<p class="recap-entry">'+esc(text)+'</p>';}).join(""):'<div class="empty">No earlier story events are available at this point yet.</div>';
+      var chapter=state.settings.currentChapter,source=window.CAST_MONOPAD_DATA&&window.CAST_MONOPAD_DATA.recaps&&window.CAST_MONOPAD_DATA.recaps.dr1,entries=[];
+      for(var c=1;c<=chapter;c++){
+        var complete=!!state.settings.completedChapters[String(c)],data=source&&source[c-1],pre=data&&data.pretrial||RECAPS[c].pre,trial=data&&data.full||RECAPS[c].trial;
+        var label=complete?'COMPLETE CASE':c===chapter&&currentTrial()?'CLASS TRIAL ACTIVE · VERDICT HIDDEN':'INVESTIGATION';
+        entries.push({chapter:c,complete:complete,label:label,text:complete?pre+' '+trial:pre});
+      }
+      document.getElementById("recapFeed").innerHTML=entries.map(function(entry){return '<p class="recap-entry '+(entry.complete?'complete':'')+'"><strong>CHAPTER '+entry.chapter+' <em>'+entry.label+'</em></strong>'+esc(entry.text)+'</p>';}).join("");
     }
     function gameUnlocked(index){if(index===0)return true;for(var i=0;i<index;i++){if(!state.settings.completedGames[GAME_CATALOG[i].id])return false;}return true;}
     function renderGames(){
@@ -450,11 +506,23 @@
       if(!actorById(state.selectedActorId))state.selectedActorId=state.actors[0]&&state.actors[0].id||null;
       updateChrome();renderTabs();renderPredictionDock();renderPool();renderActors();renderMemorial();renderStatistics();renderMonopad();renderGames();renderActivity();save();
     }
+    function moveRoleToActor(roleId,targetActorId){
+      if(!canEdit())return false;
+      var r=roleById(roleId),target=actorById(targetActorId),source=roleOwner(r);if(!r||r.dead||!target||source&&source.id===target.id)return false;
+      if(state.mode==="player"&&target.id!==state.selectedActorId)return false;
+      if(rolesForActor(target.id).length>=state.settings.maxPerActor){notify(target.name+" already has the maximum of "+state.settings.maxPerActor+" characters.");return false;}
+      if(source){
+        if(source.lockedRoleId===r.id){notify(r.name+" is locked to "+source.name+" and cannot be taken.");return false;}
+        if(!target.replacementToken){notify(target.name+" needs a replacement star to take another actor's character.");return false;}
+        r.ownerId=target.id;target.replacementToken=false;target.lockedRoleId=r.id;addHistory(target,r.name);state.selectedActorId=target.id;render();notify(target.name+" used ★ to take "+r.name+" from "+source.name+". It is now the locked character.");return true;
+      }
+      r.ownerId=target.id;addHistory(target,r.name);state.selectedActorId=target.id;render();notify(r.name+" assigned to "+target.name+".");return true;
+    }
     function assignRole(roleId){
-      if(!canEdit())return;
-      var r=roleById(roleId),actor=actorById(state.selectedActorId);if(!r||r.dead||r.ownerId||!actor)return;
-      if(rolesForActor(actor.id).length>=state.settings.maxPerActor){notify(actor.name+" already has the maximum of "+state.settings.maxPerActor+" characters.");return;}
-      r.ownerId=actor.id;addHistory(actor,r.name);render();notify(r.name+" assigned to "+actor.name+".");
+      return moveRoleToActor(roleId,state.selectedActorId);
+    }
+    function takeRole(roleId){
+      return moveRoleToActor(roleId,state.selectedActorId);
     }
     function unassignRole(roleId){
       if(!canEdit())return;var r=roleById(roleId),actor=actorById(r&&r.ownerId);if(!r||!actor)return;
@@ -463,7 +531,7 @@
     }
     function toggleLock(roleId){
       if(!isHost())return;var r=roleById(roleId),actor=actorById(r&&r.ownerId);if(!actor)return;
-      actor.lockedRoleId=actor.lockedRoleId===roleId?null:roleId;if(actor.lockedRoleId&&actor.replacementToken)actor.replacementToken=false;render();notify(actor.lockedRoleId?roleById(actor.lockedRoleId).name+" is now locked for "+actor.name+".":"Locked character cleared.");
+      actor.lockedRoleId=actor.lockedRoleId===roleId?null:roleId;render();notify(actor.lockedRoleId?roleById(actor.lockedRoleId).name+" is now locked for "+actor.name+".":"Locked character cleared.");
     }
     function killRole(roleId){
       if(!isHost())return;var r=roleById(roleId),actor=actorById(r&&r.ownerId);if(!r||r.dead)return;
@@ -488,9 +556,11 @@
       result[kind]=result[kind]===r.id?"":r.id;render();notify((kind==="victim"?"Victim":"Blackened")+" result updated for Chapter "+key+".");
     }
     function setChapter(value){
-      var chapter=Math.max(1,Math.min(6,Number(value)||1)),key=String(chapter);state.settings.currentChapter=chapter;
+      var chapter=Math.max(1,Math.min(6,Number(value)||1)),previous=state.settings.currentChapter,key=String(chapter),advanced=chapter>previous;
+      if(advanced){for(var passed=previous;passed<chapter;passed++){state.settings.completedChapters[String(passed)]=true;state.settings.trialByChapter[String(passed)]=true;}}
+      state.settings.currentChapter=chapter;
       if(!state.settings.visited[key]){state.settings.visited[key]=true;state.settings.trialByChapter[key]=false;}
-      render();notify("Chapter "+chapter+" restored in "+(currentTrial()?"Trial":"pre-Trial")+" state.");
+      render();notify(advanced?"Chapter "+chapter+" opened in pre-Trial; completed chapter summaries were updated.":"Chapter "+chapter+" restored in "+(currentTrial()?"Trial":"pre-Trial")+" state.");
     }
     function activateTab(name,push){
       if(name==="admin"&&!isHost())name="assignments";state.activeTab=name;save();
@@ -499,26 +569,48 @@
     }
     function openDialog(id){document.getElementById(id).showModal();}
     function closeDialog(id){document.getElementById(id).close();}
+    function showProfile(roleId){var profile=roleById(roleId);if(!profile)return;document.getElementById("dossierHeading").textContent=profile.name;document.getElementById("dossierTalent").textContent=profile.title;document.getElementById("dossierArt").innerHTML=imageMarkup(profile,"");document.getElementById("dossierBio").textContent=bioFor(profile);openDialog("dossierDialog");}
+
+    var pointerDrag=null,suppressProfileUntil=0;
+    function cleanupPointerDrag(){document.querySelectorAll(".drag-target").forEach(function(card){card.classList.remove("drag-target");});if(pointerDrag&&pointerDrag.ghost)pointerDrag.ghost.remove();pointerDrag=null;}
+    document.addEventListener("pointerdown",function(event){
+      var source=event.target.closest("[data-drag-role]");if(!source||!canEdit()||!window.matchMedia("(max-width:720px)").matches||event.button!==0)return;
+      pointerDrag={roleId:source.dataset.dragRole,startX:event.clientX,startY:event.clientY,x:event.clientX,y:event.clientY,pointerId:event.pointerId,source:source,ghost:null};if(source.setPointerCapture)source.setPointerCapture(event.pointerId);
+    });
+    document.addEventListener("pointermove",function(event){
+      if(!pointerDrag||pointerDrag.pointerId!==event.pointerId)return;var distance=Math.hypot(event.clientX-pointerDrag.startX,event.clientY-pointerDrag.startY);if(distance<8&&!pointerDrag.ghost)return;event.preventDefault();
+      if(!pointerDrag.ghost){var role=roleById(pointerDrag.roleId),ghost=document.createElement("div");ghost.className="mobile-drag-ghost";ghost.textContent="↕ "+(role?role.name:"Character");document.body.appendChild(ghost);pointerDrag.ghost=ghost;}
+      pointerDrag.x=event.clientX;pointerDrag.y=event.clientY;pointerDrag.ghost.style.left=event.clientX+"px";pointerDrag.ghost.style.top=event.clientY+"px";document.querySelectorAll(".drag-target").forEach(function(card){card.classList.remove("drag-target");});var over=document.elementFromPoint(event.clientX,event.clientY),card=over&&over.closest("[data-actor-card],[data-drop-actor]");if(card)card.classList.add("drag-target");
+    },{passive:false});
+    document.addEventListener("pointerup",function(event){if(!pointerDrag||pointerDrag.pointerId!==event.pointerId)return;var dragged=!!pointerDrag.ghost,roleId=pointerDrag.roleId,over=document.elementFromPoint(event.clientX,event.clientY),card=over&&over.closest("[data-actor-card],[data-drop-actor]"),targetId=card&&(card.dataset.actorCard||card.dataset.dropActor);cleanupPointerDrag();if(dragged){suppressProfileUntil=Date.now()+450;if(targetId)moveRoleToActor(roleId,targetId);else notify("Drop the character on a voice-actor card.");}});
+    document.addEventListener("pointercancel",cleanupPointerDrag);
+    document.addEventListener("dragstart",function(event){var source=event.target.closest("[data-drag-role]");if(!source||!canEdit())return;event.dataTransfer.effectAllowed="move";event.dataTransfer.setData("text/plain",source.dataset.dragRole);});
+    document.addEventListener("dragover",function(event){var target=event.target.closest("[data-actor-card],[data-drop-actor]");if(!target)return;event.preventDefault();event.dataTransfer.dropEffect="move";document.querySelectorAll(".drag-target").forEach(function(item){item.classList.remove("drag-target");});target.classList.add("drag-target");});
+    document.addEventListener("drop",function(event){var target=event.target.closest("[data-actor-card],[data-drop-actor]");if(!target)return;event.preventDefault();var roleId=event.dataTransfer.getData("text/plain"),targetId=target.dataset.actorCard||target.dataset.dropActor;cleanupPointerDrag();suppressProfileUntil=Date.now()+450;if(roleId&&targetId)moveRoleToActor(roleId,targetId);});
+    document.addEventListener("dragend",cleanupPointerDrag);
 
     document.querySelectorAll(".tab").forEach(function(btn){btn.addEventListener("click",function(){activateTab(btn.dataset.tab,true);});});
     document.addEventListener("click",function(event){
       var target=event.target.closest("button");if(!target)return;
       if(target.dataset.close){closeDialog(target.dataset.close);return;}
       if(target.dataset.assign){assignRole(target.dataset.assign);return;}
+      if(target.dataset.takeRole){takeRole(target.dataset.takeRole);return;}
       if(target.dataset.unassign){unassignRole(target.dataset.unassign);return;}
       if(target.dataset.lock){toggleLock(target.dataset.lock);return;}
       if(target.dataset.kill){killRole(target.dataset.kill);return;}
       if(target.dataset.revive){reviveRole(target.dataset.revive);return;}
       if(target.dataset.result){toggleResult(target.dataset.result);return;}
-      if(target.dataset.selectActor){state.selectedActorId=target.dataset.selectActor;render();notify(actorById(state.selectedActorId).name+" selected for new assignments.");return;}
-      if(target.dataset.expand){var card=target.closest(".role-card");card&&card.classList.toggle("expanded");target.textContent=card&&card.classList.contains("expanded")?"Less":"Profile";return;}
+      if(target.dataset.popStep){var pop=target.dataset.popStep.split("|"),item=state.population[pop[0]],field=pop[1],delta=Number(pop[2]);if(isHost()&&item){item[field]=Math.max(0,item[field]+delta);render();notify((pop[0]==="0"?"Start":"Chapter "+pop[0])+" population updated.");}return;}
+      if(target.dataset.selectActor){if(state.mode==="player"&&target.dataset.selectActor!=="nicolas"){notify("Player preview stays locked to Nicolas.");return;}state.selectedActorId=target.dataset.selectActor;render();notify(actorById(state.selectedActorId).name+" selected for new assignments.");return;}
+      if(target.dataset.expand){var roleCard=target.closest(".role-card");roleCard&&roleCard.classList.toggle("expanded");target.textContent=roleCard&&roleCard.classList.contains("expanded")?"Less":"Profile text";return;}
       if(target.dataset.reveal){var hidden=roleById(target.dataset.reveal);if(hidden){hidden.revealed=true;render();notify(hidden.name+" revealed in the Open Library.");}return;}
-      if(target.dataset.profile){var profile=roleById(target.dataset.profile);if(profile){document.getElementById("dossierHeading").textContent=profile.name;document.getElementById("dossierTalent").textContent=profile.title;document.getElementById("dossierArt").innerHTML=imageMarkup(profile,"");document.getElementById("dossierBio").textContent=bioFor(profile);openDialog("dossierDialog");}return;}
+      if(target.dataset.openProfile){if(Date.now()>=suppressProfileUntil)showProfile(target.dataset.openProfile);return;}
+      if(target.dataset.profile){showProfile(target.dataset.profile);return;}
       if(target.dataset.chooseGame){closeDialog("gameDialog");notify(target.dataset.chooseGame==="dr1"?"Trigger Happy Havoc remains active.":"This design study intentionally remains on the current DR1 board.");return;}
     });
     document.addEventListener("change",function(event){
       var target=event.target;
-      if(target.dataset.prediction){var key=String(state.settings.currentChapter);state.predictions[key]=state.predictions[key]||{victim:"",blackened:""};state.predictions[key][target.dataset.prediction]=target.value;save();notify("Chapter "+key+" prediction saved locally.");return;}
+      if(target.dataset.prediction){var key=String(state.settings.currentChapter),actor=actorById(state.selectedActorId);if(!actor)return;state.predictions[actor.id]=state.predictions[actor.id]||{};state.predictions[actor.id][key]=state.predictions[actor.id][key]||{victim:"",blackened:""};state.predictions[actor.id][key][target.dataset.prediction]=target.value;render();notify("Chapter "+key+" prediction saved locally for "+actor.name+".");return;}
       if(target.dataset.completeGame){var id=target.dataset.completeGame,index=GAME_CATALOG.findIndex(function(g){return g.id===id;});state.settings.completedGames[id]=target.checked;if(!target.checked){GAME_CATALOG.slice(index+1).forEach(function(g){state.settings.completedGames[g.id]=false;});}render();notify(GAME_CATALOG[index].title+" marked "+(target.checked?"complete.":"not complete; later boards relocked."));return;}
     });
     document.getElementById("modeSelect").addEventListener("change",function(event){state.mode=event.target.value;if(state.mode==="player")state.selectedActorId="nicolas";render();notify("Now previewing the "+state.mode+" interface.");});
