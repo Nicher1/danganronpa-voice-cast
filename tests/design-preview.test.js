@@ -34,11 +34,17 @@ assert.ok(html.includes('data-assigned-role="'), "Actor cards must render their 
 assert.ok(html.includes('data-unassign="'), "Every assigned role must expose its own unassign control");
 assert.ok(html.includes('data-revive="'), "Memorial entries must expose revive controls");
 assert.ok(html.includes("trialByChapter"), "Each chapter must preserve its own Trial state");
-assert.ok(html.includes("dvc-design-preview:v4"), "The isolated preview must use its own storage namespace");
+assert.ok(html.includes("dvc-design-preview:v5"), "The sample preview must use its own storage namespace");
+assert.ok(html.includes("dvc-real-data-draft:v1"), "The real-data draft must use a separate local storage namespace");
+assert.ok(html.includes('new URLSearchParams(location.search).get("dataset")==="real"'), "The sanitized real-data draft must be selectable without replacing the sample");
+assert.ok(html.includes('real-data-snapshot.js?v=1'), "The real-data draft must load the sanitized snapshot");
 assert.ok(html.includes("function moveRoleToActor("), "Replacement transfers need one normalized move function");
 assert.ok(html.includes("data-take-role=\""), "Eligible unavailable roles need a replacement-star control");
 assert.ok(html.includes("target.replacementToken=false"), "A replacement takeover must consume the star");
 assert.ok(html.includes("source.lockedRoleId===r.id"), "Locked roles must stay protected from replacement takeovers");
+assert.ok(!html.includes("target.lockedRoleId=r.id"), "A replacement takeover must not silently choose the new locked role");
+assert.ok(html.includes("Choose which assigned character to lock."), "A replacement takeover must explain the explicit lock choice");
+assert.ok(html.includes('state.mode==="player"&&actor.id===state.selectedActorId'), "Players must be able to manage the lock on their own assigned roles");
 assert.ok(html.includes("data-drag-role=\""), "Character portraits must expose the phone drag interaction");
 assert.ok(html.includes('data-open-profile="'), "Character portraits must open their Monopad entry");
 assert.ok(html.includes('addEventListener("pointermove"'), "Phone drag needs pointer-based movement support");
@@ -57,6 +63,17 @@ assert.strictEqual(scripts.length, 1, "Expected one inline prototype script");
 new vm.Script(scripts[0]);
 
 const production = fs.readFileSync("index.html", "utf8");
-assert.ok(!production.includes("dvc-design-preview:v4"), "Prototype state must never leak into the live interface");
+assert.ok(!production.includes("dvc-design-preview:v5"), "Prototype state must never leak into the live interface");
+assert.ok(!production.includes("dvc-real-data-draft:v1"), "Real-data draft state must never leak into the live interface");
+
+const snapshot = fs.readFileSync("real-data-snapshot.js", "utf8");
+for (const actor of ["Nicher", "Fae", "Fall", "MD", "Angel", "Reika", "Sushi"]) {
+  assert.ok(snapshot.includes(`name: "${actor}"`), `Real-data snapshot is missing ${actor}`);
+}
+assert.ok(snapshot.includes('"Genocide Jill", "Ultimate Murderous Fiend"'), "Every revealed real DR1 role must be represented");
+for (const sensitiveField of ["passwordHash", "personalRecordings", "presence", "referenceUrl", "lineText"]) {
+  assert.ok(!new RegExp(`\\b${sensitiveField}\\s*:`).test(snapshot), `Real-data snapshot must exclude ${sensitiveField}`);
+}
+new vm.Script(snapshot);
 
 console.log("Interactive Danganronpa design preview checks passed.");

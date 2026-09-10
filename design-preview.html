@@ -177,7 +177,7 @@
       </div>
       <div class="top-actions">
         <span class="badge" id="modeBadge">MASTER PREVIEW</span>
-        <select id="modeSelect" aria-label="Preview access mode"><option value="host">Master</option><option value="player">Player · Nicolas</option><option value="viewer">Viewer</option></select>
+        <select id="modeSelect" aria-label="Preview access mode"><option value="host">Master</option><option value="player">Player</option><option value="viewer">Viewer</option></select>
         <button id="gameButton">◆ Trigger Happy Havoc</button>
         <button id="patchButton">Patch notes</button>
         <button id="exportButton" class="host-only">Export sample</button>
@@ -256,12 +256,12 @@
       <div class="hero panel"><div><div class="kicker">Series control · Master only</div><h2>Admin Tools</h2><p>Trigger Happy Havoc remains the active game. Completion controls show the real sequential unlock structure without changing the live board.</p></div><button class="tool" id="adminGameButton">Choose active game</button></div>
       <div class="admin-grid">
         <section class="admin-section panel"><div class="kicker">Game progression</div><h2>Series boards</h2><div class="game-list" id="gameList"></div></section>
-        <section class="admin-section panel"><div class="kicker">Database status</div><h2>Wake / check database</h2><p class="library-help" style="padding-left:0">This prototype simulates the control and never contacts the shared database.</p><div class="service-actions"><button class="tool primary" id="wakeButton">Wake and verify now</button><button class="tool" id="resetButton">Reset prototype</button></div><div class="service-result" id="databaseResult">No manual check in this preview session yet.</div></section>
+        <section class="admin-section panel"><div class="kicker">Database status</div><h2>Wake / check database</h2><p class="library-help" id="databaseHelp" style="padding-left:0">This prototype simulates the control and never contacts the shared database.</p><div class="service-actions"><button class="tool primary" id="wakeButton">Wake and verify now</button><button class="tool" id="resetButton">Reset prototype</button></div><div class="service-result" id="databaseResult">No manual check in this preview session yet.</div></section>
         <section class="admin-section panel" style="grid-column:1/-1"><div class="panel-head" style="padding:0 0 11px"><div><div class="kicker">Private · Master only</div><h2>Last seven days</h2></div><button class="tool" id="activityButton">Refresh activity</button></div><div class="activity-days" id="activityDays"></div><div class="sessions" id="activitySessions"></div></section>
       </div>
     </section>
 
-    <p class="concept"><b>INTERACTIVE REDESIGN PROTOTYPE</b> · LOCAL SAMPLE STATE ONLY · THE ACTUAL VOICE-CAST SITE IS UNCHANGED</p>
+    <p class="concept" id="conceptNote"><b>INTERACTIVE REDESIGN PROTOTYPE</b> · LOCAL SAMPLE STATE ONLY · THE ACTUAL VOICE-CAST SITE IS UNCHANGED</p>
   </main>
 
   <dialog id="gameDialog"><div class="modal-head"><div><div class="kicker">Series boards</div><h2>Choose active game</h2></div><button data-close="gameDialog" aria-label="Close">×</button></div><div class="modal-body"><div class="game-picker" id="gamePicker"></div></div></dialog>
@@ -272,18 +272,20 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="monopad-data.js?v=2"></script>
+  <script src="real-data-snapshot.js?v=1"></script>
   <script>
   (function(){
     "use strict";
-    var STORAGE_KEY="dvc-design-preview:v4";
+    var REAL_DRAFT=new URLSearchParams(location.search).get("dataset")==="real";
+    var STORAGE_KEY=REAL_DRAFT?"dvc-real-data-draft:v1":"dvc-design-preview:v5";
     var IMG={
       aoi:"assets/monopad/dr1/aoi-asahina.png",byakuya:"assets/monopad/dr1/byakuya-togami.png",
       celestia:"assets/monopad/dr1/celestia-ludenberg.jpeg",chihiro:"assets/monopad/dr1/chihiro-fujisaki.png",
       hifumi:"assets/monopad/dr1/hifumi-yamada.png",junko:"assets/monopad/dr1/junko-disguise.png",
       taka:"assets/monopad/dr1/kiyotaka-ishimaru.png",kyoko:"assets/monopad/dr1/kyoko-kirigiri.png",
-      leon:"assets/monopad/dr1/leon-kuwata.webp",makoto:"assets/monopad/dr1/makoto-naegi.png",
+      leon:"assets/monopad/dr1/leon-kuwata.webp",makoto:"assets/monopad/dr1/makoto-naegi.png",monokuma:"assets/monopad/dr1/monokuma.png",
       mondo:"assets/monopad/dr1/mondo-owada.png",sakura:"assets/monopad/dr1/sakura-ogami.jpg",
-      sayaka:"assets/monopad/dr1/sayaka-maizono.jpg",toko:"assets/monopad/dr1/toko-fukawa.jpg",
+      sayaka:"assets/monopad/dr1/sayaka-maizono.jpg",toko:"assets/monopad/dr1/toko-fukawa.jpg",genocide:"assets/monopad/dr1/genocide-jill.jpg",
       yasuhiro:"assets/monopad/dr1/yasuhiro-hagakure.png"
     };
     var GAME_CATALOG=[
@@ -303,7 +305,7 @@
 
     function initialState(){
       return {
-        version:4,activeTab:"assignments",mode:"host",selectedActorId:"nicolas",expanded:false,
+        version:5,activeTab:"assignments",mode:"host",selectedActorId:"nicolas",expanded:false,
         settings:{maxPerActor:3,gameActive:true,currentChapter:3,trackingSinceChapter:3,trialByChapter:{"1":true,"2":true,"3":false},completedChapters:{"1":true,"2":true},visited:{"1":true,"2":true,"3":true},completedGames:{dr1:false,dr2:false,dr3anime:false,v3:false}},
         actors:[
           {id:"nicolas",name:"Nicolas",lockedRoleId:"celestia",replacementToken:false,deathCount:2,online:true,history:["Celestia Ludenberg","Hifumi Yamada","Sayaka Maizono","Mondo Owada"]},
@@ -337,8 +339,18 @@
     function deadRole(id,name,title,image,lastActorName,lastActorId,chapter,kind,at){
       var r=role(id,name,title,image,null);r.dead=true;r.deathRecord={lastActorId:lastActorId,lastActorName:lastActorName,chapter:chapter,phase:kind==="blackened"?"trial":"pretrial",kind:kind,at:at};return r;
     }
-    function cloneInitial(){return initialState();}
-    function validState(candidate){return candidate&&candidate.version===4&&Array.isArray(candidate.actors)&&Array.isArray(candidate.roles)&&candidate.settings&&candidate.population;}
+    function imageForName(name){
+      var key=String(name||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+      return ({"monokuma":IMG.monokuma,"makoto naegi":IMG.makoto,"aoi asahina":IMG.aoi,"byakuya togami":IMG.byakuya,"celestia ludenberg":IMG.celestia,"chihiro fujisaki":IMG.chihiro,"hifumi yamada":IMG.hifumi,"junko enoshima":IMG.junko,"kiyotaka ishimaru":IMG.taka,"kyoko kirigiri":IMG.kyoko,"leon kuwata":IMG.leon,"mondo owada":IMG.mondo,"sakura ogami":IMG.sakura,"sayaka maizono":IMG.sayaka,"toko fukawa":IMG.toko,"yasuhiro hagakure":IMG.yasuhiro,"genocide jill":IMG.genocide})[key]||"";
+    }
+    function cloneInitial(){
+      var source=REAL_DRAFT&&window.DVC_REAL_DATA_SNAPSHOT?window.DVC_REAL_DATA_SNAPSHOT:initialState();
+      var copy=JSON.parse(JSON.stringify(source));
+      copy.roles.forEach(function(r){if(!r.image)r.image=imageForName(r.name);});
+      copy.actors.forEach(function(actor){actor.online=false;});
+      return copy;
+    }
+    function validState(candidate){return candidate&&candidate.version===5&&Array.isArray(candidate.actors)&&Array.isArray(candidate.roles)&&candidate.settings&&candidate.population;}
     function loadState(){try{var saved=JSON.parse(localStorage.getItem(STORAGE_KEY));return validState(saved)?saved:cloneInitial();}catch(_){return cloneInitial();}}
     var state=loadState();
     var toastTimer=null;
@@ -357,17 +369,18 @@
     function currentTrial(){return !!state.settings.trialByChapter[String(state.settings.currentChapter)];}
     function canEdit(){return state.mode!=="viewer";}
     function isHost(){return state.mode==="host";}
+    function playerActorId(){return state.actors[0]&&state.actors[0].id||null;}
     function roleOwner(r){return actorById(r&&r.ownerId);}
     function isLockedRole(r){var owner=roleOwner(r);return !!(owner&&owner.lockedRoleId===r.id);}
     function predictionCounts(actorId){
       var victim=0,blackened=0;
-      Object.keys(state.results||{}).forEach(function(chapter){var result=state.results[chapter]||{},guess=state.predictions[actorId]&&state.predictions[actorId][chapter]||{};if(result.victim&&guess.victim===result.victim)victim++;if(result.blackened&&guess.blackened===result.blackened)blackened++;});
+      Object.keys(state.results||{}).forEach(function(chapter){var result=state.results[chapter]||{},guess=state.predictions[actorId]&&state.predictions[actorId][chapter]||{};if((result.victimCorrectActorIds||[]).indexOf(actorId)>=0||result.victim&&guess.victim===result.victim)victim++;if((result.blackenedCorrectActorIds||[]).indexOf(actorId)>=0||result.blackened&&guess.blackened===result.blackened)blackened++;});
       return {victim:victim,blackened:blackened};
     }
     function actorScore(actor){var correct=predictionCounts(actor.id);return {victim:correct.victim,blackened:correct.blackened,deaths:actor.deathCount||0,score:correct.victim+correct.blackened-(actor.deathCount||0)};}
     function chapterDelta(actor,chapter){
       var key=String(chapter),result=state.results[key]||{},guess=state.predictions[actor.id]&&state.predictions[actor.id][key]||{},points=0;
-      if(result.victim&&guess.victim===result.victim)points++;if(result.blackened&&guess.blackened===result.blackened)points++;
+      if((result.victimCorrectActorIds||[]).indexOf(actor.id)>=0||result.victim&&guess.victim===result.victim)points++;if((result.blackenedCorrectActorIds||[]).indexOf(actor.id)>=0||result.blackened&&guess.blackened===result.blackened)points++;
       points-=state.roles.filter(function(r){var d=r.deathRecord;return d&&Number(d.chapter)===chapter&&(d.lastActorId===actor.id||!d.lastActorId&&d.lastActorName===actor.name);}).length;
       return points;
     }
@@ -380,9 +393,12 @@
       document.getElementById("progressFill").style.width=pct+"%";
       var bar=document.getElementById("progressBar");bar.setAttribute("aria-valuenow",String(pct));bar.setAttribute("aria-label",pct+" percent through Trigger Happy Havoc");
       document.body.dataset.mode=state.mode;
-      document.getElementById("modeSelect").value=state.mode;
-      document.getElementById("modeBadge").textContent=state.mode==="host"?"MASTER PREVIEW":state.mode==="player"?"PLAYER · NICOLAS":"VIEWER PREVIEW";
-      document.getElementById("syncLabel").textContent="LOCAL PREVIEW";
+      var player=actorById(playerActorId()),playerName=player?player.name:"Player",modeSelect=document.getElementById("modeSelect");
+      modeSelect.querySelector('option[value="player"]').textContent="Player · "+playerName;
+      modeSelect.value=state.mode;
+      document.getElementById("modeBadge").textContent=state.mode==="host"?"MASTER PREVIEW":state.mode==="player"?"PLAYER · "+playerName.toUpperCase():"VIEWER PREVIEW";
+      document.getElementById("syncLabel").textContent=REAL_DRAFT?"REAL SNAPSHOT · LOCAL":"LOCAL PREVIEW";
+      document.getElementById("exportButton").textContent=REAL_DRAFT?"Export draft":"Export sample";
       document.getElementById("maxRolesInput").value=state.settings.maxPerActor;
       document.getElementById("gameActiveToggle").checked=state.settings.gameActive;
       document.getElementById("trialToggle").checked=trial;
@@ -415,7 +431,8 @@
     function renderPool(){
       var roles=openRoles(),pool=document.getElementById("rolePool");
       document.getElementById("availableCount").textContent=roles.length;
-      document.getElementById("libraryHelp").textContent=state.mode==="viewer"?"Read-only cast view.":state.mode==="player"?"Claim a character for Nicolas; assigned characters disappear from this Library.":"Select an actor card, then assign from this Library. Assigned characters disappear immediately.";
+      var player=actorById(playerActorId()),playerName=player?player.name:"yourself";
+      document.getElementById("libraryHelp").textContent=state.mode==="viewer"?"Read-only cast view.":state.mode==="player"?"Claim a character for "+playerName+"; assigned characters disappear from this Library.":"Select an actor card, then assign from this Library. Assigned characters disappear immediately.";
       pool.innerHTML=roles.length?roles.map(roleCardMarkup).join(""):'<div class="empty">No available characters.</div>';
       var hidden=hiddenRoles();document.getElementById("spoilerCount").textContent=hidden.length;
       document.getElementById("spoilerList").innerHTML=hidden.length?hidden.map(function(r){return '<div class="assigned-role"><div class="role-placeholder">?</div><div><div class="role-name">Hidden file</div><div class="role-title">Unrevealed spoiler character</div></div><button class="mini-action" data-reveal="'+r.id+'">Reveal</button></div>';}).join(""):'<div class="empty">Vault empty.</div>';
@@ -425,7 +442,7 @@
       var list=document.getElementById("unavailableList"),selected=actorById(state.selectedActorId),roles=state.roles.filter(function(r){return !r.dead&&r.revealed&&r.ownerId;});
       document.getElementById("unavailableCount").textContent=roles.length;
       var hint=document.getElementById("replacementHint");
-      hint.innerHTML=selected&&selected.replacementToken?'<b>★ '+esc(selected.name)+' has one replacement.</b> Any other actor\'s unlocked character can be taken once; that character becomes the new locked role.':'Locked roles stay protected. If a locked character dies, the replacement star unlocks a one-time takeover of another actor\'s non-locked character.';
+      hint.innerHTML=selected&&selected.replacementToken?'<b>★ '+esc(selected.name)+' has one replacement.</b> Any other actor\'s unlocked character can be taken once. Afterwards, choose which assigned character to lock.':'Locked roles stay protected. If a locked character dies, the replacement star unlocks a one-time takeover of another actor\'s non-locked character.';
       list.innerHTML=roles.map(function(r){
         var owner=roleOwner(r),own=selected&&owner&&owner.id===selected.id,locked=isLockedRole(r),canTake=!!(canEdit()&&selected&&selected.replacementToken&&!own&&!locked&&rolesForActor(selected.id).length<state.settings.maxPerActor);
         var action=own?'<span class="status-chip">YOURS</span>':canTake?'<button class="take-role" data-take-role="'+r.id+'">Use ★</button>':'<button class="take-role" disabled>'+(locked?'LOCKED':'CAST')+'</button>';
@@ -436,7 +453,7 @@
       var locked=actor.lockedRoleId===r.id;
       var actions="";
       if(isHost())actions='<div class="assigned-actions"><button data-lock="'+r.id+'">'+(locked?"Unlock":"Lock")+'</button><button data-unassign="'+r.id+'">Unassign</button><button class="danger" data-kill="'+r.id+'">☠ Memorial</button></div>';
-      else if(state.mode==="player"&&actor.id===state.selectedActorId)actions='<div class="assigned-actions"><button data-unassign="'+r.id+'">Unassign</button></div>';
+      else if(state.mode==="player"&&actor.id===state.selectedActorId)actions='<div class="assigned-actions"><button data-lock="'+r.id+'">'+(locked?"Unlock":"Lock")+'</button><button data-unassign="'+r.id+'">Unassign</button></div>';
       return '<div class="assigned-role" data-assigned-role="'+r.id+'">'+profilePortrait(r,true)+'<div><div class="role-name">'+esc(r.name)+'</div><div class="role-title">'+esc(r.title)+'</div>'+(locked?'<div class="lock-badge">🔒 LOCKED CHARACTER</div>':'')+'</div>'+actions+'</div>';
     }
     function renderActors(){
@@ -498,6 +515,7 @@
       document.getElementById("gamePicker").innerHTML=GAME_CATALOG.map(function(game,index){var unlocked=gameUnlocked(index);return '<button class="game-choice" data-choose-game="'+game.id+'" '+(!unlocked?"disabled":"")+'><span class="game-no">'+game.number+'</span><span><strong>'+esc(game.title)+'</strong><small>'+(game.id==="dr1"?"Active design prototype":unlocked?"Board unlocked; this visual study remains on DR1":"Locked")+'</small></span><span class="status-chip">'+(game.id==="dr1"?"ACTIVE":unlocked?"AVAILABLE":"🔒")+'</span></button>';}).join("");
     }
     function renderActivity(){
+      if(REAL_DRAFT){document.getElementById("activityDays").innerHTML='<div class="empty">Presence history is intentionally excluded from this public draft snapshot.</div>';document.getElementById("activitySessions").innerHTML='<div class="session"><strong>Private master data not copied</strong><time>The live site remains the source of truth.</time></div>';return;}
       var rows=[["TODAY",68,9,79,5,"2 VISITS"],["WED",null,null,null,null,"0 VISITS"],["TUE",61,15,null,null,"1 VISIT"],["MON",72,4,77,11,"2 VISITS"],["SUN",null,null,null,null,"0 VISITS"],["SAT",41,21,null,null,"1 VISIT"],["FRI",55,8,null,null,"1 VISIT"]];
       document.getElementById("activityDays").innerHTML=rows.map(function(row){return '<div class="activity-row"><span>'+row[0]+'</span><div class="track">'+(row[1]!=null?'<i class="visit" style="left:'+row[1]+'%;width:'+row[2]+'%"></i>':'')+(row[3]!=null?'<i class="visit pink" style="left:'+row[3]+'%;width:'+row[4]+'%"></i>':'')+'</div><span>'+row[5]+'</span></div>';}).join("");
       document.getElementById("activitySessions").innerHTML='<div class="session"><strong>Nicolas · today · visit 1</strong><time>16:21–18:32 · 2h 11m</time></div><div class="session"><strong>Nicolas · today · visit 2</strong><time>18:58–20:10 · 1h 12m</time></div><div class="session"><strong>Emil · Tue · visit 1</strong><time>14:43–18:19 · 3h 36m</time></div><div class="session"><strong>Alexander · Mon · visit 1</strong><time>17:17–18:14 · 57m</time></div><div class="session"><strong>Alexander · Mon · visit 2</strong><time>18:31–21:09 · 2h 38m</time></div><div class="session"><strong>Nicolas · Sat · visit 1</strong><time>09:51–14:53 · 5h 02m</time></div><div class="session"><strong>Emil · Fri · visit 1</strong><time>13:12–15:07 · 1h 55m</time></div>';
@@ -514,7 +532,7 @@
       if(source){
         if(source.lockedRoleId===r.id){notify(r.name+" is locked to "+source.name+" and cannot be taken.");return false;}
         if(!target.replacementToken){notify(target.name+" needs a replacement star to take another actor's character.");return false;}
-        r.ownerId=target.id;target.replacementToken=false;target.lockedRoleId=r.id;addHistory(target,r.name);state.selectedActorId=target.id;render();notify(target.name+" used ★ to take "+r.name+" from "+source.name+". It is now the locked character.");return true;
+        r.ownerId=target.id;target.replacementToken=false;addHistory(target,r.name);state.selectedActorId=target.id;render();notify(target.name+" used ★ to take "+r.name+" from "+source.name+". Choose which assigned character to lock.");return true;
       }
       r.ownerId=target.id;addHistory(target,r.name);state.selectedActorId=target.id;render();notify(r.name+" assigned to "+target.name+".");return true;
     }
@@ -530,7 +548,7 @@
       r.ownerId=null;if(actor.lockedRoleId===r.id)actor.lockedRoleId=null;render();notify(r.name+" returned to the Open Library.");
     }
     function toggleLock(roleId){
-      if(!isHost())return;var r=roleById(roleId),actor=actorById(r&&r.ownerId);if(!actor)return;
+      var r=roleById(roleId),actor=actorById(r&&r.ownerId);if(!actor||!isHost()&&!(state.mode==="player"&&actor.id===state.selectedActorId))return;
       actor.lockedRoleId=actor.lockedRoleId===roleId?null:roleId;render();notify(actor.lockedRoleId?roleById(actor.lockedRoleId).name+" is now locked for "+actor.name+".":"Locked character cleared.");
     }
     function killRole(roleId){
@@ -601,7 +619,7 @@
       if(target.dataset.revive){reviveRole(target.dataset.revive);return;}
       if(target.dataset.result){toggleResult(target.dataset.result);return;}
       if(target.dataset.popStep){var pop=target.dataset.popStep.split("|"),item=state.population[pop[0]],field=pop[1],delta=Number(pop[2]);if(isHost()&&item){item[field]=Math.max(0,item[field]+delta);render();notify((pop[0]==="0"?"Start":"Chapter "+pop[0])+" population updated.");}return;}
-      if(target.dataset.selectActor){if(state.mode==="player"&&target.dataset.selectActor!=="nicolas"){notify("Player preview stays locked to Nicolas.");return;}state.selectedActorId=target.dataset.selectActor;render();notify(actorById(state.selectedActorId).name+" selected for new assignments.");return;}
+      if(target.dataset.selectActor){if(state.mode==="player"&&target.dataset.selectActor!==playerActorId()){notify("Player preview stays locked to "+actorById(playerActorId()).name+".");return;}state.selectedActorId=target.dataset.selectActor;render();notify(actorById(state.selectedActorId).name+" selected for new assignments.");return;}
       if(target.dataset.expand){var roleCard=target.closest(".role-card");roleCard&&roleCard.classList.toggle("expanded");target.textContent=roleCard&&roleCard.classList.contains("expanded")?"Less":"Profile text";return;}
       if(target.dataset.reveal){var hidden=roleById(target.dataset.reveal);if(hidden){hidden.revealed=true;render();notify(hidden.name+" revealed in the Open Library.");}return;}
       if(target.dataset.openProfile){if(Date.now()>=suppressProfileUntil)showProfile(target.dataset.openProfile);return;}
@@ -613,7 +631,7 @@
       if(target.dataset.prediction){var key=String(state.settings.currentChapter),actor=actorById(state.selectedActorId);if(!actor)return;state.predictions[actor.id]=state.predictions[actor.id]||{};state.predictions[actor.id][key]=state.predictions[actor.id][key]||{victim:"",blackened:""};state.predictions[actor.id][key][target.dataset.prediction]=target.value;render();notify("Chapter "+key+" prediction saved locally for "+actor.name+".");return;}
       if(target.dataset.completeGame){var id=target.dataset.completeGame,index=GAME_CATALOG.findIndex(function(g){return g.id===id;});state.settings.completedGames[id]=target.checked;if(!target.checked){GAME_CATALOG.slice(index+1).forEach(function(g){state.settings.completedGames[g.id]=false;});}render();notify(GAME_CATALOG[index].title+" marked "+(target.checked?"complete.":"not complete; later boards relocked."));return;}
     });
-    document.getElementById("modeSelect").addEventListener("change",function(event){state.mode=event.target.value;if(state.mode==="player")state.selectedActorId="nicolas";render();notify("Now previewing the "+state.mode+" interface.");});
+    document.getElementById("modeSelect").addEventListener("change",function(event){state.mode=event.target.value;if(state.mode==="player")state.selectedActorId=playerActorId();render();notify("Now previewing the "+state.mode+" interface.");});
     document.getElementById("chapterSelect").addEventListener("change",function(event){setChapter(event.target.value);});
     document.getElementById("trialToggle").addEventListener("change",function(event){state.settings.trialByChapter[String(state.settings.currentChapter)]=event.target.checked;render();notify(event.target.checked?"Trial started; predictions locked.":"Returned to pre-Trial; predictions reopened.");});
     document.getElementById("gameActiveToggle").addEventListener("change",function(event){state.settings.gameActive=event.target.checked;render();notify(event.target.checked?"Live rules enabled.":"Casting/setup rules enabled.");});
@@ -630,13 +648,19 @@
     document.getElementById("adminGameButton").addEventListener("click",function(){renderGames();openDialog("gameDialog");});
     document.getElementById("patchButton").addEventListener("click",function(){openDialog("patchDialog");});
     document.getElementById("wakeButton").addEventListener("click",function(){var result=document.getElementById("databaseResult");result.textContent="Checking local prototype…";setTimeout(function(){result.textContent="Preview check complete · no shared database contacted";notify("Prototype database control verified.");},550);});
-    document.getElementById("activityButton").addEventListener("click",function(){renderActivity();notify("Activity sample refreshed at "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+".");});
+    document.getElementById("activityButton").addEventListener("click",function(){renderActivity();notify(REAL_DRAFT?"Private activity was not copied into this public draft.":"Activity sample refreshed at "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+".");});
     document.getElementById("resetButton").addEventListener("click",function(){localStorage.removeItem(STORAGE_KEY);state=cloneInitial();render();activateTab("assignments",false);notify("The complete prototype state was reset.");});
-    document.getElementById("exportButton").addEventListener("click",function(){var blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="dvc-design-preview.json";a.click();setTimeout(function(){URL.revokeObjectURL(url);},1000);notify("Prototype state exported.");});
+    document.getElementById("exportButton").addEventListener("click",function(){var blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=REAL_DRAFT?"dvc-real-snapshot-draft.json":"dvc-design-preview.json";a.click();setTimeout(function(){URL.revokeObjectURL(url);},1000);notify("Prototype state exported.");});
     document.getElementById("importInput").addEventListener("change",function(event){var file=event.target.files&&event.target.files[0];if(!file)return;file.text().then(function(text){var parsed=JSON.parse(text);if(!validState(parsed))throw new Error("Invalid");state=parsed;render();notify("Prototype state imported.");}).catch(function(){notify("That file is not a valid prototype export.");}).finally(function(){event.target.value="";});});
     window.addEventListener("hashchange",function(){var name=location.hash.slice(1);if(["assignments","memorial","statistics","monopad","admin"].indexOf(name)>=0)activateTab(name,false);});
     var chapterSelect=document.getElementById("chapterSelect");chapterSelect.innerHTML=[1,2,3,4,5,6].map(function(ch){return '<option value="'+ch+'">Chapter '+ch+'</option>';}).join("");
     var requested=location.hash.slice(1);if(["assignments","memorial","statistics","monopad","admin"].indexOf(requested)>=0)state.activeTab=requested;
+    if(REAL_DRAFT){
+      document.title="Real Data Draft · Danganronpa Voice Cast";
+      document.getElementById("conceptNote").innerHTML='<b>INTERACTIVE REDESIGN DRAFT · REAL BOARD SNAPSHOT R'+esc(state.snapshot&&state.snapshot.revision||"?")+'</b> · ALL CHANGES STAY IN THIS BROWSER · LIVE SITE UNCHANGED';
+      document.getElementById("databaseHelp").textContent="This local draft is based on a sanitized real-board snapshot. The control below remains a simulation and never contacts or changes the shared database.";
+      document.getElementById("databaseResult").textContent="Snapshot only · passwords, recordings, presence, and active guesses excluded.";
+    }
     render();
   })();
   </script>
