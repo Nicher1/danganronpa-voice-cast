@@ -683,6 +683,7 @@ body.mobile-dragging{user-select:none}
   .control-strip{padding:8px}
   .role-pool,.actors-panel,.memorial-hero,.stats-hero,.monopad-hero,.monopad-section,.prediction-leaderboard,.population-panel{padding:12px}
   .modal-card,.compact-modal,.practice-dialog-card,.game-picker-card,.dossier-dialog-card{width:100%;max-width:100%}
+  .monopad-section-head{display:block}.monopad-section-head button{width:100%;margin-top:9px}.recap-editor-grid,.recap-editor-row{grid-template-columns:1fr}.recap-manager-item{grid-template-columns:1fr}.recap-manager-actions button{flex:1}
   .anime-episode-tracker{align-items:stretch;flex-direction:column}.anime-episode-tracker button{width:100%}.anime-score-card{grid-template-columns:1fr 1fr}.anime-score-metric.total{grid-column:1/-1;grid-row:1}
 }
 
@@ -767,7 +768,9 @@ body.mobile-dragging{user-select:none}
 .dossier-card{display:grid;grid-template-columns:62px minmax(0,1fr);gap:10px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(135deg,rgba(255,255,255,.026),transparent),var(--panel-soft);min-width:0}
 .dossier-card img,.dossier-card .dossier-placeholder{width:62px;height:70px;object-fit:cover;object-position:center top;border-radius:9px;background:#0f1117;border:1px solid rgba(255,255,255,.06)}
 .dossier-card .dossier-placeholder{display:grid;place-items:center;color:var(--muted2);font-weight:950;font-size:1.15rem}.dossier-card-copy{min-width:0}.dossier-card h3{font-size:.8rem;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dossier-card p{font-size:.64rem;color:var(--muted);font-style:italic;margin:3px 0 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dossier-card button{font-size:.63rem;padding:.36rem .5rem;width:100%}
-.recap-feed{display:grid;gap:10px;margin-top:15px}.recap-entry{position:relative;margin:0;padding:13px 13px 13px 16px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018);color:#d6dbe5;font-size:.76rem;line-height:1.6;overflow-wrap:anywhere}.recap-entry::before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(var(--blue),var(--pink-hot))}.recap-empty{padding:15px;border:1px dashed var(--line);border-radius:11px;color:var(--muted);font-size:.74rem;line-height:1.5}
+.monopad-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.monopad-section-head>div{min-width:0}.monopad-section-head button{flex:0 0 auto;font-size:.65rem}
+.recap-feed{display:grid;gap:10px;margin-top:15px}.recap-entry{position:relative;margin:0;padding:13px 13px 13px 16px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018);color:#d6dbe5;font-size:.76rem;line-height:1.6;overflow-wrap:anywhere}.recap-entry::before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(var(--blue),var(--pink-hot))}.recap-entry.custom::before{background:linear-gradient(var(--gold),var(--pink-hot))}.recap-entry-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}.recap-entry-label{color:var(--blue);font-size:.58rem;font-weight:950;letter-spacing:.1em;text-transform:uppercase}.recap-entry.custom .recap-entry-label{color:var(--gold)}.recap-entry p{margin:0}.recap-entry-actions{display:flex;gap:4px;flex-wrap:wrap}.recap-entry-actions button{padding:.28rem .42rem;font-size:.57rem}.recap-empty{padding:15px;border:1px dashed var(--line);border-radius:11px;color:var(--muted);font-size:.74rem;line-height:1.5}
+#recapManagerDialog{width:min(94vw,860px);max-width:94vw;max-height:94vh;overflow:auto}.recap-manager-card{width:100%}.recap-editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.recap-editor-panel{padding:14px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.018)}.recap-editor-panel h4{margin:0 0 4px}.recap-editor-panel>p{margin:0 0 9px}.recap-editor-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.modal select{display:block;width:100%;margin-top:5px;border:1px solid var(--line);background:#0e1117;color:white;border-radius:10px;padding:10px 11px;outline:none}.recap-manager-list{display:grid;gap:6px;max-height:220px;overflow:auto;margin-top:11px}.recap-manager-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:9px;background:#0e1118}.recap-manager-item strong{display:block;font-size:.69rem}.recap-manager-item small{display:block;color:var(--muted);font-size:.61rem;margin-top:2px}.recap-manager-actions{display:flex;gap:4px}.recap-manager-actions button{padding:.34rem .46rem;font-size:.58rem}.field-help{display:block;margin-top:5px;color:var(--muted);font-size:.65rem;font-weight:500;line-height:1.4}#editDossierBioBtn{margin-top:17px}
 #dossierDialog{width:min(94vw,820px);max-width:94vw;overflow-x:hidden;overflow-y:auto}
 .dossier-dialog-card{width:100%;max-width:100%;padding:0;overflow:hidden}.dossier-dialog-body{display:grid;grid-template-columns:minmax(230px,.82fr) minmax(0,1.18fr);min-width:0;min-height:410px;overflow:hidden}#dossierDialogArtWrap{display:flex;align-items:stretch;min-width:0;max-width:100%;overflow:hidden}.dossier-dialog-art{display:block;width:100%;max-width:100%;min-width:0;height:100%;max-height:650px;min-height:410px;object-fit:contain;object-position:center top;background:linear-gradient(145deg,rgba(112,184,255,.08),rgba(245,64,148,.045)),#0d1016}.dossier-dialog-placeholder{display:grid;place-items:center;color:var(--muted2);font-size:3rem}.dossier-dialog-copy{padding:23px;align-self:center;min-width:0;max-width:100%;overflow-wrap:anywhere}.dossier-dialog-copy .modal-head{padding-bottom:14px}.dossier-dialog-copy h3{font-size:clamp(1.45rem,4vw,2.2rem);line-height:1}.dossier-dialog-talent{color:var(--blue);font-weight:850;font-size:.8rem;margin:12px 0}.dossier-dialog-bio{color:#d9dee8;font-size:.88rem;line-height:1.72;white-space:pre-line;overflow-wrap:anywhere}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:12px;margin-bottom:16px}
@@ -1297,9 +1300,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <div id="monopadDossierGrid" class="monopad-dossier-grid"></div>
         </section>
         <section class="monopad-section panel">
-          <div class="section-kicker">STORY MEMORY</div>
-          <h2 id="monopadRecapTitle">What happened so far</h2>
-          <p id="monopadRecapHelp" class="muted small"></p>
+          <div class="monopad-section-head">
+            <div>
+              <div class="section-kicker">STORY MEMORY</div>
+              <h2 id="monopadRecapTitle">What happened so far</h2>
+              <p id="monopadRecapHelp" class="muted small"></p>
+            </div>
+            <button id="manageRecapsBtn" type="button" class="ghost host-only">Manage recaps</button>
+          </div>
           <div id="monopadRecapFeed" class="recap-feed"></div>
         </section>
       </div>
@@ -1352,8 +1360,41 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           </div>
           <div id="dossierDialogTalent" class="dossier-dialog-talent"></div>
           <div id="dossierDialogBio" class="dossier-dialog-bio"></div>
+          <button id="editDossierBioBtn" type="button" class="ghost host-only">Edit character description</button>
         </div>
       </div>
+    </div>
+  </dialog>
+
+  <dialog id="recapManagerDialog" class="modal">
+    <div class="modal-card recap-manager-card">
+      <div class="modal-head">
+        <div><div class="eyebrow">MASTER STORY CONTROL</div><h3>Manage story memory</h3></div>
+        <button type="button" class="icon-btn" data-close="recapManagerDialog">×</button>
+      </div>
+      <div class="recap-editor-grid">
+        <form id="builtInRecapForm" class="recap-editor-panel">
+          <h4>Built-in summary</h4>
+          <p class="muted tiny">Built-in chapter summaries can be rewritten, but they cannot be removed.</p>
+          <div class="recap-editor-row">
+            <label>Chapter<select id="builtInRecapChapter"></select></label>
+            <label>Section<select id="builtInRecapPhase"></select></label>
+          </div>
+          <label>Summary<textarea id="builtInRecapText" required rows="8"></textarea></label>
+          <div class="modal-actions"><button type="submit" class="primary">Save built-in summary</button></div>
+        </form>
+        <form id="customRecapForm" class="recap-editor-panel">
+          <h4 id="customRecapFormTitle">Add custom summary</h4>
+          <p class="muted tiny">Custom entries appear from their selected chapter onward and can be edited or removed whenever they are no longer needed.</p>
+          <input id="customRecapId" type="hidden">
+          <label>Title<input id="customRecapTitle" maxlength="80" placeholder="Temporary stopping point"></label>
+          <label>Visible from<select id="customRecapChapter"></select></label>
+          <label>Summary<textarea id="customRecapText" required rows="6" placeholder="Write only what the group has reached..."></textarea></label>
+          <div class="modal-actions"><button id="cancelCustomRecapEditBtn" type="button" class="ghost hidden">Cancel edit</button><button type="submit" class="primary">Save custom summary</button></div>
+        </form>
+      </div>
+      <div class="section-kicker" style="margin-top:16px">CUSTOM ENTRIES FOR THIS BOARD</div>
+      <div id="customRecapList" class="recap-manager-list"></div>
     </div>
   </dialog>
 
@@ -1377,7 +1418,15 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Version history. Releases are newest first and collapsed until you open them.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">v0.15</span><span class="patch-release-title"><strong>A genuinely separate Reworked interface</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">v0.16</span><span class="patch-release-title"><strong>Master-editable story memory and dossiers</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Custom stopping-point recaps</h4><p>The master can add, edit, and remove spoiler-safe custom story summaries from the Monopad. A special Chapter 3 entry records the search for Taka and Hifumi's missing bodies without revealing what happens next.</p></section>
+            <section class="patch-note"><h4>Protected built-in summaries</h4><p>Every normal pre-Trial and Trial recap can now be edited by the master, but it cannot be deleted or saved empty.</p></section>
+            <section class="patch-note"><h4>Editable character files</h4><p>The master can rewrite a character's Monopad description from either the character editor or the open dossier.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.15</span><span class="patch-release-title"><strong>A genuinely separate Reworked interface</strong><small>Previous release</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Two complete presentations, one board</h4><p>Original preserves the established interface. Reworked now uses the full Hope's Peak prototype composition, including its own header, Monokuma emblem, progress band, navigation, two-column casting workspace, actor cards, memorial, statistics, Monopad, and Admin presentation.</p></section>
             <section class="patch-note"><h4>Your choice does not fork the data</h4><p>Changing the interface only changes how the shared live board is presented. Assignments, locks, deaths, chapters, recordings, history, and database updates remain identical for everyone.</p></section>
@@ -1498,6 +1547,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
       <label>Modifier / note
         <input id="roleModifier" placeholder="e.g. reserve, accent, chapter note...">
+      </label>
+
+      <label>Monopad description
+        <textarea id="roleBiography" rows="5" placeholder="A spoiler-safe description shown in the character file."></textarea>
+        <span class="field-help">Master-only editing. Leave this empty to keep using the built-in description.</span>
       </label>
 
       <label class="check-row">
@@ -1720,7 +1774,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.09.11.2";
+  const APP_BUILD = "2026.09.11.3";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2006,15 +2060,23 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     game.id,
     initialPopulationGraph(game.id==="dr1"?2:1,game.id)
   ]));
+  const DR1_CH3_BODY_SEARCH_RECAP_ID="dr1-ch3-bodies-missing-stopping-point";
+  const DR1_CH3_BODY_SEARCH_RECAP_TEXT="After Alter Ego became a fragile source of hope, the laptop disappeared from the bathhouse and the conflict between Taka and Hifumi intensified. Monokuma also dangled a ten-million-yen reward as the latest motive. Celeste then reported an attack by a strange figure in a handmade Robo Justice suit, and Hifumi was found injured in the library. While the group chased reports of the costumed attacker through the school, Hifumi was later found bloodied and unresponsive in the nurse's office, while Taka was discovered in the physics lab equipment room with another numbered Justice Hammer nearby. The two apparent murders seemed to have happened almost at once. Before anyone could make sense of that timeline, Hifumi's body vanished from the nurse's office and Taka's vanished from the equipment room. The survivors have now split up to search the school for the missing bodies; this is exactly where the story currently stops.";
+  const seededBodySearchRecap=()=>({
+    id:DR1_CH3_BODY_SEARCH_RECAP_ID,gameId:"dr1",chapter:3,title:"Chapter 3 · The missing bodies",
+    text:DR1_CH3_BODY_SEARCH_RECAP_TEXT,createdAt:Date.UTC(2026,8,11)
+  });
 
   function defaultState() {
     return {
-      version:12,
+      version:13,
       settings:{completedGames:emptyCompletionFlags(),games:defaultGameSettings()},
       secretSettings:{games:{dr1:{junkoMukuroRevealed:false,populationPresets:POPULATION_PRESETS},dr2:{populationPresets:DR2_POPULATION_PRESETS},dr3anime:{},v3:{}}},
       predictions:{},
       chapterResults:{},
       populationGraph:defaultPopulationGraphs(),
+      recapOverrides:{},
+      customRecaps:[seededBodySearchRecap()],
       actors:[
         {id:id(),name:"Nicher",hasPassword:false,lockedRoleIds:emptyLockedRoleIds(),lockedAtByGame:{},replacementToken:false,history:[],deathCount:0},
         {id:id(),name:"Fae",hasPassword:false,lockedRoleIds:emptyLockedRoleIds(),lockedAtByGame:{},replacementToken:false,history:[],deathCount:0},
@@ -2165,7 +2227,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function normaliseState(s) {
     const previousVersion=Number(s.version)||0;
-    s.version = 12;
+    s.version = 13;
     const legacySettings=s.settings&&!s.settings.games?{...s.settings}:null;
     if(!s.settings?.games){
       s.settings={
@@ -2181,6 +2243,31 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       const fallback=createGameSettings({chapter:game.id==="dr1"?2:1,gameActive:game.id==="dr1"});
       s.settings.games[game.id]=normaliseGameSettings(s.settings.games[game.id],fallback,game.id);
     });
+    if(!s.recapOverrides||typeof s.recapOverrides!=="object"||Array.isArray(s.recapOverrides))s.recapOverrides={};
+    const cleanedRecapOverrides={};
+    GAME_IDS.forEach(gameId=>{
+      const byChapter=s.recapOverrides[gameId];
+      if(!byChapter||typeof byChapter!=="object"||Array.isArray(byChapter))return;
+      Object.entries(byChapter).forEach(([rawChapter,value])=>{
+        const chapter=Math.max(1,Math.min(gameDefinition(gameId).maxChapter,Number(rawChapter)||1));
+        if(!value||typeof value!=="object"||Array.isArray(value))return;
+        const entry={};
+        ["pretrial","full"].forEach(phase=>{const text=String(value[phase]||"").trim();if(text)entry[phase]=text});
+        if(Object.keys(entry).length){cleanedRecapOverrides[gameId]||={};cleanedRecapOverrides[gameId][String(chapter)]=entry}
+      });
+    });
+    s.recapOverrides=cleanedRecapOverrides;
+    if(!Array.isArray(s.customRecaps))s.customRecaps=[];
+    s.customRecaps=s.customRecaps.filter(entry=>entry&&typeof entry==="object"&&String(entry.text||"").trim()).map(entry=>{
+      const gameId=GAME_IDS.includes(entry.gameId)?entry.gameId:"dr1";
+      return {
+        id:String(entry.id||id()),gameId,
+        chapter:Math.max(1,Math.min(gameDefinition(gameId).maxChapter,Number(entry.chapter)||1)),
+        title:String(entry.title||"Custom story memory").trim().slice(0,80)||"Custom story memory",
+        text:String(entry.text||"").trim(),createdAt:Number(entry.createdAt)||Date.now()
+      };
+    });
+    if(previousVersion<13&&!s.customRecaps.some(entry=>entry.id===DR1_CH3_BODY_SEARCH_RECAP_ID))s.customRecaps.push(seededBodySearchRecap());
 
     const legacySecret=s.secretSettings&&!s.secretSettings.games?{...s.secretSettings}:null;
     s.secretSettings=s.secretSettings||{};
@@ -2284,6 +2371,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       if (typeof r.dead !== "boolean") r.dead = false;
       r.image ||= "";
       r.modifier ||= "";
+      r.biography=typeof r.biography==="string"?r.biography.trim():"";
       r.lastActorName ||= "";
       if(!Array.isArray(r.customVoiceClips))r.customVoiceClips=[];
       const maxChapter=gameDefinition(r.gameId).maxChapter;
@@ -2653,7 +2741,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         },30000);
       }
       setSyncStatus("LIVE","live");
-      if(mode==="host"&&sharedStateVersion<12)saveState();
+      if(mode==="host"&&sharedStateVersion<13)saveState();
     }catch(error){
       remoteReady=false;
       setSyncStatus("OFFLINE BACKUP","offline");
@@ -2873,6 +2961,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function biographyForRole(role){
     if(!role)return "No profile is available yet.";
+    if(String(role.biography||"").trim())return String(role.biography).trim();
     const gameBios=monopadData.bios?.[role.gameId]||{};
     if(role.specialRole==="real-junko")return gameBios["Junko Enoshima (Real)"]||gameBios[role.name]||"No profile is available yet.";
     return gameBios[role.name]||`${role.name} is known as ${role.title||"a student connected to Hope's Peak"}. More surface-level profile information will be added when it becomes available.`;
@@ -2890,25 +2979,39 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     return gameRoles().filter(role=>role.name!=="Narrator"&&currentRoleVisible(role)&&(!role.hiddenSpoiler||role.revealed||mode==="host"));
   }
 
-  function visibleRecapParagraphs(){
-    const current=Number(chapterKey());
-    if(activeGameId==="dr3anime"){
-      const previous=monopadData.animeRecaps?.[current-2];
-      return previous?[previous]:[];
-    }
-    const chapters=monopadData.recaps?.[activeGameId]||[];
-    const visible=[];
-    for(let chapter=1;chapter<current;chapter++){
-      const completedChapter=chapters[chapter-1]||{};
-      const completeRecap=[completedChapter.pretrial,completedChapter.full].filter(Boolean).join(" ");
-      if(completeRecap)visible.push(completeRecap);
-    }
-    if(currentSettings().voiceInTrial){
-      const pretrial=chapters[current-1]?.pretrial;
-      if(pretrial)visible.push(pretrial);
-    }
-    return visible;
+  function builtInRecapText(gameId,chapter,phase){
+    const override=state.recapOverrides?.[gameId]?.[String(chapter)]?.[phase];
+    if(String(override||"").trim())return String(override).trim();
+    if(gameDefinition(gameId).kind==="anime")return phase==="full"?(monopadData.animeRecaps?.[chapter-1]||""):"";
+    return monopadData.recaps?.[gameId]?.[chapter-1]?.[phase]||"";
   }
+
+  function visibleRecapEntries(){
+    const current=Number(chapterKey());
+    const visible=[];
+    if(activeGameId==="dr3anime"){
+      const previousChapter=current-1;
+      const text=previousChapter>0?builtInRecapText(activeGameId,previousChapter,"full"):"";
+      if(text)visible.push({kind:"built-in",chapter:previousChapter,phases:["full"],label:storyUnitLabel(activeGameId,previousChapter),text});
+    }else{
+      for(let chapter=1;chapter<current;chapter++){
+        const pretrial=builtInRecapText(activeGameId,chapter,"pretrial");
+        const full=builtInRecapText(activeGameId,chapter,"full");
+        const text=[pretrial,full].filter(Boolean).join(" ");
+        if(text)visible.push({kind:"built-in",chapter,phases:["pretrial","full"],label:`Chapter ${chapter} · Complete`,text});
+      }
+      if(currentSettings().voiceInTrial){
+        const text=builtInRecapText(activeGameId,current,"pretrial");
+        if(text)visible.push({kind:"built-in",chapter:current,phases:["pretrial"],label:`Chapter ${current} · Pre-Trial`,text});
+      }
+    }
+    state.customRecaps.filter(entry=>entry.gameId===activeGameId&&entry.chapter<=current).forEach(entry=>visible.push({
+      ...entry,kind:"custom",phases:[],label:entry.title||`${storyUnitLabel(activeGameId,entry.chapter)} · Custom`
+    }));
+    return visible.sort((a,b)=>a.chapter-b.chapter||(a.kind===b.kind?(a.createdAt||0)-(b.createdAt||0):a.kind==="built-in"?-1:1));
+  }
+
+  function visibleRecapParagraphs(){return visibleRecapEntries().map(entry=>entry.text)}
 
   function openDossier(role){
     if(!role||!currentRoleVisible(role))return;
@@ -2918,6 +3021,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#dossierDialogName").textContent=role.name;
     $("#dossierDialogTalent").textContent=role.title||"Profile";
     $("#dossierDialogBio").textContent=biographyForRole(role);
+    $("#editDossierBioBtn").dataset.roleId=role.id;
     attachImageFallback(wrap,role);
     $("#dossierDialog").showModal();
   }
@@ -2942,12 +3046,89 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#monopadRecapHelp").textContent=anime
       ? `At ${animeWatchEntry(chapterKey()).label}, this recalls only the immediately previous watch-order episode.`
       : currentSettings().voiceInTrial
-        ? "Earlier chapters include both their pre-Trial events and Trial outcomes; the current chapter includes only what happened before this Trial."
-        : "Each completed earlier chapter includes both its pre-Trial events and Trial outcome; the current chapter remains unwritten until its Trial begins.";
+        ? "Earlier chapters include both their pre-Trial events and Trial outcomes; the current built-in summary stops before this Trial. Master-added stopping points appear alongside them."
+        : "Completed earlier chapters use their protected built-in summaries. A master can add an accurate temporary stopping point for the current chapter.";
     const feed=$("#monopadRecapFeed");feed.innerHTML="";
-    const paragraphs=visibleRecapParagraphs();
-    paragraphs.forEach(text=>{const paragraph=document.createElement("p");paragraph.className="recap-entry";paragraph.textContent=text;feed.appendChild(paragraph)});
-    if(!paragraphs.length)feed.innerHTML=`<div class="recap-empty">No earlier story events are available at this point yet.</div>`;
+    const entries=visibleRecapEntries();
+    entries.forEach(entry=>{
+      const article=document.createElement("article");article.className=`recap-entry ${entry.kind==="custom"?"custom":"built-in"}`;
+      const builtInActions=entry.phases.map(phase=>`<button type="button" class="ghost host-only" data-edit-built-in="${phase}">Edit ${phase==="pretrial"?"pre-Trial":"Trial"}</button>`).join("");
+      const customActions=entry.kind==="custom"?`<button type="button" class="ghost host-only" data-edit-custom="${esc(entry.id)}">Edit</button><button type="button" class="ghost danger-text host-only" data-remove-custom="${esc(entry.id)}">Remove</button>`:"";
+      article.innerHTML=`<div class="recap-entry-head"><span class="recap-entry-label">${esc(entry.kind==="custom"?`Custom · ${entry.label}`:entry.label)}</span><span class="recap-entry-actions">${builtInActions}${customActions}</span></div><p>${esc(entry.text)}</p>`;
+      article.querySelectorAll("[data-edit-built-in]").forEach(button=>button.onclick=()=>openRecapManager({chapter:entry.chapter,phase:button.dataset.editBuiltIn}));
+      article.querySelector("[data-edit-custom]")?.addEventListener("click",()=>openRecapManager({customId:entry.id}));
+      article.querySelector("[data-remove-custom]")?.addEventListener("click",()=>removeCustomRecap(entry.id));
+      feed.appendChild(article);
+    });
+    if(!entries.length)feed.innerHTML=`<div class="recap-empty">No earlier story events are available at this point yet.</div>`;
+  }
+
+  function recapChapterOptions(selectedChapter=currentSettings().voiceChapter){
+    const game=gameDefinition(activeGameId);
+    return Array.from({length:game.maxChapter},(_,index)=>{
+      const chapter=index+1;
+      return `<option value="${chapter}" ${chapter===Number(selectedChapter)?"selected":""}>${esc(storyUnitLabel(activeGameId,chapter))}</option>`;
+    }).join("");
+  }
+
+  function refreshBuiltInRecapEditor({chapter,phase}={}){
+    const chapterSelect=$("#builtInRecapChapter");
+    const selectedChapter=Number(chapter||chapterSelect.value||currentSettings().voiceChapter);
+    chapterSelect.innerHTML=recapChapterOptions(selectedChapter);
+    const anime=gameDefinition(activeGameId).kind==="anime";
+    const phaseSelect=$("#builtInRecapPhase");
+    phaseSelect.innerHTML=anime?'<option value="full">Episode recap</option>':'<option value="pretrial">Pre-Trial events</option><option value="full">Trial outcome</option>';
+    const selectedPhase=anime?"full":phase==="full"||phaseSelect.dataset.selection==="full"?"full":"pretrial";
+    phaseSelect.value=selectedPhase;phaseSelect.dataset.selection=selectedPhase;
+    $("#builtInRecapText").value=builtInRecapText(activeGameId,selectedChapter,selectedPhase);
+  }
+
+  function resetCustomRecapForm(chapter=currentSettings().voiceChapter){
+    $("#customRecapId").value="";
+    $("#customRecapFormTitle").textContent="Add custom summary";
+    $("#customRecapTitle").value="";
+    $("#customRecapChapter").innerHTML=recapChapterOptions(chapter);
+    $("#customRecapText").value="";
+    $("#cancelCustomRecapEditBtn").classList.add("hidden");
+  }
+
+  function editCustomRecap(customId){
+    const entry=state.customRecaps.find(item=>item.id===customId&&item.gameId===activeGameId);if(!entry)return;
+    $("#customRecapId").value=entry.id;
+    $("#customRecapFormTitle").textContent="Edit custom summary";
+    $("#customRecapTitle").value=entry.title;
+    $("#customRecapChapter").innerHTML=recapChapterOptions(entry.chapter);
+    $("#customRecapText").value=entry.text;
+    $("#cancelCustomRecapEditBtn").classList.remove("hidden");
+  }
+
+  function renderCustomRecapList(){
+    const list=$("#customRecapList");
+    const entries=state.customRecaps.filter(entry=>entry.gameId===activeGameId).sort((a,b)=>a.chapter-b.chapter||a.createdAt-b.createdAt);
+    list.innerHTML=entries.length?entries.map(entry=>`<div class="recap-manager-item"><div><strong>${esc(entry.title)}</strong><small>${esc(storyUnitLabel(activeGameId,entry.chapter))} · ${esc(entry.text.slice(0,110))}${entry.text.length>110?"…":""}</small></div><div class="recap-manager-actions"><button type="button" class="ghost" data-manager-edit="${esc(entry.id)}">Edit</button><button type="button" class="ghost danger-text" data-manager-remove="${esc(entry.id)}">Remove</button></div></div>`).join(""):'<div class="recap-empty">No custom summaries on this board.</div>';
+    list.querySelectorAll("[data-manager-edit]").forEach(button=>button.onclick=()=>editCustomRecap(button.dataset.managerEdit));
+    list.querySelectorAll("[data-manager-remove]").forEach(button=>button.onclick=()=>removeCustomRecap(button.dataset.managerRemove));
+  }
+
+  function openRecapManager({chapter=currentSettings().voiceChapter,phase="pretrial",customId=""}={}){
+    if(mode!=="host")return;
+    $("#builtInRecapPhase").dataset.selection=phase;
+    refreshBuiltInRecapEditor({chapter,phase});
+    resetCustomRecapForm(chapter);
+    renderCustomRecapList();
+    if(customId)editCustomRecap(customId);
+    if(!$("#recapManagerDialog").open)$("#recapManagerDialog").showModal();
+  }
+
+  async function removeCustomRecap(customId){
+    if(mode!=="host")return;
+    const entry=state.customRecaps.find(item=>item.id===customId&&item.gameId===activeGameId);if(!entry)return;
+    const approved=await appConfirm({kicker:"REMOVE CUSTOM SUMMARY",title:`Remove “${entry.title}”?`,text:"Built-in chapter summaries are protected, but this custom entry can be removed.",confirmText:"Remove summary",danger:true});
+    if(!approved)return;
+    state.customRecaps=state.customRecaps.filter(item=>item.id!==customId);
+    saveState();render();
+    if($("#recapManagerDialog").open){resetCustomRecapForm();renderCustomRecapList()}
+    toast("Custom summary removed.");
   }
 
   function selectGame(gameId,{announce=true}={}){
@@ -4562,6 +4743,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#roleName").value=r?.name||"";
     $("#roleTitle").value=r?.title||"";
     $("#roleModifier").value=r?.modifier||"";
+    $("#roleBiography").value=r?biographyForRole(r):"";
     $("#roleSpoiler").checked=!!r?.hiddenSpoiler;
     pendingImage=r?.image||"";
     $("#roleImageUrl").value=(pendingImage&&/^https?:/i.test(pendingImage))?pendingImage:"";
@@ -4667,6 +4849,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       name,
       title:$("#roleTitle").value.trim(),
       modifier:$("#roleModifier").value.trim(),
+      biography:$("#roleBiography").value.trim(),
       image:pendingImage,
       hiddenSpoiler
     };
@@ -4880,6 +5063,40 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     saveState();render();
     toast(`Default theme changed to ${state.settings.defaultUiTheme}. Personal choices are unchanged.`);
   };
+
+  $("#manageRecapsBtn").onclick=()=>openRecapManager();
+  $("#editDossierBioBtn").onclick=()=>{
+    const role=roleById($("#editDossierBioBtn").dataset.roleId);
+    if(!role)return;
+    $("#dossierDialog").close();openRoleDialog(role);
+  };
+  $("#builtInRecapChapter").onchange=()=>refreshBuiltInRecapEditor({chapter:$("#builtInRecapChapter").value,phase:$("#builtInRecapPhase").value});
+  $("#builtInRecapPhase").onchange=()=>{
+    $("#builtInRecapPhase").dataset.selection=$("#builtInRecapPhase").value;
+    refreshBuiltInRecapEditor({chapter:$("#builtInRecapChapter").value,phase:$("#builtInRecapPhase").value});
+  };
+  $("#builtInRecapForm").onsubmit=event=>{
+    event.preventDefault();if(mode!=="host")return;
+    const chapter=String(Number($("#builtInRecapChapter").value)||1);
+    const phase=$("#builtInRecapPhase").value==="full"?"full":"pretrial";
+    const text=$("#builtInRecapText").value.trim();
+    if(!text)return toast("Built-in summaries cannot be empty or removed.");
+    state.recapOverrides[activeGameId]||={};state.recapOverrides[activeGameId][chapter]||={};
+    state.recapOverrides[activeGameId][chapter][phase]=text;
+    saveState();render();refreshBuiltInRecapEditor({chapter,phase});toast("Built-in summary updated.");
+  };
+  $("#customRecapForm").onsubmit=event=>{
+    event.preventDefault();if(mode!=="host")return;
+    const customId=$("#customRecapId").value;
+    const text=$("#customRecapText").value.trim();if(!text)return;
+    const chapter=Math.max(1,Math.min(gameDefinition(activeGameId).maxChapter,Number($("#customRecapChapter").value)||currentSettings().voiceChapter));
+    const title=$("#customRecapTitle").value.trim()||`${storyUnitLabel(activeGameId,chapter)} · Custom`;
+    const existing=state.customRecaps.find(entry=>entry.id===customId&&entry.gameId===activeGameId);
+    if(existing)Object.assign(existing,{chapter,title,text});
+    else state.customRecaps.push({id:id(),gameId:activeGameId,chapter,title,text,createdAt:Date.now()});
+    saveState();render();resetCustomRecapForm(chapter);renderCustomRecapList();toast(existing?"Custom summary updated.":"Custom summary added.");
+  };
+  $("#cancelCustomRecapEditBtn").onclick=()=>resetCustomRecapForm();
 
   function activateTab(tabName){
     $$(".tab").forEach(button=>button.classList.toggle("active",button.dataset.tab===tabName));
