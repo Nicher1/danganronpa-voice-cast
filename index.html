@@ -683,7 +683,7 @@ body.mobile-dragging{user-select:none}
   .control-strip{padding:8px}
   .role-pool,.actors-panel,.memorial-hero,.stats-hero,.monopad-hero,.monopad-section,.prediction-leaderboard,.population-panel{padding:12px}
   .modal-card,.compact-modal,.practice-dialog-card,.game-picker-card,.dossier-dialog-card{width:100%;max-width:100%}
-  .monopad-section-head{display:block}.monopad-section-head button{width:100%;margin-top:9px}.recap-editor-grid,.recap-editor-row{grid-template-columns:1fr}.recap-manager-item{grid-template-columns:1fr}.recap-manager-actions button{flex:1}
+  .recap-editor-grid,.recap-editor-row{grid-template-columns:1fr}.recap-manager-item{grid-template-columns:1fr}.recap-manager-actions button{flex:1}
   .anime-episode-tracker{align-items:stretch;flex-direction:column}.anime-episode-tracker button{width:100%}.anime-score-card{grid-template-columns:1fr 1fr}.anime-score-metric.total{grid-column:1/-1;grid-row:1}
 }
 
@@ -768,7 +768,7 @@ body.mobile-dragging{user-select:none}
 .dossier-card{display:grid;grid-template-columns:62px minmax(0,1fr);gap:10px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(135deg,rgba(255,255,255,.026),transparent),var(--panel-soft);min-width:0}
 .dossier-card img,.dossier-card .dossier-placeholder{width:62px;height:70px;object-fit:cover;object-position:center top;border-radius:9px;background:#0f1117;border:1px solid rgba(255,255,255,.06)}
 .dossier-card .dossier-placeholder{display:grid;place-items:center;color:var(--muted2);font-weight:950;font-size:1.15rem}.dossier-card-copy{min-width:0}.dossier-card h3{font-size:.8rem;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dossier-card p{font-size:.64rem;color:var(--muted);font-style:italic;margin:3px 0 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dossier-card button{font-size:.63rem;padding:.36rem .5rem;width:100%}
-.monopad-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.monopad-section-head>div{min-width:0}.monopad-section-head button{flex:0 0 auto;font-size:.65rem}
+.monopad-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.monopad-section-head>div{min-width:0}.monopad-section-head button{flex:0 0 auto;font-size:.65rem}.monopad-section-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .recap-feed{display:grid;gap:10px;margin-top:15px}.recap-entry{position:relative;margin:0;padding:13px 13px 13px 16px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018);color:#d6dbe5;font-size:.76rem;line-height:1.6;overflow-wrap:anywhere}.recap-entry::before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(var(--blue),var(--pink-hot))}.recap-entry.custom::before{background:linear-gradient(var(--gold),var(--pink-hot))}.recap-entry-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}.recap-entry-label{color:var(--blue);font-size:.58rem;font-weight:950;letter-spacing:.1em;text-transform:uppercase}.recap-entry.custom .recap-entry-label{color:var(--gold)}.recap-entry p{margin:0}.recap-entry-actions{display:flex;gap:4px;flex-wrap:wrap}.recap-entry-actions button{padding:.28rem .42rem;font-size:.57rem}.recap-empty{padding:15px;border:1px dashed var(--line);border-radius:11px;color:var(--muted);font-size:.74rem;line-height:1.5}
 #recapManagerDialog{width:min(94vw,860px);max-width:94vw;max-height:94vh;overflow:auto}.recap-manager-card{width:100%}.recap-editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.recap-editor-panel{padding:14px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.018)}.recap-editor-panel h4{margin:0 0 4px}.recap-editor-panel>p{margin:0 0 9px}.recap-editor-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.modal select{display:block;width:100%;margin-top:5px;border:1px solid var(--line);background:#0e1117;color:white;border-radius:10px;padding:10px 11px;outline:none}.recap-manager-list{display:grid;gap:6px;max-height:220px;overflow:auto;margin-top:11px}.recap-manager-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:9px;background:#0e1118}.recap-manager-item strong{display:block;font-size:.69rem}.recap-manager-item small{display:block;color:var(--muted);font-size:.61rem;margin-top:2px}.recap-manager-actions{display:flex;gap:4px}.recap-manager-actions button{padding:.34rem .46rem;font-size:.58rem}.field-help{display:block;margin-top:5px;color:var(--muted);font-size:.65rem;font-weight:500;line-height:1.4}#editDossierBioBtn{margin-top:17px}
 #dossierDialog{width:min(94vw,820px);max-width:94vw;overflow-x:hidden;overflow-y:auto}
@@ -1039,6 +1039,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 @media(max-width:620px){
   .theme-picker{width:100%;justify-content:space-between}.theme-picker select{flex:1}
+  .monopad-section-head{display:block;width:100%}.monopad-section-head>div{width:100%;min-width:100%}.monopad-section-actions{display:grid;grid-template-columns:1fr;width:100%;margin-top:10px}.monopad-section-head button{width:100%;margin:0}.recap-entry-head{align-items:flex-start;flex-direction:column}.recap-entry-actions{width:100%}.recap-entry-actions button{flex:1}
 }
 @media(prefers-reduced-motion:reduce){
   html[data-ui-theme="reworked"] .tab-panel.active{animation:none}
@@ -1299,14 +1300,17 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <p class="muted small">Open a file for a larger portrait and a brief, surface-level introduction.</p>
           <div id="monopadDossierGrid" class="monopad-dossier-grid"></div>
         </section>
-        <section class="monopad-section panel">
+        <section id="monopad-summaries" class="monopad-section panel">
           <div class="monopad-section-head">
             <div>
               <div class="section-kicker">STORY MEMORY</div>
               <h2 id="monopadRecapTitle">What happened so far</h2>
               <p id="monopadRecapHelp" class="muted small"></p>
             </div>
-            <button id="manageRecapsBtn" type="button" class="ghost host-only">Manage recaps</button>
+            <div class="monopad-section-actions host-only">
+              <button id="copyPlayerRecapLinkBtn" type="button" class="ghost">Copy player recap link</button>
+              <button id="manageRecapsBtn" type="button" class="ghost">Manage recaps</button>
+            </div>
           </div>
           <div id="monopadRecapFeed" class="recap-feed"></div>
         </section>
@@ -1418,7 +1422,15 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Version history. Releases are newest first and collapsed until you open them.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">v0.16</span><span class="patch-release-title"><strong>Master-editable story memory and dossiers</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">v0.17</span><span class="patch-release-title"><strong>Direct player recap links</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Open directly on story memory</h4><p>A dedicated player link now opens the Monopad and moves straight to the summary section. First-time visitors can read it without an actor-selection dialog covering the recap.</p></section>
+            <section class="patch-note"><h4>One-tap master sharing</h4><p>The master can copy the exact player recap link beside Manage Recaps in the Monopad.</p></section>
+            <section class="patch-note"><h4>Portrait-phone heading repair</h4><p>Master-only recap controls now stack below the heading on narrow screens, preventing the explanatory text from collapsing to one character per line.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.16</span><span class="patch-release-title"><strong>Master-editable story memory and dossiers</strong><small>Previous release</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Custom stopping-point recaps</h4><p>The master can add, edit, and remove spoiler-safe custom story summaries from the Monopad. A special Chapter 3 entry records the search for Taka and Hifumi's missing bodies without revealing what happens next.</p></section>
             <section class="patch-note"><h4>Protected built-in summaries</h4><p>Every normal pre-Trial and Trial recap can now be edited by the master, but it cannot be deleted or saved empty.</p></section>
@@ -1774,7 +1786,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.09.11.3";
+  const APP_BUILD = "2026.09.11.4";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -1803,6 +1815,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   const requestedMode = params.get("mode");
   const hostAccess = params.get("host") === "11037" || /\/11037\/?$/.test(location.pathname);
   const mode = hostAccess ? "host" : requestedMode === "viewer" ? "viewer" : "player";
+  const PLAYER_RECAP_HASH="#monopad-summaries";
   if(hostAccess&&params.get("host")==="11037"){
     const cleanHostUrl=new URL(location.href);
     cleanHostUrl.pathname=cleanHostUrl.pathname.replace(/\/?$/, "/11037");
@@ -5107,6 +5120,17 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   }
   $$(".tab").forEach(btn=>btn.onclick=()=>activateTab(btn.dataset.tab));
 
+  function applyDeepLinkRoute(){
+    const route=location.hash.toLowerCase();
+    if(route!=="#monopad"&&route!==PLAYER_RECAP_HASH)return false;
+    activateTab("monopad");
+    if(route===PLAYER_RECAP_HASH){
+      requestAnimationFrame(()=>document.getElementById("monopad-summaries")?.scrollIntoView({block:"start"}));
+    }
+    return true;
+  }
+  window.addEventListener("hashchange",applyDeepLinkRoute);
+
   $$("[data-close]").forEach(btn=>{
     btn.onclick=()=>document.getElementById(btn.dataset.close).close();
   });
@@ -5141,11 +5165,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     if(!event.persisted)remoteSync?.endPresenceSession?.().catch(()=>{});
   });
 
-  function publicModeUrl(targetMode){
+  function publicModeUrl(targetMode,destination=""){
     const url=new URL(location.href);
     url.pathname=url.pathname.replace(/\/11037\/?$/, "/");
     url.search="";
-    url.hash="";
+    url.hash=destination?`#${String(destination).replace(/^#/,"")}`:"";
     url.searchParams.set("mode",targetMode);
     return url;
   }
@@ -5158,16 +5182,18 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   $("#previewPlayerBtn").onclick=()=>openPreview("player");
   $("#previewViewerBtn").onclick=()=>openPreview("viewer");
 
-  async function copyModeLink(targetMode){
-    const url=publicModeUrl(targetMode);
+  async function copyModeLink(targetMode,{destination="",label=""}={}){
+    const url=publicModeUrl(targetMode,destination);
+    const linkLabel=label||(targetMode==="player"?"Player":"Viewer");
     try{
-      await navigator.clipboard.writeText(url.href);toast(`${targetMode==="player"?"Player":"Viewer"} link copied.`);
+      await navigator.clipboard.writeText(url.href);toast(`${linkLabel} link copied.`);
     }catch(_){
       prompt("Copy this link:",url.href);
     }
   }
   $("#playerLinkBtn").onclick=()=>copyModeLink("player");
   $("#viewerLinkBtn").onclick=()=>copyModeLink("viewer");
+  $("#copyPlayerRecapLinkBtn").onclick=()=>copyModeLink("player",{destination:"monopad-summaries",label:"Player recap"});
 
   $("#exportBtn").onclick=()=>{
     const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
@@ -5187,12 +5213,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   });
 
   render();
+  const initialDeepLink=applyDeepLinkRoute();
   await initializeSharedBoard();
   initialBoardLoadComplete=true;
   render();
+  const openedDeepLink=applyDeepLinkRoute()||initialDeepLink;
 
   // If a player arrives without a selected actor, open the selector automatically.
-  if(mode==="player"&&!activeActorId){
+  if(mode==="player"&&!activeActorId&&!openedDeepLink){
     setTimeout(()=>{
       const picker=$("#gamePickerDialog");
       if(picker.open)picker.addEventListener("close",()=>setTimeout(()=>beginLogin(),50),{once:true});
