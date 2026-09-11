@@ -864,7 +864,8 @@ body.mobile-dragging{user-select:none}
   .role-mini-img{width:46px;height:52px;flex-basis:46px}
 }
 
-/* Optional Danganronpa-inspired reworked theme. The original theme remains the default. */
+/* Two presentation layers share the same live board. Original stays untouched above;
+   Reworked deliberately follows the separate navigable overhaul prototype. */
 .theme-picker{
   display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:4px 5px 4px 10px;
   border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018);
@@ -876,75 +877,207 @@ body.mobile-dragging{user-select:none}
 .theme-service{padding:17px}.theme-service h3{margin:3px 0 5px}.theme-service p{margin:0 0 13px;color:var(--muted);font-size:.72rem;line-height:1.5}
 .theme-default-control{display:grid;gap:6px;color:var(--muted);font-size:.68rem;font-weight:850}.theme-default-select{width:100%;border:1px solid var(--line)}
 .theme-progress{display:none}
-.brand-mark img{display:none;width:100%;height:100%;object-fit:contain;object-position:center}
+.reworked-brand-shell{display:none}
 
 html[data-ui-theme="reworked"]{
-  --bg:#05070c;--bg2:#090c13;--panel:#0d111a;--panel-raised:#121824;--panel-soft:#171e2b;--panel-hover:#1d2635;
-  --line:#30394a;--line-strong:#5b687d;--text:#f8f8f4;--muted:#9ba7b9;--muted2:#697589;
-  --pink:#ff2f91;--pink-hot:#ff5bab;--blue:#35d9ff;--green:#b9ff4a;--gold:#ffdc42;
-  --shadow:0 14px 0 rgba(0,0,0,.22);--shadow-small:0 7px 0 rgba(0,0,0,.2);--radius:4px;--radius-sm:3px
+  --bg:#07090e;--bg2:#0b0e15;--panel:#111520;--panel-raised:#171c28;--panel-soft:#202635;--panel-hover:#252d3e;
+  --line:#343b4c;--line-strong:#69758b;--text:#f3f0e9;--muted:#98a0b1;--muted2:#697386;
+  --pink:#ff2f91;--pink-hot:#ff65ae;--blue:#35d9ff;--green:#baff55;--gold:#ffdc36;
+  --shadow:7px 9px 0 rgba(0,0,0,.64);--shadow-small:4px 5px 0 rgba(0,0,0,.48);--radius:18px 4px 18px 4px;--radius-sm:12px 3px 12px 3px
 }
 html[data-ui-theme="reworked"] body{
+  font-family:"Arial Narrow","Roboto Condensed","Segoe UI",sans-serif;
   background:
-    linear-gradient(130deg,rgba(255,47,145,.035) 25%,transparent 25%) 0 0/42px 42px,
-    linear-gradient(310deg,rgba(53,217,255,.025) 25%,transparent 25%) 0 0/42px 42px,
-    radial-gradient(circle at 90% -5%,rgba(53,217,255,.12),transparent 30rem),#05070c
+    radial-gradient(circle at 90% 4%,rgba(53,217,255,.12),transparent 28rem),
+    linear-gradient(118deg,transparent 0 72%,rgba(255,47,145,.055) 72% 72.5%,transparent 72.5%),
+    repeating-linear-gradient(135deg,rgba(255,255,255,.018) 0 1px,transparent 1px 12px),
+    var(--bg)
 }
 html[data-ui-theme="reworked"] body::before{
-  content:"";position:fixed;z-index:90;left:0;right:0;top:0;height:7px;pointer-events:none;
-  background:repeating-linear-gradient(135deg,var(--pink) 0 18px,#090b12 18px 36px)
+  content:"";position:fixed;z-index:90;inset:0;pointer-events:none;border-top:6px solid var(--pink);border-right:6px solid var(--blue);
+  background:none
 }
 html[data-ui-theme="reworked"] .topbar{
-  max-width:none;margin-top:7px;padding:25px 28px 18px;background:rgba(5,7,12,.94);border-bottom:1px solid var(--line);align-items:center
+  position:relative;display:grid;grid-template-columns:minmax(390px,.9fr) minmax(480px,1.1fr);align-items:center;gap:28px;
+  max-width:none;margin:0;padding:22px clamp(16px,3vw,46px) 17px;background:rgba(7,9,14,.95);border-bottom:1px solid #303747;overflow:hidden
 }
+html[data-ui-theme="reworked"] .topbar::before{content:"DESPAIR";position:absolute;right:-24px;top:-27px;color:rgba(255,255,255,.025);font:1000 9rem/1 Impact,sans-serif;transform:rotate(-5deg)}
 html[data-ui-theme="reworked"] .topbar::after{display:none}
-html[data-ui-theme="reworked"] .brand-kicker,html[data-ui-theme="reworked"] .section-kicker,html[data-ui-theme="reworked"] .eyebrow{color:var(--pink);font-family:ui-monospace,Consolas,monospace}
-html[data-ui-theme="reworked"] .brand-mark{width:57px;height:57px;border:0;border-radius:0;background:linear-gradient(145deg,var(--pink),#ff85bf);box-shadow:7px 7px 0 #11151e;transform:rotate(-4deg);overflow:visible}
-html[data-ui-theme="reworked"] .brand-mark::after,html[data-ui-theme="reworked"] .brand-mark span{display:none}
-html[data-ui-theme="reworked"] .brand-mark img{display:block;filter:drop-shadow(2px 3px 0 rgba(0,0,0,.8));transform:rotate(4deg) scale(1.13)}
-html[data-ui-theme="reworked"] .topbar h1,html[data-ui-theme="reworked"] h2,html[data-ui-theme="reworked"] .actor-name{font-family:Impact,"Arial Black",sans-serif;letter-spacing:.018em;text-transform:uppercase}
-html[data-ui-theme="reworked"] .topbar h1{font-size:clamp(34px,5vw,58px);line-height:.82;text-shadow:3px 3px 0 #151a25}
-html[data-ui-theme="reworked"] .topbar h1::first-letter{color:var(--pink)}
-html[data-ui-theme="reworked"] .brand-subtitle{font-family:ui-monospace,Consolas,monospace;font-size:.69rem;letter-spacing:.08em;text-transform:uppercase}
-html[data-ui-theme="reworked"] button,html[data-ui-theme="reworked"] .button,html[data-ui-theme="reworked"] .theme-picker,html[data-ui-theme="reworked"] select{border-radius:2px}
-html[data-ui-theme="reworked"] button,html[data-ui-theme="reworked"] .button{font-family:ui-monospace,Consolas,monospace;text-transform:uppercase;letter-spacing:.035em;box-shadow:inset 0 -2px rgba(0,0,0,.4)}
-html[data-ui-theme="reworked"] button.primary{background:var(--blue);color:#04070b;box-shadow:5px 5px 0 rgba(255,47,145,.85)}
-html[data-ui-theme="reworked"] .panel{background:linear-gradient(145deg,rgba(255,255,255,.018),transparent 42%),var(--panel);border-radius:4px;box-shadow:8px 8px 0 rgba(0,0,0,.2)}
-html[data-ui-theme="reworked"] .tabs{gap:5px}
-html[data-ui-theme="reworked"] .tab{border:1px solid var(--line);border-radius:0;background:#0b0f17;font-family:ui-monospace,Consolas,monospace;text-transform:uppercase;font-size:.72rem;letter-spacing:.04em}
-html[data-ui-theme="reworked"] .tab.active{color:#031017;background:var(--blue);border-color:var(--blue);box-shadow:inset 0 -4px var(--pink)}
-html[data-ui-theme="reworked"] .tab.active .tab-icon{color:#031017}
-html[data-ui-theme="reworked"] .control-strip{border-radius:2px;background:#10151f}
-html[data-ui-theme="reworked"] .role-card,html[data-ui-theme="reworked"] .actor-card,html[data-ui-theme="reworked"] .memorial-card,html[data-ui-theme="reworked"] .dossier-card,html[data-ui-theme="reworked"] .stats-card{border-radius:2px}
-html[data-ui-theme="reworked"] .role-card:hover,html[data-ui-theme="reworked"] .actor-card:hover{border-color:var(--blue)}
-html[data-ui-theme="reworked"] .rule-banner{border-radius:0;border-left:5px solid var(--pink)}
-html[data-ui-theme="reworked"] .rule-banner::before{display:none}
-html[data-ui-theme="reworked"] .badge,html[data-ui-theme="reworked"] .count-pill,html[data-ui-theme="reworked"] .counter{border-radius:2px;font-family:ui-monospace,Consolas,monospace}
-html[data-ui-theme="reworked"] .theme-progress{
-  display:grid;grid-template-columns:auto minmax(120px,1fr) auto;align-items:center;gap:13px;max-width:1650px;margin:12px auto 0;padding:10px 17px;
-  background:linear-gradient(100deg,rgba(255,47,145,.12),rgba(53,217,255,.05)),#10141e;border:1px solid #343d4d;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 100%)
+html[data-ui-theme="reworked"] .original-brand-shell{display:none}
+html[data-ui-theme="reworked"] .reworked-brand-shell{position:relative;display:block;min-width:0}
+html[data-ui-theme="reworked"] .reworked-brand{display:flex;align-items:center;gap:15px;min-width:0}
+html[data-ui-theme="reworked"] .reworked-monokuma-mark{
+  flex:0 0 76px;width:76px;height:76px;padding:4px;background:#f3f0e9;border:3px solid #05060a;box-shadow:7px 7px 0 var(--pink);
+  transform:rotate(-4deg);clip-path:polygon(0 0,100% 0,94% 91%,60% 91%,50% 100%,40% 91%,5% 91%)
 }
-.theme-progress strong{color:var(--gold);font:900 .83rem/1 ui-monospace,Consolas,monospace;white-space:nowrap}.theme-progress-track{height:8px;background:#27303e;overflow:hidden;transform:skewX(-17deg)}.theme-progress-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--blue));transition:width .25s}.theme-progress em{color:var(--green);font:900 .63rem/1 ui-monospace,Consolas,monospace;font-style:normal;letter-spacing:.07em;white-space:nowrap}.theme-progress em::before{content:"";display:inline-block;width:7px;height:7px;margin-right:7px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor}
-html[data-ui-theme="reworked"] .app-shell{padding-top:10px}
+html[data-ui-theme="reworked"] .reworked-monokuma-mark svg{display:block;width:100%;height:100%;transform:rotate(4deg)}
+html[data-ui-theme="reworked"] .reworked-brand-kicker{color:var(--pink);font:1000 .64rem/1 ui-monospace,Consolas,monospace;letter-spacing:.2em;text-transform:uppercase}
+html[data-ui-theme="reworked"] .reworked-brand h1{margin:5px 0 1px;font:1000 clamp(2.35rem,5vw,4.7rem)/.78 Impact,"Arial Black",sans-serif;text-transform:uppercase;letter-spacing:-.035em;white-space:nowrap;text-shadow:none}
+html[data-ui-theme="reworked"] .reworked-brand h1 span{color:var(--blue);text-shadow:5px 0 0 rgba(255,47,145,.75)}
+html[data-ui-theme="reworked"] .reworked-brand-sub{color:#aeb5c3;font-size:.74rem}
+html[data-ui-theme="reworked"] .reworked-session{min-height:18px;margin:8px 0 0 91px;color:var(--muted);font-size:.75rem}
+html[data-ui-theme="reworked"] .top-actions{position:relative;justify-content:flex-end;gap:7px;align-content:center}
+html[data-ui-theme="reworked"] button,html[data-ui-theme="reworked"] .button,html[data-ui-theme="reworked"] .theme-picker,html[data-ui-theme="reworked"] select{border-radius:10px 2px 10px 2px}
+html[data-ui-theme="reworked"] button,html[data-ui-theme="reworked"] .button{font-family:ui-monospace,Consolas,monospace;text-transform:uppercase;letter-spacing:.04em;box-shadow:none}
+html[data-ui-theme="reworked"] .top-actions button,html[data-ui-theme="reworked"] .top-actions .button{min-height:34px;padding:7px 10px;background:#131722;border-color:#3c4353;font-size:.64rem}
+html[data-ui-theme="reworked"] .top-actions button:hover,html[data-ui-theme="reworked"] .top-actions .button:hover{border-color:var(--blue);background:#202738}
+html[data-ui-theme="reworked"] .theme-picker{min-height:34px;padding:3px 4px 3px 8px;border-color:#3c4353;background:#131722;font-family:ui-monospace,Consolas,monospace}
+html[data-ui-theme="reworked"] .theme-picker select{padding:.38rem .45rem;background:#090c12}
+html[data-ui-theme="reworked"] button.primary{background:var(--pink);border-color:var(--pink);color:white;box-shadow:4px 4px 0 rgba(53,217,255,.82)}
+html[data-ui-theme="reworked"] .brand-kicker,html[data-ui-theme="reworked"] .section-kicker,html[data-ui-theme="reworked"] .eyebrow{color:var(--pink);font-family:ui-monospace,Consolas,monospace;text-transform:uppercase}
+html[data-ui-theme="reworked"] h2,html[data-ui-theme="reworked"] h3,html[data-ui-theme="reworked"] .actor-name,html[data-ui-theme="reworked"] .memorial-name{font-family:Impact,"Arial Black",sans-serif;letter-spacing:.025em;text-transform:uppercase}
+html[data-ui-theme="reworked"] .theme-progress{
+  display:grid;grid-template-columns:auto minmax(160px,1fr) auto;align-items:center;gap:15px;width:min(1540px,calc(100% - 30px));min-height:55px;margin:15px auto 11px;padding:10px 17px;
+  background:linear-gradient(100deg,rgba(255,47,145,.11),rgba(53,217,255,.04)),#171b28;border:1px solid #3c4354;
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,14px 100%,0 calc(100% - 14px));box-shadow:var(--shadow)
+}
+.theme-progress strong{color:var(--gold);font:1000 clamp(.75rem,1.3vw,1rem)/1 ui-monospace,Consolas,monospace;white-space:nowrap}.theme-progress-track{position:relative;height:13px;background:#292e3a;border:1px solid #444c5d;transform:skew(-15deg);overflow:hidden}.theme-progress-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pink),#aa72c3 48%,var(--blue));box-shadow:0 0 14px var(--blue);transition:width .35s}.theme-progress em{color:var(--green);font:1000 .62rem/1 ui-monospace,Consolas,monospace;font-style:normal;letter-spacing:.075em;white-space:nowrap}.theme-progress em::before{content:"";display:inline-block;width:8px;height:8px;margin-right:8px;border-radius:50%;background:currentColor;box-shadow:0 0 12px currentColor}
+html[data-ui-theme="reworked"] .app-shell{width:min(1540px,calc(100% - 30px));max-width:none;padding:0 0 42px}
+html[data-ui-theme="reworked"] .game-lock-banner{border-radius:18px 4px 18px 4px;box-shadow:var(--shadow)}
+html[data-ui-theme="reworked"] .tabs{display:flex;gap:5px;margin:0 0 14px;overflow:auto}
+html[data-ui-theme="reworked"] .tab{position:relative;min-width:142px;padding:11px 17px;border:1px solid #3b4252;border-radius:0;background:#10141e;color:var(--muted);font:1000 .67rem/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;clip-path:polygon(0 0,92% 0,100% 50%,92% 100%,0 100%,7% 50%)}
+html[data-ui-theme="reworked"] .tab:first-child{clip-path:polygon(0 0,92% 0,100% 50%,92% 100%,0 100%)}
+html[data-ui-theme="reworked"] .tab:hover{transform:translateY(-2px);border-color:var(--blue)}
+html[data-ui-theme="reworked"] .tab.active{color:#06080d;background:var(--blue);border-color:var(--blue);box-shadow:inset 0 -5px 0 var(--pink)}
+html[data-ui-theme="reworked"] .tab.active .tab-icon{color:#06080d}
+html[data-ui-theme="reworked"] .tab-panel.active{animation:reworked-enter .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes reworked-enter{from{opacity:.2;transform:translateY(9px)}to{opacity:1;transform:none}}
+html[data-ui-theme="reworked"] .panel{background:linear-gradient(145deg,rgba(255,255,255,.025),transparent 36%),var(--panel);border-color:var(--line);border-radius:18px 4px 18px 4px;box-shadow:var(--shadow)}
+html[data-ui-theme="reworked"] .control-strip{padding:10px;margin-bottom:11px;background:#121620;border:1px solid #353c4b;border-radius:14px 3px 14px 3px;box-shadow:none;backdrop-filter:none}
+html[data-ui-theme="reworked"] .toggle-wrap{border-radius:12px 3px 12px 3px;background:#171c28}
+html[data-ui-theme="reworked"] .rule-banner{margin-bottom:11px;padding:9px 12px;border:0;border-left:4px solid var(--blue);border-radius:0;background:#111a23;color:#c6cbd5;box-shadow:none}
+html[data-ui-theme="reworked"] .rule-banner::before{display:none}
+html[data-ui-theme="reworked"] .prediction-dock{border:1px solid var(--pink);border-radius:15px 3px 15px 3px;background:rgba(255,47,145,.08)}
+html[data-ui-theme="reworked"] .badge,html[data-ui-theme="reworked"] .count-pill,html[data-ui-theme="reworked"] .counter{border-radius:9px 2px 9px 2px;font-family:ui-monospace,Consolas,monospace}
+html[data-ui-theme="reworked"] .count-pill{display:inline-grid;place-items:center;min-width:36px;min-height:27px;background:var(--gold);border-color:var(--gold);color:#0b0c11;transform:skew(-8deg)}
+
+/* Casting becomes the prototype's library + two-card cast workspace. */
+html[data-ui-theme="reworked"] .casting-layout{grid-template-columns:minmax(290px,.68fr) minmax(0,1.32fr);gap:13px}
+html[data-ui-theme="reworked"] .role-pool{top:12px;max-height:calc(100vh - 24px);padding:0;overflow:auto}
+html[data-ui-theme="reworked"] .actors-panel{padding:0;min-height:540px}
+html[data-ui-theme="reworked"] .role-pool>.panel-title-row,html[data-ui-theme="reworked"] .actors-panel>.panel-title-row{padding:14px 15px 0}
+html[data-ui-theme="reworked"] .role-pool>#libraryHelp{padding:0 14px 10px;margin:7px 0 0;border-bottom:1px solid var(--line)}
+html[data-ui-theme="reworked"] .role-stack{gap:8px;padding:10px}
+html[data-ui-theme="reworked"] .spoiler-vault{margin:0 10px 10px;border-radius:12px 3px 12px 3px}
+html[data-ui-theme="reworked"] .actors-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:10px}
+html[data-ui-theme="reworked"] .actor-card{padding:0;min-height:220px;border-radius:22px 3px 22px 3px;background:#0b0e15;overflow:hidden;box-shadow:none}
+html[data-ui-theme="reworked"] .actor-card:nth-child(even){border-radius:3px 22px 3px 22px}
+html[data-ui-theme="reworked"] .actor-card::before{display:none}
+html[data-ui-theme="reworked"] .actor-card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:none}
+html[data-ui-theme="reworked"] .actor-card.mine{border-color:var(--blue);box-shadow:inset 4px 0 0 var(--blue)}
+html[data-ui-theme="reworked"] .actor-card.online{border-color:var(--green)}
+html[data-ui-theme="reworked"] .actor-head{margin:0;padding:11px 12px;border-bottom:1px solid #303645;background:#151925}
+html[data-ui-theme="reworked"] .actor-name{font-size:1.1rem;line-height:1}
+html[data-ui-theme="reworked"] .actor-meta>span:not(.token-badge){border-radius:2px;background:#0d1119;border-color:#343b4a}
+html[data-ui-theme="reworked"] .actor-slots{min-height:96px;padding:9px}
+html[data-ui-theme="reworked"] .actor-history{margin:0;padding:9px 11px;border:0;border-top:1px solid #2e3441;border-radius:0;background:#10141d}
+html[data-ui-theme="reworked"] .role-card{border-radius:3px 17px 3px 17px;background:#0b0e15;box-shadow:none}
+html[data-ui-theme="reworked"] .role-card:nth-child(even){border-radius:17px 3px 17px 3px}
+html[data-ui-theme="reworked"] .role-card:hover{border-color:#596278;transform:translateX(3px)}
+html[data-ui-theme="reworked"] .role-mini-img{border-radius:12px 2px 12px 2px}
+html[data-ui-theme="reworked"] .empty-slot{border-radius:14px 3px 14px 3px}
+
+/* The other destinations also use the prototype's distinct card systems. */
+html[data-ui-theme="reworked"] .memorial-hero,html[data-ui-theme="reworked"] .stats-hero,html[data-ui-theme="reworked"] .monopad-hero,html[data-ui-theme="reworked"] .admin-hero{border-radius:22px 4px 22px 4px}
+html[data-ui-theme="reworked"] .graveyard-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+html[data-ui-theme="reworked"] .memorial-card{padding:0;border:3px solid #000;border-radius:28px 4px 28px 4px;background:#f3f0e9;color:#11131a;box-shadow:var(--shadow)}
+html[data-ui-theme="reworked"] .memorial-card img,html[data-ui-theme="reworked"] .memorial-placeholder{border-radius:0;background:#bbb;filter:grayscale(1);opacity:.72}
+html[data-ui-theme="reworked"] .memorial-card>:not(.memorial-visual){margin-left:11px;margin-right:11px}
+html[data-ui-theme="reworked"] .memorial-card button{color:#11131a;border-color:#222;background:transparent}
+html[data-ui-theme="reworked"] .stats-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+html[data-ui-theme="reworked"] .stats-card{border-radius:18px 3px 18px 3px;overflow:hidden}
+html[data-ui-theme="reworked"] .stats-breakdown div,html[data-ui-theme="reworked"] .stats-game-row{border-radius:10px 2px;background:#0b0e15}
+html[data-ui-theme="reworked"] .prediction-leaderboard,html[data-ui-theme="reworked"] .population-panel{border-radius:24px 4px 24px 4px}
+html[data-ui-theme="reworked"] .prediction-chart-track{border-radius:13px 2px;background:#090c12}
+html[data-ui-theme="reworked"] .monopad-layout{grid-template-columns:1.2fr .8fr;gap:12px}
+html[data-ui-theme="reworked"] .monopad-section{border-radius:24px 4px 24px 4px}
+html[data-ui-theme="reworked"] .monopad-dossier-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+html[data-ui-theme="reworked"] .dossier-card{display:block;padding:0;border-radius:22px 3px 22px 3px;overflow:hidden}
+html[data-ui-theme="reworked"] .dossier-card img,html[data-ui-theme="reworked"] .dossier-card .dossier-placeholder{width:100%;height:145px;border:0;border-radius:0}
+html[data-ui-theme="reworked"] .dossier-card-copy{padding:9px}
+html[data-ui-theme="reworked"] .recap-entry{border-radius:14px 3px 14px 3px;background:#0b0e15}
+html[data-ui-theme="reworked"] .admin-games{grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+html[data-ui-theme="reworked"] .admin-game-card:nth-child(even),html[data-ui-theme="reworked"] .theme-service,html[data-ui-theme="reworked"] .activity-panel{border-radius:4px 20px 4px 20px}
+html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-shadow:var(--shadow)}
+
+@media(max-width:1080px){
+  html[data-ui-theme="reworked"] .topbar{grid-template-columns:1fr}html[data-ui-theme="reworked"] .reworked-brand-shell{max-width:none}
+  html[data-ui-theme="reworked"] .top-actions{justify-content:flex-start}
+  html[data-ui-theme="reworked"] .casting-layout,html[data-ui-theme="reworked"] .monopad-layout{grid-template-columns:1fr}
+  html[data-ui-theme="reworked"] .role-pool{position:relative;top:auto;max-height:none}
+  html[data-ui-theme="reworked"] .graveyard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  html[data-ui-theme="reworked"] .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  html[data-ui-theme="reworked"] .admin-games{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px){
+  html[data-ui-theme="reworked"] .theme-picker{width:100%;justify-content:space-between}html[data-ui-theme="reworked"] .theme-picker select{flex:1}
+  html[data-ui-theme="reworked"] .topbar{display:block;padding:16px 12px 13px}
+  html[data-ui-theme="reworked"] .reworked-monokuma-mark{flex-basis:60px;width:60px;height:60px}
+  html[data-ui-theme="reworked"] .reworked-brand h1{font-size:clamp(2rem,12vw,3.25rem)}
+  html[data-ui-theme="reworked"] .reworked-brand-sub{font-size:.65rem}
+  html[data-ui-theme="reworked"] .reworked-session{margin-left:75px}
+  html[data-ui-theme="reworked"] .top-actions{margin-top:14px;justify-content:flex-start}
+  html[data-ui-theme="reworked"] .top-actions>*{flex:1 1 auto}
+  html[data-ui-theme="reworked"] .theme-progress{width:calc(100% - 16px);margin:9px 8px 10px;grid-template-columns:1fr auto;gap:8px;padding:9px 11px}
+  html[data-ui-theme="reworked"] .theme-progress-track{grid-column:1/-1;grid-row:2}html[data-ui-theme="reworked"] .theme-progress em{grid-column:2;grid-row:1}
+  html[data-ui-theme="reworked"] .app-shell{width:calc(100% - 16px)}
+  html[data-ui-theme="reworked"] .tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}
+  html[data-ui-theme="reworked"] .tab{min-width:0;padding:11px 7px}html[data-ui-theme="reworked"] .tab:last-child{grid-column:1/-1}
+  html[data-ui-theme="reworked"] .actors-grid,html[data-ui-theme="reworked"] .stats-grid,html[data-ui-theme="reworked"] .graveyard-grid,html[data-ui-theme="reworked"] .admin-games{grid-template-columns:1fr}
+  html[data-ui-theme="reworked"] .monopad-dossier-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:430px){
+  html[data-ui-theme="reworked"] .reworked-brand{gap:10px}
+  html[data-ui-theme="reworked"] .reworked-monokuma-mark{flex-basis:52px;width:52px;height:52px}
+  html[data-ui-theme="reworked"] .reworked-brand h1{font-size:1.85rem;white-space:normal}
+  html[data-ui-theme="reworked"] .reworked-brand-kicker{font-size:.52rem}
+  html[data-ui-theme="reworked"] .reworked-session{margin-left:0}
+  html[data-ui-theme="reworked"] .monopad-dossier-grid{grid-template-columns:1fr}
+}
 @media(max-width:620px){
-  .theme-picker{width:100%;justify-content:space-between}.theme-picker select{flex:1}.theme-progress{margin:8px 10px 0;grid-template-columns:1fr auto;gap:8px;padding:9px 11px}.theme-progress-track{grid-column:1/-1;grid-row:2}.theme-progress em{grid-column:2;grid-row:1}
-  html[data-ui-theme="reworked"] .topbar{padding-left:11px;padding-right:11px}.activity-panel{grid-column:auto}
+  .theme-picker{width:100%;justify-content:space-between}.theme-picker select{flex:1}
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-ui-theme="reworked"] .tab-panel.active{animation:none}
 }
 
 </style>
 </head>
 <body>
   <header class="topbar">
-    <div>
+    <div class="original-brand-shell">
       <div id="gameKicker" class="brand-kicker">CAST CONTROL / TRIGGER HAPPY HAVOC</div>
       <div class="brand-row">
-        <div class="brand-mark" aria-hidden="true"><span>V</span><span>A</span><img src="assets/monopad/dr1/monokuma.png" alt=""></div>
+        <div class="brand-mark" aria-hidden="true"><span>V</span><span>A</span></div>
         <div>
           <h1>Danganronpa Voice Cast</h1>
           <div class="brand-subtitle">Live character assignment for voice acting</div>
         </div>
       </div>
       <div id="sessionLine" class="session-line"></div>
+    </div>
+
+    <div class="reworked-brand-shell">
+      <div class="reworked-brand">
+        <div class="reworked-monokuma-mark" role="img" aria-label="Danganronpa Monokuma emblem">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <circle cx="14" cy="12" r="7" fill="#f5f5f5" stroke="#11141b" stroke-width="2"/>
+            <circle cx="34" cy="12" r="7" fill="#11141b" stroke="#11141b" stroke-width="2"/>
+            <circle cx="24" cy="26" r="16" fill="#f5f5f5" stroke="#11141b" stroke-width="2"/>
+            <path d="M24 10a16 16 0 0 1 0 32Z" fill="#11141b"/>
+            <circle cx="18" cy="23" r="2.8" fill="#11141b"/>
+            <path d="m30 18 2.2 3 3.8-.2-2.4 3 1.4 3.5-3.6-1.2-3 2 .1-3.8-3-2.3 3.7-1Z" fill="#ff315d"/>
+            <path d="M13 31q5 6 11 1" fill="none" stroke="#11141b" stroke-width="2" stroke-linecap="round"/>
+            <path d="m25 32 3 3 3-3 3 3 3-4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="reworked-brand-kicker">Hope's Peak casting protocol</div>
+          <h1>Voice <span>Cast</span></h1>
+          <div id="reworkedGameSubtitle" class="reworked-brand-sub">Live board · Trigger Happy Havoc</div>
+        </div>
+      </div>
+      <div id="reworkedSessionLine" class="reworked-session"></div>
     </div>
 
     <div class="top-actions">
@@ -1244,7 +1377,15 @@ html[data-ui-theme="reworked"] .app-shell{padding-top:10px}
       <p class="muted small">Version history. Releases are newest first and collapsed until you open them.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">v0.14</span><span class="patch-release-title"><strong>Switchable interface themes and live death totals</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">v0.15</span><span class="patch-release-title"><strong>A genuinely separate Reworked interface</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Two complete presentations, one board</h4><p>Original preserves the established interface. Reworked now uses the full Hope's Peak prototype composition, including its own header, Monokuma emblem, progress band, navigation, two-column casting workspace, actor cards, memorial, statistics, Monopad, and Admin presentation.</p></section>
+            <section class="patch-note"><h4>Your choice does not fork the data</h4><p>Changing the interface only changes how the shared live board is presented. Assignments, locks, deaths, chapters, recordings, history, and database updates remain identical for everyone.</p></section>
+            <section class="patch-note"><h4>Phone layout included</h4><p>The alternate interface collapses its library, cast cards, statistics, and Monopad into touch-friendly single-column layouts on smaller screens.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.14</span><span class="patch-release-title"><strong>Switchable interface themes and live death totals</strong><small>Previous release</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Original or Reworked, on every device</h4><p>Every visitor can follow the shared default or choose Original or Reworked for their own browser. Both appearances keep the complete live board and database.</p></section>
             <section class="patch-note"><h4>Master-controlled default</h4><p>Admin Tools can choose which theme new visitors receive without overriding anyone’s personal selection.</p></section>
@@ -1579,7 +1720,7 @@ html[data-ui-theme="reworked"] .app-shell{padding-top:10px}
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.09.11.1";
+  const APP_BUILD = "2026.09.11.2";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2848,6 +2989,7 @@ html[data-ui-theme="reworked"] .app-shell{padding-top:10px}
     if(!isGameUnlocked(activeGameId)){activeGameId="dr1";sessionStorage.setItem(SESSION_GAME_KEY,activeGameId)}
     const game=gameDefinition(activeGameId);
     $("#gameKicker").textContent=`CAST CONTROL / ${game.kicker}`;
+    $("#reworkedGameSubtitle").textContent=`Live board · ${game.title}`;
     $("#gameSwitcherBtn").textContent=game.title;
     const nextLocked=GAME_DEFINITIONS.find(game=>!isGameUnlocked(game.id));
     $("#lockedGameBanner").classList.toggle("hidden",!nextLocked);
@@ -2970,25 +3112,23 @@ html[data-ui-theme="reworked"] .app-shell{padding-top:10px}
   function renderSession(){
     if(mode==="host"){
       $("#sessionLine").innerHTML='You are the <strong>host</strong>. You can move anything, reveal spoilers, and mark characters as dead.';
-      return;
-    }
-    if(mode==="viewer"){
+    }else if(mode==="viewer"){
       $("#sessionLine").textContent="Read-only view.";
-      return;
-    }
-
-    const actor=activeActor();
-    if(actor){
-      $("#sessionLine").innerHTML=`Logged in as <strong>${esc(actor.name)}</strong>${actor.replacementToken ? ' · <span class="token">★ replacement token ready</span>' : ""}`;
-      $("#editMyActorBtn").disabled=false;
-      $("#editMyActorBtn").textContent=actor.hasPassword?"Change password":"Set password";
-      $("#logoutBtn").disabled=false;
     } else {
-      $("#sessionLine").innerHTML='You are not logged in to an actor yet. <strong>Select or create your actor.</strong>';
-      $("#editMyActorBtn").disabled=true;
-      $("#editMyActorBtn").textContent="Set password";
-      $("#logoutBtn").disabled=true;
+      const actor=activeActor();
+      if(actor){
+        $("#sessionLine").innerHTML=`Logged in as <strong>${esc(actor.name)}</strong>${actor.replacementToken ? ' · <span class="token">★ replacement token ready</span>' : ""}`;
+        $("#editMyActorBtn").disabled=false;
+        $("#editMyActorBtn").textContent=actor.hasPassword?"Change password":"Set password";
+        $("#logoutBtn").disabled=false;
+      } else {
+        $("#sessionLine").innerHTML='You are not logged in to an actor yet. <strong>Select or create your actor.</strong>';
+        $("#editMyActorBtn").disabled=true;
+        $("#editMyActorBtn").textContent="Set password";
+        $("#logoutBtn").disabled=true;
+      }
     }
+    $("#reworkedSessionLine").innerHTML=$("#sessionLine").innerHTML;
   }
 
   function setAnimeWatchStep(step){

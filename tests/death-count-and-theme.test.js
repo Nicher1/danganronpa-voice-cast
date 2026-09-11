@@ -43,6 +43,12 @@ assert.ok(html.includes('danganronpa-cast-ui-theme-v1'), "Personal theme prefere
 assert.ok(html.includes('data-ui-theme="reworked"'), "The reworked live-board theme is missing");
 assert.ok(html.includes('state.settings.defaultUiTheme'), "Shared default theme must live with board settings");
 assert.ok(html.includes('role.dead&&role.deathRecorded&&role.deathActorId===actorId'), "Only characters currently in Memorial may count as deaths");
+assert.ok(html.includes('class="original-brand-shell"'), "The Original interface needs its own preserved header");
+assert.ok(html.includes('class="reworked-brand-shell"'), "The Reworked interface needs a separate header composition");
+assert.ok(html.includes('class="reworked-monokuma-mark"'), "The Reworked header needs the correct Monokuma emblem");
+assert.ok(!html.includes('<img src="assets/monopad/dr1/monokuma.png" alt="">'), "The cropped Monokuma portrait must not be used as the brand mark");
+assert.ok(html.includes('html[data-ui-theme="reworked"] .actors-grid{grid-template-columns:repeat(2,minmax(0,1fr))'), "Reworked must use the prototype's readable two-column actor layout");
+assert.ok(html.includes('Two presentation layers share the same live board'), "Theme implementations must explicitly share the live board");
 
 const design = fs.readFileSync("design-preview.html", "utf8");
 assert.ok(design.includes("function syncDeathCounts()"), "The isolated redesign must also derive live death totals");
