@@ -114,8 +114,8 @@ assert.ok(poolSource.includes("voicePackForChapter(profile,target)"), "Normal pl
 assert.ok(poolSource.includes('customVoiceFor(r,target,"trial")'), "Host-uploaded Trial clips should use the same earlier-safe fallback");
 
 const versions = [...html.matchAll(/class="patch-version">(v[0-9.]+)/g)].map(match => match[1]);
-assert.deepEqual(versions, ["v0.13", "v0.12", "v0.11", "v0.10", "v0.9", "v0.8.1", "v0.8", "v0.7", "v0.6", "v0.5"]);
-assert.equal((html.match(/<details class="patch-release"/g) || []).length, 10);
+assert.deepEqual(versions, ["v0.14", "v0.13", "v0.12", "v0.11", "v0.10", "v0.9", "v0.8.1", "v0.8", "v0.7", "v0.6", "v0.5"]);
+assert.equal((html.match(/<details class="patch-release"/g) || []).length, 11);
 assert.equal((html.match(/<details class="patch-release" open>/g) || []).length, 0);
 assert.ok(html.includes("Point calculation for anime guessing"));
 const patchNotes = html.slice(html.indexOf('<dialog id="patchNotesDialog"'), html.indexOf('<dialog id="hostAuthDialog"'));

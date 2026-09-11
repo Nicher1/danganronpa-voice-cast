@@ -362,6 +362,7 @@
     function rolesForActor(id){return state.roles.filter(function(r){return !r.dead&&r.revealed&&r.ownerId===id;});}
     function openRoles(){return state.roles.filter(function(r){return !r.dead&&r.revealed&&!r.ownerId;});}
     function deadRoles(){return state.roles.filter(function(r){return r.dead&&r.revealed;}).sort(function(a,b){return (b.deathRecord&&b.deathRecord.at||0)-(a.deathRecord&&a.deathRecord.at||0);});}
+    function syncDeathCounts(){state.actors.forEach(function(actor){actor.deathCount=state.roles.filter(function(r){var d=r.deathRecord;return r.dead&&d&&(d.lastActorId===actor.id||!d.lastActorId&&d.lastActorName===actor.name);}).length;});}
     function hiddenRoles(){return state.roles.filter(function(r){return !r.dead&&!r.revealed&&r.hiddenSpoiler;});}
     function imageMarkup(r,cls){return r.image?'<img class="'+(cls||"")+'" src="'+esc(r.image)+'" alt="">':'<div class="role-placeholder">'+esc(r.name.slice(0,1))+'</div>';}
     function profilePortrait(r,draggable){return '<button type="button" class="portrait-button '+(draggable?'drag-source':'')+'" data-open-profile="'+r.id+'" '+(draggable?'draggable="true" data-drag-role="'+r.id+'"':'')+' aria-label="Open '+esc(r.name)+' in Monopad">'+imageMarkup(r,"")+'</button>';}
@@ -521,6 +522,7 @@
       document.getElementById("activitySessions").innerHTML='<div class="session"><strong>Nicolas · today · visit 1</strong><time>16:21–18:32 · 2h 11m</time></div><div class="session"><strong>Nicolas · today · visit 2</strong><time>18:58–20:10 · 1h 12m</time></div><div class="session"><strong>Emil · Tue · visit 1</strong><time>14:43–18:19 · 3h 36m</time></div><div class="session"><strong>Alexander · Mon · visit 1</strong><time>17:17–18:14 · 57m</time></div><div class="session"><strong>Alexander · Mon · visit 2</strong><time>18:31–21:09 · 2h 38m</time></div><div class="session"><strong>Nicolas · Sat · visit 1</strong><time>09:51–14:53 · 5h 02m</time></div><div class="session"><strong>Emil · Fri · visit 1</strong><time>13:12–15:07 · 1h 55m</time></div>';
     }
     function render(){
+      syncDeathCounts();
       if(!actorById(state.selectedActorId))state.selectedActorId=state.actors[0]&&state.actors[0].id||null;
       updateChrome();renderTabs();renderPredictionDock();renderPool();renderActors();renderMemorial();renderStatistics();renderMonopad();renderGames();renderActivity();save();
     }
@@ -554,7 +556,7 @@
     function killRole(roleId){
       if(!isHost())return;var r=roleById(roleId),actor=actorById(r&&r.ownerId);if(!r||r.dead)return;
       var wasLocked=actor&&actor.lockedRoleId===r.id,kind=currentTrial()?"blackened":"victim";
-      if(actor){actor.deathCount++;addHistory(actor,r.name);}
+      if(actor)addHistory(actor,r.name);
       if(wasLocked){actor.lockedRoleId=null;actor.replacementToken=true;}
       r.deathRecord={lastActorId:actor&&actor.id||null,lastActorName:actor&&actor.name||"None",chapter:state.settings.currentChapter,phase:currentTrial()?"trial":"pretrial",kind:kind,at:Date.now()};
       r.dead=true;r.ownerId=null;state.results[String(r.deathRecord.chapter)]=state.results[String(r.deathRecord.chapter)]||{victim:"",blackened:""};
