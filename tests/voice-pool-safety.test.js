@@ -114,11 +114,13 @@ assert.ok(poolSource.includes("voicePackForChapter(profile,target)"), "Normal pl
 assert.ok(poolSource.includes('customVoiceFor(r,target,"trial")'), "Host-uploaded Trial clips should use the same earlier-safe fallback");
 
 const versions = [...html.matchAll(/class="patch-version">(v[0-9.]+)/g)].map(match => match[1]);
-assert.deepEqual(versions, ["v0.17", "v0.16", "v0.15", "v0.14", "v0.13", "v0.12", "v0.11", "v0.10", "v0.9", "v0.8.1", "v0.8", "v0.7", "v0.6", "v0.5"]);
-assert.equal((html.match(/<details class="patch-release"/g) || []).length, 14);
+assert.deepEqual(versions, ["v0.18", "v0.17", "v0.16", "v0.15", "v0.14", "v0.13", "v0.12", "v0.11", "v0.10", "v0.9", "v0.8.1", "v0.8", "v0.7", "v0.6", "v0.5"]);
+assert.equal((html.match(/<details class="patch-release"/g) || []).length, 15);
 assert.equal((html.match(/<details class="patch-release" open>/g) || []).length, 0);
 assert.ok(html.includes("Point calculation for anime guessing"));
 const patchNotes = html.slice(html.indexOf('<dialog id="patchNotesDialog"'), html.indexOf('<dialog id="hostAuthDialog"'));
+const newestPatch = patchNotes.slice(patchNotes.indexOf('<details class="patch-release">'), patchNotes.indexOf('</details>') + '</details>'.length);
+assert.doesNotMatch(newestPatch, /Monokuma|Genocide|Alter Ego|Junko|Mukuro|sixteenth|mastermind|twin|disguis|Fenrir|Ultimate Despair|Ultimate Soldier/i, "The dossier-refresh patch note must not identify affected or hidden profiles");
 assert.doesNotMatch(patchNotes, /secret points?|hidden points?|unscored|decoy/i);
 assert.ok(patchNotes.includes("See who is online"));
 assert.ok(patchNotes.includes("Hope and despair leader emblems"));

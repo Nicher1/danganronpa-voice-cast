@@ -8,7 +8,7 @@ const context = { window: {} };
 vm.runInNewContext(dataSource, context, { filename: "monopad-data.js" });
 const data = context.window.CAST_MONOPAD_DATA;
 
-assert.equal(data.version, 2);
+assert.equal(data.version, 4);
 assert.deepEqual(Object.keys(data.recaps).sort(), ["dr1", "dr2", "v3"]);
 for (const gameId of ["dr1", "dr2", "v3"]) {
   assert.equal(data.recaps[gameId].length, 6, `${gameId} needs six chapter recap pairs`);
@@ -20,7 +20,7 @@ for (const gameId of ["dr1", "dr2", "v3"]) {
 assert.equal(data.animeRecaps.length, 24, "Anime data must follow all 24 watch-order steps");
 data.animeRecaps.forEach((entry, index) => assert.ok(entry.length > 100, `Anime watch step ${index + 1} needs a recap`));
 
-const requiredBioCounts = { dr1: 18, dr2: 18, dr3anime: 21, v3: 22 };
+const requiredBioCounts = { dr1: 20, dr2: 18, dr3anime: 21, v3: 22 };
 for (const [gameId, minimum] of Object.entries(requiredBioCounts)) {
   assert.ok(Object.keys(data.bios[gameId]).length >= minimum, `${gameId} dossiers are incomplete`);
 }
@@ -32,14 +32,18 @@ for (const [name, asset] of Object.entries(data.profileOverrides.dr1)) {
   assert.ok(fs.existsSync(asset), `Missing supplied DR1 artwork for ${name}: ${asset}`);
 }
 
-assert.ok(html.includes('<script src="monopad-data.js?v=2"></script>'));
+assert.ok(html.includes('<script src="monopad-data.js?v=4"></script>'));
 assert.ok(html.includes('data-tab="monopad"'));
 assert.ok(html.includes('id="monopadTab"'));
 assert.ok(html.includes('id="dossierDialog"'));
 assert.ok(html.includes('id="recapManagerDialog"'), "Master recap manager is missing");
+assert.ok(html.includes('id="builtInRecapSaveStatus"') && html.includes('id="customRecapSaveStatus"'), "Both recap editors need visible save feedback");
+assert.ok(html.includes('role="status" aria-live="polite"'), "Recap save feedback must be announced accessibly");
+assert.ok(html.includes("function showRecapSaveFeedback"), "Recap save controls must confirm successful saves");
 assert.ok(html.includes('class="monopad-section-actions host-only"') && html.includes('id="manageRecapsBtn"'), "Recap controls must be master-only");
 assert.ok(html.includes('id="roleBiography"'), "Character descriptions need a master-editable field");
 assert.ok(html.includes('id="editDossierBioBtn"'), "Open dossiers need a direct master edit action");
+assert.ok(html.includes('previousVersion<15&&r.gameId==="dr1"&&DR1_REFRESHED_BIOGRAPHY_NAMES.has(r.name)'), "Stale saved DR1 biographies must yield to the refreshed dossiers");
 assert.ok(html.includes('id="monopad-summaries"'), "The summary section needs a stable deep-link target");
 assert.ok(html.includes('id="copyPlayerRecapLinkBtn"'), "The master needs a one-click player recap link");
 assert.ok(html.includes('const PLAYER_RECAP_HASH="#monopad-summaries"'), "The player recap route is missing");
@@ -63,7 +67,23 @@ assert.ok(html.includes('role.specialRole==="junko-disguise"'), "The reversible 
 assert.ok(html.includes('mkRole("Genocide Jill"'));
 assert.ok(html.includes('r.name="Genocide Jill"'), "Existing shared state must migrate to Genocide Jill");
 assert.ok(html.includes('r.voiceProfile="Genocide Jack"'), "The renamed card must retain its working voice library profile");
-assert.ok(data.bios.dr1["Genocide Jill"]);
+for (const identity of ["Monokuma", "Genocide Jill", "Alter Ego", "Mukuro Ikusaba", "Junko Enoshima (Real)"]) {
+  assert.ok(data.bios.dr1[identity]?.length > 120, `${identity} needs a substantial refreshed DR1 biography`);
+}
+const refreshedBioFacts = {
+  "Monokuma": ["carries out elaborate executions", "whoever controls him remain unknown"],
+  "Genocide Jill": ["does not share memories with Toko", "she did not kill Chihiro"],
+  "Alter Ego": ["agreed to remain inside the academy", "Monokuma found and confiscated it"],
+  "Mukuro Ikusaba": ["disguised as Junko", "reused to stage the fifth case"],
+  "Junko Enoshima (Real)": ["mastermind controlling Monokuma", "broadcast their killing game"]
+};
+for (const [identity, facts] of Object.entries(refreshedBioFacts)) {
+  for (const fact of facts) {
+    assert.ok(data.bios.dr1[identity].includes(fact), `${identity} is missing the expected updated detail: ${fact}`);
+  }
+}
+assert.notEqual(data.bios.dr1["Junko Enoshima"], data.bios.dr1["Junko Enoshima (Real)"], "The two separately revealed dossiers must remain distinct");
+assert.ok(html.includes('gameBios["Junko Enoshima (Real)"]'), "The later hidden role must use its dedicated dossier");
 assert.doesNotMatch(html, /<h[1-6][^>]*>\s*Chapter [1-6]\s*<\/h[1-6]>/i, "Recap entries should not expose chapter-number headings");
 
 console.log("Monopad dossiers, artwork, and spoiler-gated recap data checks passed.");

@@ -1,0 +1,45 @@
+/* Optional third presentation layer; every control still uses the same board. */
+.narrator-free{opacity:.66}.narrator-free:hover,.narrator-free:focus-within{opacity:1}.narrator-note{display:block;font-size:.65rem;color:var(--muted)}
+.finale-stage{display:none}
+html[data-ui-theme="finale"]{--pink-hot:#ff248b;--pink:#ff248b;--panel:#17151c;--line:#514653;--text:#f6f0dd;--muted:#c0b6c4;--bg:#100f14}
+html[data-ui-theme="finale"] body{background:radial-gradient(ellipse at 90% 0%,#4e163f80,transparent 52%),repeating-linear-gradient(115deg,#ffffff03 0 1px,transparent 1px 7px),#100f14;color:#f6f0dd}
+html[data-ui-theme="finale"] .topbar{border-bottom:4px solid #ff248b;background:#111015}
+html[data-ui-theme="finale"] .finale-stage{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:26px;margin:24px auto;max-width:1600px;padding:30px;border:2px solid #f6f0dd;box-shadow:8px 8px 0 #ff248b;position:relative;overflow:hidden;background:radial-gradient(circle at 78% 24%,#ff248b24 0 3px,transparent 4px) 0 0/13px 13px,#17151c}
+.finale-stage h2{font:900 clamp(2.4rem,5vw,5.8rem)/.88 Impact,'Arial Black',sans-serif;letter-spacing:-.025em;text-transform:uppercase;margin:14px 0 20px;max-width:850px;transform:rotate(-2deg)}
+.finale-stage h2 em{color:#ff248b;font-style:normal}
+.finale-stamp{font:900 .72rem monospace;letter-spacing:.22em;background:#f6f0dd;color:#16131b;display:inline-block;padding:7px 12px;transform:rotate(-2deg)}
+.finale-copy{max-width:600px;color:#d1c7d4;font-size:.9rem}
+.finale-aside{border-left:2px solid #ff248b;padding-left:20px;display:flex;flex-direction:column;justify-content:center;gap:20px;min-width:0}
+.finale-aside blockquote{margin:0;font:900 1.2rem/1.4 Georgia,serif;color:#f6f0dd}.finale-aside small{color:#e9b7cf;font:700 .67rem monospace;text-transform:uppercase;letter-spacing:.12em}
+.finale-memorial{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.finale-frame{position:relative;background:#ebe4d5;border:3px solid #ebe4d5;width:72px;color:#17151c;transform:rotate(-3deg);padding:0 0 4px}.finale-frame:nth-child(even){transform:rotate(3deg)}.finale-frame img{display:block;width:100%;height:75px;object-fit:cover;object-position:top;filter:grayscale(1);background:#6b6470}.finale-frame::after{content:'×';position:absolute;top:-15px;left:10px;font:900 90px/1 sans-serif;color:#ff248bcc}.finale-frame span{display:block;font:800 9px/1.2 sans-serif;padding:4px 2px 0;text-align:center;overflow-wrap:anywhere}
+html[data-ui-theme="finale"] .panel,html[data-ui-theme="finale"] .actor-card,html[data-ui-theme="finale"] .dossier-card{border-radius:2px;border-color:#615162;box-shadow:4px 4px 0 #050408}
+html[data-ui-theme="finale"] .section-kicker{color:#ff77ba;letter-spacing:.18em}html[data-ui-theme="finale"] button.primary{border-radius:2px;background:#ff248b;color:#160813;box-shadow:3px 3px 0 #f6f0dd}
+html[data-ui-theme="finale"] .tab.active{background:#f6f0dd;color:#17151c;transform:skew(-5deg)}
+.session-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:12px 0}.session-controls label{font-size:.78rem}.session-controls input[type="datetime-local"]{max-width:220px}.session-readout{font:700 .78rem monospace;letter-spacing:.05em;color:var(--pink-hot);margin:12px 0}.case-status{padding:5px 9px;border:1px solid currentColor;display:inline-block;margin-right:12px}.report-measurement{border-left:3px solid var(--pink-hot);padding:12px;margin:16px 0;background:#88888810}
+.finale-frame{display:block;flex:0 0 auto;border-radius:1px;min-height:0;overflow:hidden;align-self:start}.finale-frame span{color:#17151c;min-height:28px;width:100%;font-size:10px}.finale-frame::after{top:0;pointer-events:none}.finale-frame:hover{border-color:#ff248b;transform:rotate(0)}
+html[data-ui-theme="finale"] .finale-stage{width:calc(100% - 60px)}
+body[data-scenario="slayhem"]{--pink-hot:#ff345c;--pink:#ff345c}body[data-scenario="slayhem"] .finale-stage{box-shadow:8px 8px 0 #ff345c;background:repeating-linear-gradient(135deg,#ef30460b 0 14px,transparent 14px 28px),#190d13}body[data-scenario="slayhem"] .finale-stage h2 em{color:#ff345c}
+body.panic-active .finale-stage{border-color:#ff248b;box-shadow:8px 8px 0 #ff248b,0 0 35px #ff248b30}body.panic-active .case-status{background:#8e143f;color:white}
+@media(max-width:700px){html[data-ui-theme="finale"] .finale-stage{grid-template-columns:1fr;margin:16px 10px;padding:20px;gap:20px}.finale-aside{border-left:0;border-top:2px solid #ff248b;padding:16px 0 0}.finale-frame{width:58px}.finale-frame img{height:62px}.finale-frame::after{font-size:75px}.session-controls{align-items:flex-start;flex-direction:column}}
+@media(max-width:700px){html[data-ui-theme="finale"] .finale-stage{width:calc(100% - 28px)}.finale-frame span{font-size:9px}}
+/* Dark Hope's Peak presentation: charcoal, cyan detail and pink blood. */
+html[data-ui-theme="finale"]{color-scheme:dark;--panel-soft:#201e28}
+html[data-ui-theme="finale"] .finale-stage{background:radial-gradient(ellipse at 10% 0,#19374280,transparent 65%),#17151c;border-color:#595463;box-shadow:7px 7px 0 #e80678}
+html[data-ui-theme="finale"] .finale-stage h2{font-style:italic;letter-spacing:-.055em;color:#fff7ed;text-shadow:3px 3px 0 #285667;font-size:clamp(2rem,5vw,5.7rem)}
+html[data-ui-theme="finale"] .finale-stage h2 em{color:#ff3297;text-shadow:none;font-size:.8em}
+html[data-ui-theme="finale"] .finale-copy{color:#b9c3ce;font:700 .78rem monospace;letter-spacing:.09em}
+html[data-ui-theme="finale"] .finale-aside blockquote{color:#f6f0dd;font:800 1rem/1.5 Arial,sans-serif}
+html[data-ui-theme="finale"] .panel,html[data-ui-theme="finale"] .actor-card,html[data-ui-theme="finale"] .dossier-card,html[data-ui-theme="finale"] .role-card,html[data-ui-theme="finale"] .modal-card,html[data-ui-theme="finale"] dialog,html[data-ui-theme="finale"] .session-planner{background:#17151c;color:#f6f0dd;border-color:#514653;box-shadow:3px 3px 0 #07060a}
+html[data-ui-theme="finale"] button,html[data-ui-theme="finale"] input,html[data-ui-theme="finale"] select,html[data-ui-theme="finale"] textarea{color:#f6f0dd;background:#26222e;border-color:#625668;color-scheme:dark}
+html[data-ui-theme="finale"] .tab.active,html[data-ui-theme="finale"] button.primary{background:#ff248b;color:#180711;border-color:#ff248b}
+html[data-ui-theme="finale"] .actor-header,html[data-ui-theme="finale"] .role-compact,html[data-ui-theme="finale"] .panel-header,html[data-ui-theme="finale"] .control-strip,html[data-ui-theme="finale"] .schedule-day{background:#1c1922;color:#f6f0dd}
+html[data-ui-theme="finale"] .calendar-day.selected,html[data-ui-theme="finale"] .vote-controls button[aria-pressed=true]{background:#ae0753;color:#fff}
+html[data-ui-theme="finale"] .calendar-day.week-remaining{border-color:#548a9c}
+html[data-ui-theme="finale"] body[data-scenario="slayhem"] .finale-stage{background:repeating-linear-gradient(135deg,#e5163b0b 0 14px,transparent 14px 28px),#190d13;border-color:#a40d30;box-shadow:7px 7px 0 #e5163b}
+.game-lock-banner{isolation:isolate;padding-top:22px;padding-bottom:22px}
+.game-lock-banner::before,.game-lock-banner::after{content:"";position:absolute;left:0;right:0;width:100%;height:15px;opacity:.65;transform:none;pointer-events:none;z-index:-1;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='15' viewBox='0 0 48 15'%3E%3Cg fill='none' stroke='%23969eac' stroke-width='2.5'%3E%3Crect x='-8' y='4' width='30' height='7' rx='3.5'/%3E%3Crect x='16' y='2' width='30' height='11' rx='5.5'/%3E%3Crect x='40' y='4' width='30' height='7' rx='3.5'/%3E%3C/g%3E%3C/svg%3E") repeat-x center}
+.game-lock-banner::before{top:0;bottom:auto}.game-lock-banner::after{top:auto;bottom:0}
+[hidden]{display:none!important}
+html[data-ui-theme="finale"] .game-lock-banner{background:repeating-linear-gradient(135deg,#24222b 0 8px,#19171f 8px 16px);color:#f6f0dd}
+html[data-ui-theme="finale"] .mode-badge,html[data-ui-theme="finale"] .sync-status{color:#ffc5e0;background:#392033}
+html[data-ui-theme="finale"] button.finale-frame{background:#ebe4d5;border-color:#ebe4d5;color:#17151c}

@@ -13,6 +13,9 @@ assert.match(css, /#dossierDialogArtWrap\{display:flex;align-items:stretch;min-w
 assert.match(css, /\.dossier-dialog-art\{display:block;width:100%;max-width:100%;min-width:0/);
 assert.match(css, /\.monopad-section-head\{display:block;width:100%\}/, "Master recap heading must stack in portrait view");
 assert.match(css, /\.monopad-section-actions\{display:grid;grid-template-columns:1fr;width:100%;margin-top:10px\}/, "Master recap buttons must not squeeze the summary text");
+assert.match(css, /#recapManagerDialog textarea\{min-height:42dvh;overflow-y:hidden;resize:none;line-height:1\.55\}/, "Recap summary fields must be comfortably tall on phones");
+assert.match(html, /function fitRecapTextarea\(textarea\)/, "Recap summary fields must grow with their text on phones");
+assert.match(html, /requestAnimationFrame\(fitRecapTextareas\)/, "Recap fields must be measured after the dialog becomes visible");
 assert.match(css, /overflow-wrap:anywhere/);
 assert.match(css, /@media\(max-width:350px\)/);
 assert.doesNotMatch(css, /100vw/);

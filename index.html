@@ -641,6 +641,8 @@ body.mobile-dragging{user-select:none}
 .image-actions label{width:100%;margin:0}
 .image-actions p{width:100%;margin:2px 0}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.save-feedback{align-self:center;min-height:1.2em;margin-right:auto;color:#78e6ad;font-size:.7rem;font-weight:900}
+.save-feedback:empty{display:none}.recap-save-button.saved{background:#238557;border-color:#4dc98b;box-shadow:0 0 0 3px rgba(77,201,139,.13)}
 .choice-options,.login-list{display:flex;flex-direction:column;gap:7px;margin-top:12px;max-height:330px;overflow:auto}
 .choice-row,.login-row{
   display:flex;align-items:center;justify-content:space-between;gap:9px;
@@ -684,6 +686,9 @@ body.mobile-dragging{user-select:none}
   .role-pool,.actors-panel,.memorial-hero,.stats-hero,.monopad-hero,.monopad-section,.prediction-leaderboard,.population-panel{padding:12px}
   .modal-card,.compact-modal,.practice-dialog-card,.game-picker-card,.dossier-dialog-card{width:100%;max-width:100%}
   .recap-editor-grid,.recap-editor-row{grid-template-columns:1fr}.recap-manager-item{grid-template-columns:1fr}.recap-manager-actions button{flex:1}
+  #recapManagerDialog{width:calc(100% - 20px);max-width:calc(100% - 20px);max-height:calc(100dvh - 20px)}
+  #recapManagerDialog .recap-manager-card{padding:14px}
+  #recapManagerDialog textarea{min-height:42dvh;overflow-y:hidden;resize:none;line-height:1.55}
   .anime-episode-tracker{align-items:stretch;flex-direction:column}.anime-episode-tracker button{width:100%}.anime-score-card{grid-template-columns:1fr 1fr}.anime-score-metric.total{grid-column:1/-1;grid-row:1}
 }
 
@@ -1046,6 +1051,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 
 </style>
+<link rel="stylesheet" href="finale.css?v=20261021-dark">
+<link rel="stylesheet" href="session-planner.css?v=20261021">
 </head>
 <body>
   <header class="topbar">
@@ -1055,7 +1062,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         <div class="brand-mark" aria-hidden="true"><span>V</span><span>A</span></div>
         <div>
           <h1>Danganronpa Voice Cast</h1>
-          <div class="brand-subtitle">Live character assignment for voice acting</div>
+          <div class="brand-subtitle">Voice casting overview</div>
         </div>
       </div>
       <div id="sessionLine" class="session-line"></div>
@@ -1091,7 +1098,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         <select id="uiThemeSelect" aria-label="Interface theme">
           <option value="default">Default</option>
           <option value="original">Original</option>
-          <option value="reworked">Reworked</option>
+          <option value="reworked">Reworked</option><option value="finale">Danganronpa · Dark</option>
         </select>
       </label>
       <button id="gameSwitcherBtn" class="ghost current-game-btn">Trigger Happy Havoc</button>
@@ -1118,6 +1125,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     <em id="themeProgressStatus">CONNECTING</em>
   </div>
 
+  <section id="finaleStage" class="finale-stage" aria-label="Killing game atmosphere"></section>
   <main class="app-shell">
     <section id="lockedGameBanner" class="game-lock-banner hidden" aria-label="Locked game">
       <div class="game-lock-copy">
@@ -1126,6 +1134,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       </div>
       <button id="lockedGameAdminBtn" class="ghost host-only">Open Admin Tools</button>
     </section>
+    <section id="sessionPlanner" class="session-planner" aria-label="Session schedule"></section>
+    <dialog id="scheduleDialog"></dialog>
     <nav class="tabs">
       <button class="tab active" data-tab="casting"><span class="tab-icon">◆</span> Assignments</button>
       <button class="tab" data-tab="memorial"><span class="tab-icon">☠</span> Memorial <span id="deadCount" class="counter">0</span></button>
@@ -1149,6 +1159,15 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <span><strong>Game in progress</strong><small>Players can only claim from the Library</small></span>
         </label>
 
+        <div class="session-controls host-only">
+          <label><input type="checkbox" id="chapterCompleteToggle"> Chapter finished · show full recap</label>
+          <label><input type="checkbox" id="predictionLockToggle"> Close guesses</label>
+          <label><input type="checkbox" id="panicToggle"> Panic atmosphere</label>
+          <label hidden>Next session (your local time) <input type="datetime-local" id="nextSessionInput"></label><button hidden id="saveSessionBtn">Set timer</button><button hidden id="clearSessionBtn" class="ghost">Clear timer</button>
+          <button id="chapter4CheckpointBtn">Set stopping point: Chapter 5 · headmaster’s room</button>
+        </div>
+        <div id="sessionReadout" class="session-readout" role="status"></div>
+        <button id="editionSwitchBtn" class="ghost hidden">Preview DR2 / 2×2 route</button>
         <div class="voice-controls host-only" aria-label="Voice sample controls">
           <label><span id="storyUnitLabel">Current chapter</span>
             <select id="voiceChapterSelect" aria-label="Current story chapter">
@@ -1327,11 +1346,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         <section class="theme-service panel">
           <div class="section-kicker">INTERFACE DEFAULT</div>
           <h3>Default theme</h3>
-          <p>Choose what visitors see unless they have selected their own theme above. This changes appearance only; both themes use the same live board.</p>
+          <p>Choose what visitors see unless they have selected their own theme above. All three themes use the same live board.</p>
           <label class="theme-default-control">Shared default
             <select id="defaultThemeSelect" class="theme-default-select">
               <option value="original">Original</option>
-              <option value="reworked">Reworked</option>
+              <option value="reworked">Reworked</option><option value="finale">Danganronpa · Dark</option>
             </select>
           </label>
         </section>
@@ -1363,7 +1382,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
             <button type="button" class="icon-btn" data-close="dossierDialog">×</button>
           </div>
           <div id="dossierDialogTalent" class="dossier-dialog-talent"></div>
-          <div id="dossierDialogBio" class="dossier-dialog-bio"></div>
+          <div id="dossierDialogBio" class="dossier-dialog-bio"></div><div id="dossierMeasurement" class="report-measurement"></div>
           <button id="editDossierBioBtn" type="button" class="ghost host-only">Edit character description</button>
         </div>
       </div>
@@ -1385,7 +1404,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
             <label>Section<select id="builtInRecapPhase"></select></label>
           </div>
           <label>Summary<textarea id="builtInRecapText" required rows="8"></textarea></label>
-          <div class="modal-actions"><button type="submit" class="primary">Save built-in summary</button></div>
+          <div class="modal-actions"><span id="builtInRecapSaveStatus" class="save-feedback" role="status" aria-live="polite"></span><button id="saveBuiltInRecapBtn" type="submit" class="primary recap-save-button">Save built-in summary</button></div>
         </form>
         <form id="customRecapForm" class="recap-editor-panel">
           <h4 id="customRecapFormTitle">Add custom summary</h4>
@@ -1394,7 +1413,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <label>Title<input id="customRecapTitle" maxlength="80" placeholder="Temporary stopping point"></label>
           <label>Visible from<select id="customRecapChapter"></select></label>
           <label>Summary<textarea id="customRecapText" required rows="6" placeholder="Write only what the group has reached..."></textarea></label>
-          <div class="modal-actions"><button id="cancelCustomRecapEditBtn" type="button" class="ghost hidden">Cancel edit</button><button type="submit" class="primary">Save custom summary</button></div>
+          <div class="modal-actions"><span id="customRecapSaveStatus" class="save-feedback" role="status" aria-live="polite"></span><button id="cancelCustomRecapEditBtn" type="button" class="ghost hidden">Cancel edit</button><button id="saveCustomRecapBtn" type="submit" class="primary recap-save-button">Save custom summary</button></div>
         </form>
       </div>
       <div class="section-kicker" style="margin-top:16px">CUSTOM ENTRIES FOR THIS BOARD</div>
@@ -1422,7 +1441,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Version history. Releases are newest first and collapsed until you open them.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">v0.17</span><span class="patch-release-title"><strong>Direct player recap links</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">v0.18</span><span class="patch-release-title"><strong>Dossier text refresh</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Current-story reminders</h4><p>Monopad descriptions now give concise reminders of information established by the board's current story progress. Existing profile visibility and spoiler protections remain unchanged.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.17</span><span class="patch-release-title"><strong>Direct player recap links</strong><small>Previous release</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Open directly on story memory</h4><p>A dedicated player link now opens the Monopad and moves straight to the summary section. First-time visitors can read it without an actor-selection dialog covering the recap.</p></section>
             <section class="patch-note"><h4>One-tap master sharing</h4><p>The master can copy the exact player recap link beside Manage Recaps in the Monopad.</p></section>
@@ -1776,17 +1801,21 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     </form>
   </dialog>
 
+  <dialog id="editionDialog" class="modal"><div class="modal-card compact-modal"><div class="eyebrow">CHOOSE YOUR SCHOOL TRIP</div><h2>Danganronpa 2 / 2×2</h2><p>Each route keeps its own cast, progress, predictions and memorial.</p><div class="session-controls"><button data-edition="dr2">Danganronpa 2</button><button data-edition="dr2x2">2×2 · Original</button><button data-edition="dr2slayhem">2×2 · Slayhem</button><button onclick="this.closest('dialog').close()">Cancel</button></div></div></dialog>
   <div id="toast" class="toast" aria-live="polite"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-sync.js"></script>
   <script src="voice-clips-v4.js"></script>
-  <script src="monopad-data.js?v=2"></script>
+  <script src="monopad-data.js?v=4"></script>
+  <script src="endgame-data.js?v=20261007"></script>
+  <script src="session-planner.js?v=20261021"></script>
+  <script src="session-planner-ui.js?v=20261021"></script>
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.09.11.4";
+  const APP_BUILD = "2026.10.21.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -1797,6 +1826,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     {id:"dr3anime",short:"DR3",title:"Danganronpa 3",kicker:"THE END OF HOPE'S PEAK",kind:"anime",maxChapter:24,unit:"Episode",unitShort:"EP",startPopulation:16},
     {id:"v3",short:"V3",title:"Danganronpa V3: Killing Harmony",kicker:"KILLING HARMONY",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16}
   ];
+  GAME_DEFINITIONS.push(
+    {id:"dr2x2",short:"2×2",title:"Danganronpa 2×2 · Original",kicker:"ORIGINAL / 2×2",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16},
+    {id:"dr2slayhem",short:"SLAYHEM",title:"Danganronpa 2×2 · Slayhem",kicker:"SLAYHEM / 2×2",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16}
+  );
+  const MAIN_GAME_IDS=["dr1","dr2","dr3anime","v3"];
   const GAME_IDS = GAME_DEFINITIONS.map(game=>game.id);
   const gameDefinition = gameId => GAME_DEFINITIONS.find(game=>game.id===gameId)||GAME_DEFINITIONS[0];
   const ANIME_WATCH_ORDER = [
@@ -1972,6 +2006,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   }
 
   function createRolesForGame(gameId){
+    if(["dr2x2","dr2slayhem"].includes(gameId)){
+      const roles=createDr2Roles().map(role=>({...role,gameId,voiceProfile:"",biography:""}));
+      if(gameId==="dr2slayhem")roles.push(mkRole("Sakutaro Higashi","???","",false,{gameId,modifier:"John Danganronpa",voiceProfile:"",specialRole:"new-2x2",biography:"John Danganronpa is our nickname for Sakutaro Higashi, officially introduced for Slayhem mode. His talent is unknown. His Japanese voice actor is Natsuki Hanae and his English voice actor is Griffin Burns. The promotional announcement places him in the class trials, but this file makes no claims about his background, allegiances, or fate."}));
+      return roles;
+    }
     if(gameId==="dr2")return createDr2Roles();
     if(gameId==="dr3anime")return createAnimeRoles();
     if(gameId==="v3")return createV3Roles();
@@ -2004,6 +2043,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     "Kiyotaka Ishimaru":3,"Hifumi Yamada":3,"Celestia Ludenberg":3,
     "Sakura Ogami":4
   };
+  const DR1_REFRESHED_BIOGRAPHY_NAMES=new Set([
+    "Monokuma",
+    "Makoto Naegi","Kyoko Kirigiri","Byakuya Togami","Toko Fukawa","Aoi Asahina",
+    "Sakura Ogami","Yasuhiro Hagakure","Sayaka Maizono","Leon Kuwata","Chihiro Fujisaki",
+    "Mondo Owada","Junko Enoshima","Kiyotaka Ishimaru","Hifumi Yamada","Celestia Ludenberg",
+    "Genocide Jill","Alter Ego","Mukuro Ikusaba"
+  ]);
 
   const POPULATION_KEYS=["start","1","2","3","4","5","6"];
   const POPULATION_PRESETS={
@@ -2033,10 +2079,10 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   }
   function populationPresetsForGame(gameId=activeGameId){
     if(gameId==="dr1")return POPULATION_PRESETS;
-    if(gameId==="dr2")return DR2_POPULATION_PRESETS;
+    if(gameId==="dr2"||gameId==="dr2x2")return DR2_POPULATION_PRESETS;
     return emptyPopulationPresets(gameId);
   }
-  function hasPopulationPreset(gameId,key){return gameId==="dr1"||gameId==="dr2"||key==="start"}
+  function hasPopulationPreset(gameId,key){return gameId==="dr1"||gameId==="dr2"||gameId==="dr2x2"||key==="start"}
 
   function createGameSettings({chapter=1,gameActive=false}={}){
     const key=String(chapter);
@@ -2082,7 +2128,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function defaultState() {
     return {
-      version:13,
+      version:16,
       settings:{completedGames:emptyCompletionFlags(),games:defaultGameSettings()},
       secretSettings:{games:{dr1:{junkoMukuroRevealed:false,populationPresets:POPULATION_PRESETS},dr2:{populationPresets:DR2_POPULATION_PRESETS},dr3anime:{},v3:{}}},
       predictions:{},
@@ -2161,7 +2207,16 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   const $ = sel => document.querySelector(sel);
   const $$ = sel => [...document.querySelectorAll(sel)];
-  const isGameUnlocked = gameId => gameId==="dr1" || GAME_DEFINITIONS.slice(0,GAME_IDS.indexOf(gameId)).every(game=>!!state.settings.completedGames[game.id]);
+  const isLocalPreview = ["127.0.0.1","localhost"].includes(location.hostname);
+  let sessionPlanner = null;
+  const isGameUnlocked = (gameId,includePreview=true) => {
+    if(typeof isLocalPreview!=="undefined"&&isLocalPreview&&includePreview && ["dr2","dr2x2","dr2slayhem"].includes(gameId))return true;
+    const canonical=["dr2x2","dr2slayhem"].includes(gameId)?"dr2":gameId;
+    if(canonical==="dr1")return true;
+    return MAIN_GAME_IDS.slice(0,MAIN_GAME_IDS.indexOf(canonical)).every(id=>id==="dr2"
+      ?["dr2","dr2x2","dr2slayhem"].some(key=>state.settings.completedGames[key])
+      :!!state.settings.completedGames[id]);
+  };
   const availableGameIds = () => GAME_IDS.filter(isGameUnlocked);
   const currentSettings = () => state.settings.games[activeGameId];
   const currentSecretSettings = () => state.secretSettings?.games?.[activeGameId]||{};
@@ -2176,17 +2231,82 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     if(roleId&&previous!==roleId)actor.lockedAtByGame[activeGameId]=Date.now();
   };
 
+  function chapterFourComplete(){
+    const settings=state.settings.games.dr1;
+    return settings.voiceChapter>4||!!settings.completedUnits?.["4"];
+  }
+  function renderSessionClock(){
+    const settings=currentSettings(),key=chapterKey();
+    const locked=!!settings.predictionLocks?.[key]||!!settings.completedUnits?.[key]||settings.voiceInTrial;
+    $("#sessionReadout").innerHTML=`<span class="case-status">${locked?"GUESSES CLOSED":"GUESSES OPEN"}</span>${settings.panic?"PANIC MODE":""}`;
+  }
+
+  function renderEndgame(){
+    const settings=currentSettings(),key=chapterKey();
+    const slayhem=activeGameId==="dr2slayhem";
+    document.body.dataset.scenario=slayhem?"slayhem":"original";
+    document.body.classList.toggle("panic-active",!!settings.panic);
+    $("#chapterCompleteToggle").checked=!!settings.completedUnits?.[key];
+    $("#predictionLockToggle").checked=!!settings.predictionLocks?.[key];
+    $("#panicToggle").checked=!!settings.panic;
+    $("#chapter4CheckpointBtn").classList.toggle("hidden",activeGameId!=="dr1");
+    $("#editionSwitchBtn").classList.toggle("hidden",!isLocalPreview&&!["dr2","dr2x2","dr2slayhem"].includes(activeGameId));
+    if(document.activeElement!==$("#nextSessionInput")){
+      const date=new Date(settings.nextSessionAt);
+      $("#nextSessionInput").value=Number.isFinite(date.getTime())?new Date(date.getTime()-date.getTimezoneOffset()*60000).toISOString().slice(0,16):"";
+    }
+    renderSessionClock();
+    const stage=$("#finaleStage");
+    if(resolvedUiTheme()!=="finale"){stage.replaceChildren();return}
+    const clue=activeGameId==="dr1"&&chapterFourComplete();
+    const deaths=gameRoles().filter(role=>role.dead&&(!role.hiddenSpoiler||role.revealed)&&role.name!=="Narrator");
+    stage.innerHTML=`<div><span class="finale-stamp">${slayhem?"JABBERWOCK ISLAND / SLAYHEM":esc(gameDefinition(activeGameId).kicker)} · CASE ${String(key).padStart(2,"0")}</span><h2>${slayhem?"DANGANRONPA 2×2<br><em>SLAYHEM</em>":activeGameId==="dr1"?"DANGANRONPA<br><em>VOICE CAST</em>":"GOODBYE DESPAIR<br><em>VOICE CAST</em>"}</h2><p class="finale-copy">${slayhem?"A different killing game. Build the case from what your group discovers; no Original-route outcomes are assumed.":"MONOPAD // CASTING FILES // DAILY LIFE"}</p><div class="finale-memorial" aria-label="Known losses">${deaths.map(role=>`<button class="finale-frame" data-memorial-role="${esc(role.id)}" aria-label="Open ${esc(role.name)} memorial">${role.image?`<img src="${esc(role.image)}" alt="">`:""}<span>${esc(role.name)}</span></button>`).join("")}</div></div><aside class="finale-aside"><small>${clue?"KYOKO / UNRESOLVED LEAD":"CLASS TRIAL / TRUTH BULLET"}</small><blockquote>${clue?'“Mukuro Ikusaba. The sixteenth student, lying hidden somewhere in this school. The one they call the Ultimate Despair. Watch out for her.”':'“No, that’s wrong!”'}</blockquote><small>${clue?"Identity and whereabouts unresolved":"Makoto Naegi"}</small><blockquote>${activeGameId==="dr1"&&settings.voiceChapter>=5?"“Exactly five chickens.”":"“No, that’s wrong!”"}</blockquote><small>${activeGameId==="dr1"&&settings.voiceChapter>=5?"CHAPTER 05 / GARDEN":"CLASS TRIAL"}</small></aside>`;
+    stage.querySelectorAll("[data-memorial-role]").forEach(button=>button.onclick=()=>openDossier(roleById(button.dataset.memorialRole)));
+  }
+  function setEndgameSetting(key,value){
+    if(mode!=="host")return;
+    currentSettings()[key]=value;saveState();render();
+  }
+  $("#chapterCompleteToggle").onchange=event=>{
+    if(mode!=="host")return;
+    currentSettings().completedUnits[chapterKey()]=event.target.checked;saveState();render();
+  };
+  $("#predictionLockToggle").onchange=event=>{
+    if(mode!=="host")return;
+    currentSettings().predictionLocks||={};currentSettings().predictionLocks[chapterKey()]=event.target.checked;
+    saveState();render();
+  };
+  $("#panicToggle").onchange=event=>setEndgameSetting("panic",event.target.checked);
+  $("#saveSessionBtn").onclick=()=>{
+    const value=$("#nextSessionInput").value,date=new Date(value);
+    if(!value||!Number.isFinite(date.getTime()))return toast("Choose a valid date and time.");
+    setEndgameSetting("nextSessionAt",date.toISOString());
+  };
+  $("#clearSessionBtn").onclick=()=>setEndgameSetting("nextSessionAt","");
+  $("#editionSwitchBtn").onclick=()=>$("#editionDialog").showModal();
+  $$('[data-edition]').forEach(button=>button.onclick=()=>{if(selectGame(button.dataset.edition))$("#editionDialog").close()});
+  $("#chapter4CheckpointBtn").onclick=()=>{
+    if(mode!=="host"||activeGameId!=="dr1")return;
+    const settings=currentSettings();
+    settings.voiceChapter=5;settings.voiceInTrial=false;settings.trialByChapter["5"]=false;
+    settings.completedUnits||={};[1,2,3,4].forEach(chapter=>settings.completedUnits[chapter]=true);
+    settings.predictionLocks||={};settings.predictionLocks["4"]=true;
+    currentPopulationGraph()["4"]={...POPULATION_PRESETS["4"],revealed:true};
+    saveState();render();toast("Chapter 5: on the way to the headmaster’s room. Cast assignments and guesses are preserved.");
+  };
+  setInterval(renderSessionClock,30000);
+
   function personalThemePreference(){
     try{
       const saved=localStorage.getItem(UI_THEME_KEY);
-      return ["original","reworked"].includes(saved)?saved:"default";
+      return ["original","reworked","finale"].includes(saved)?saved:"default";
     }catch(_){return "default"}
   }
 
   function resolvedUiTheme(){
     const personal=personalThemePreference();
     if(personal!=="default")return personal;
-    return state.settings?.defaultUiTheme==="reworked"?"reworked":"original";
+    return ["reworked","finale"].includes(state.settings?.defaultUiTheme)?state.settings.defaultUiTheme:"original";
   }
 
   function applyUiTheme(){
@@ -2228,6 +2348,9 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       completedUnits[String(number)]=!!settings.completedUnits[rawKey];
     });
     settings.completedUnits=completedUnits;
+    if(!settings.predictionLocks||typeof settings.predictionLocks!=="object"||Array.isArray(settings.predictionLocks))settings.predictionLocks={};
+    settings.panic=!!settings.panic;
+    if(!Number.isFinite(Date.parse(settings.nextSessionAt)))settings.nextSessionAt="";
     const key=String(settings.voiceChapter);
     if(gameDefinition(gameId).kind==="anime"){
       settings.voiceInTrial=false;
@@ -2240,7 +2363,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function normaliseState(s) {
     const previousVersion=Number(s.version)||0;
-    s.version = 13;
+    s.version = 16;
     const legacySettings=s.settings&&!s.settings.games?{...s.settings}:null;
     if(!s.settings?.games){
       s.settings={
@@ -2249,7 +2372,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       };
     }
     s.settings.completedGames||={};
-    if(!["original","reworked"].includes(s.settings.defaultUiTheme))s.settings.defaultUiTheme="original";
+    if(!["original","reworked","finale"].includes(s.settings.defaultUiTheme))s.settings.defaultUiTheme="original";
     GAME_IDS.forEach(gameId=>s.settings.completedGames[gameId]=!!s.settings.completedGames[gameId]);
     s.settings.games||={};
     GAME_DEFINITIONS.forEach(game=>{
@@ -2385,6 +2508,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       r.image ||= "";
       r.modifier ||= "";
       r.biography=typeof r.biography==="string"?r.biography.trim():"";
+      if(previousVersion<15&&r.gameId==="dr1"&&DR1_REFRESHED_BIOGRAPHY_NAMES.has(r.name))r.biography="";
       r.lastActorName ||= "";
       if(!Array.isArray(r.customVoiceClips))r.customVoiceClips=[];
       const maxChapter=gameDefinition(r.gameId).maxChapter;
@@ -2448,8 +2572,20 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     s.roles.forEach(r=>{
       if(!r.dead&&r.ownerId)addActorHistory(s.actors.find(a=>a.id===r.ownerId),r.name);
     });
+    applyOctoberPresentation(s);
     synchroniseActorDeathCounts(s);
     return s;
+  }
+
+  function applyOctoberPresentation(board){
+    if(board.settings.presentationRelease!=="2026-10-21"){
+      board.settings.defaultUiTheme="finale";
+      board.settings.presentationRelease="2026-10-21";
+    }
+    if(board.settings.games.dr1.voiceChapter>=5){
+      board.customRecaps=board.customRecaps.filter(entry=>entry.id!==DR1_CH3_BODY_SEARCH_RECAP_ID);
+      if(!board.customRecaps.some(entry=>entry.id==="dr1-ch5-headmaster-checkpoint"))board.customRecaps.push({id:"dr1-ch5-headmaster-checkpoint",gameId:"dr1",chapter:5,title:"Chapter 5 · Session checkpoint",text:"Five chickens have been counted in the garden. In the gym, the group found Monokuma disassembled and examined the time bomb. The group decided to head towards the headmaster’s room. Our session stopped on the way there, before entering the room.",createdAt:1792512000000});
+    }
   }
 
   function applyJunkoIdentity(role,revealed){
@@ -2698,6 +2834,20 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   async function initializeSharedBoard() {
     setSyncStatus("CONNECTING","working");
     if(["127.0.0.1","localhost"].includes(location.hostname)){
+      if(!localStorage.getItem("preview-snapshot-650")){
+        try{
+          const response=await fetch("live-public-board.json");
+          if(!response.ok)throw new Error("Snapshot unavailable");
+          const snapshot=await response.json();
+          localStorage.setItem("preview-before-snapshot",JSON.stringify(state));
+          state=normaliseState(snapshot.state);
+          for(const gameId of ["dr2x2","dr2slayhem"]){if(!state.roles.some(r=>r.gameId===gameId))state.roles.push(...createRolesForGame(gameId));}
+          state.customRecaps=state.customRecaps.filter(r=>r.id!==DR1_CH3_BODY_SEARCH_RECAP_ID);
+          if(!state.customRecaps.some(r=>r.id==="dr1-ch5-headmaster-checkpoint"))state.customRecaps.push({id:"dr1-ch5-headmaster-checkpoint",gameId:"dr1",chapter:5,title:"Chapter 5 · Session checkpoint",text:"Five chickens have been counted in the garden. In the gym, the group found Monokuma disassembled and examined the time bomb. The group decided to head towards the headmaster’s room. Our session stopped on the way there, before entering the room.",createdAt:Date.now()});
+          cacheState();
+          localStorage.setItem("preview-snapshot-650","loaded");
+        }catch(error){console.warn("Local snapshot could not be loaded",error);}
+      }
       setSyncStatus("LOCAL PREVIEW","offline");
       return;
     }
@@ -2754,7 +2904,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         },30000);
       }
       setSyncStatus("LIVE","live");
-      if(mode==="host"&&sharedStateVersion<13)saveState();
+      if(mode==="host"&&sharedStateVersion<16)saveState();
     }catch(error){
       remoteReady=false;
       setSyncStatus("OFFLINE BACKUP","offline");
@@ -2802,6 +2952,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     return firstVisit;
   }
   function livingVoiceSourceSummary(){
+    if(["dr2x2","dr2slayhem"].includes(activeGameId))return "2×2 uses host-uploaded samples only. Original DR2 recordings are not imported into this route.";
     const current=currentSettings().voiceChapter;
     if(gameDefinition(activeGameId).kind==="anime")return "Danganronpa 3 uses episode predictions; only host-uploaded voice samples are available on this board.";
     if(currentSettings().voiceInTrial)return `Chapter ${current} pre-trial field dialogue only (current chapter; Trial testimony excluded).`;
@@ -2832,6 +2983,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   function canEditPrediction(actorId,kind,chapter=currentSettings().voiceChapter){
     if(mode!=="player"||actorId!==activeActorId)return false;
     const key=chapterKey(chapter);
+    if(currentSettings().predictionLocks?.[key]||currentSettings().completedUnits?.[key])return false;
     const game=gameDefinition(activeGameId);
     const result=resultForChapter(key,false);
     return !isChapterPredictionLocked(game.kind,currentSettings().trialByChapter[key],state.settings.completedGames[activeGameId],!!result?.victimRoleId);
@@ -2967,15 +3119,16 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     }
     if(role.specialRole==="real-junko")return monopadData.profileImages["Junko Enoshima"]||role.image;
     if(override)return override;
-    if(role.gameId==="dr2"&&role.name==="Byakuya Togami")return role.image;
+    if(["dr2","dr2x2","dr2slayhem"].includes(role.gameId)&&role.name==="Byakuya Togami")return role.image;
     if(role.gameId==="dr3anime")return role.image||monopadData.profileImages[role.name]||"";
     return monopadData.profileImages[role.name]||role.image||"";
   }
 
   function biographyForRole(role){
     if(!role)return "No profile is available yet.";
+    if(role.gameId==="dr1"&&role.specialRole!=="real-junko"&&chapterFourComplete()&&window.CAST_ENDGAME_DATA.chapter4[role.name])return window.CAST_ENDGAME_DATA.chapter4[role.name];
     if(String(role.biography||"").trim())return String(role.biography).trim();
-    const gameBios=monopadData.bios?.[role.gameId]||{};
+    const gameBios=monopadData.bios?.[["dr2x2","dr2slayhem"].includes(role.gameId)?"dr2":role.gameId]||{};
     if(role.specialRole==="real-junko")return gameBios["Junko Enoshima (Real)"]||gameBios[role.name]||"No profile is available yet.";
     return gameBios[role.name]||`${role.name} is known as ${role.title||"a student connected to Hope's Peak"}. More surface-level profile information will be added when it becomes available.`;
   }
@@ -2989,14 +3142,16 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   }
 
   function knownMonopadRoles(){
-    return gameRoles().filter(role=>role.name!=="Narrator"&&currentRoleVisible(role)&&(!role.hiddenSpoiler||role.revealed||mode==="host"));
+    return gameRoles().filter(role=>role.name!=="Narrator"&&currentRoleVisible(role)&&(!role.hiddenSpoiler||role.revealed));
   }
 
   function builtInRecapText(gameId,chapter,phase){
     const override=state.recapOverrides?.[gameId]?.[String(chapter)]?.[phase];
+    if(gameId==="dr2slayhem")return String(override||"").trim();
+    if(gameId==="dr1"&&chapter===4&&!override)return window.CAST_ENDGAME_DATA.recap4[phase]||"";
     if(String(override||"").trim())return String(override).trim();
     if(gameDefinition(gameId).kind==="anime")return phase==="full"?(monopadData.animeRecaps?.[chapter-1]||""):"";
-    return monopadData.recaps?.[gameId]?.[chapter-1]?.[phase]||"";
+    return monopadData.recaps?.[gameId==="dr2x2"?"dr2":gameId]?.[chapter-1]?.[phase]||"";
   }
 
   function visibleRecapEntries(){
@@ -3013,7 +3168,10 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         const text=[pretrial,full].filter(Boolean).join(" ");
         if(text)visible.push({kind:"built-in",chapter,phases:["pretrial","full"],label:`Chapter ${chapter} · Complete`,text});
       }
-      if(currentSettings().voiceInTrial){
+      if(currentSettings().completedUnits?.[current]){
+        const text=["pretrial","full"].map(phase=>builtInRecapText(activeGameId,current,phase)).filter(Boolean).join(" ");
+        if(text)visible.push({kind:"built-in",chapter:current,phases:["pretrial","full"],label:`Chapter ${current} · Complete`,text});
+      }else if(currentSettings().voiceInTrial){
         const text=builtInRecapText(activeGameId,current,"pretrial");
         if(text)visible.push({kind:"built-in",chapter:current,phases:["pretrial"],label:`Chapter ${current} · Pre-Trial`,text});
       }
@@ -3034,6 +3192,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#dossierDialogName").textContent=role.name;
     $("#dossierDialogTalent").textContent=role.title||"Profile";
     $("#dossierDialogBio").textContent=biographyForRole(role);
+    const measurement=role.gameId==="dr1"?(role.specialRole==="real-junko"?(role.revealed?90:null):window.CAST_ENDGAME_DATA.chest[role.name]):null;
+    $("#dossierMeasurement").textContent=`MONOPAD / Chest: ${measurement?measurement+" cm":"Not recorded"}`;
     $("#editDossierBioBtn").dataset.roleId=role.id;
     attachImageFallback(wrap,role);
     $("#dossierDialog").showModal();
@@ -3084,6 +3244,39 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     }).join("");
   }
 
+  function fitRecapTextarea(textarea){
+    if(!textarea)return;
+    if(!window.matchMedia("(max-width:620px)").matches){textarea.style.height="";return}
+    textarea.style.height="auto";
+    textarea.style.height=`${textarea.scrollHeight+2}px`;
+  }
+
+  function fitRecapTextareas(){
+    fitRecapTextarea($("#builtInRecapText"));
+    fitRecapTextarea($("#customRecapText"));
+  }
+
+  function clearRecapSaveFeedback(statusId,buttonId){
+    $(statusId).textContent="";
+    const button=$(buttonId);
+    clearTimeout(button._recapSavedTimer);
+    button.textContent=button.dataset.defaultText||button.textContent;
+    button.classList.remove("saved");
+  }
+
+  function showRecapSaveFeedback(statusId,buttonId,message){
+    const button=$(buttonId);
+    button.dataset.defaultText||=button.textContent;
+    clearTimeout(button._recapSavedTimer);
+    $(statusId).textContent=`✓ ${message}`;
+    button.textContent="Saved ✓";
+    button.classList.add("saved");
+    button._recapSavedTimer=setTimeout(()=>{
+      button.textContent=button.dataset.defaultText;
+      button.classList.remove("saved");
+    },1800);
+  }
+
   function refreshBuiltInRecapEditor({chapter,phase}={}){
     const chapterSelect=$("#builtInRecapChapter");
     const selectedChapter=Number(chapter||chapterSelect.value||currentSettings().voiceChapter);
@@ -3094,25 +3287,30 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     const selectedPhase=anime?"full":phase==="full"||phaseSelect.dataset.selection==="full"?"full":"pretrial";
     phaseSelect.value=selectedPhase;phaseSelect.dataset.selection=selectedPhase;
     $("#builtInRecapText").value=builtInRecapText(activeGameId,selectedChapter,selectedPhase);
+    fitRecapTextarea($("#builtInRecapText"));
   }
 
   function resetCustomRecapForm(chapter=currentSettings().voiceChapter){
+    clearRecapSaveFeedback("#customRecapSaveStatus","#saveCustomRecapBtn");
     $("#customRecapId").value="";
     $("#customRecapFormTitle").textContent="Add custom summary";
     $("#customRecapTitle").value="";
     $("#customRecapChapter").innerHTML=recapChapterOptions(chapter);
     $("#customRecapText").value="";
     $("#cancelCustomRecapEditBtn").classList.add("hidden");
+    fitRecapTextarea($("#customRecapText"));
   }
 
   function editCustomRecap(customId){
     const entry=state.customRecaps.find(item=>item.id===customId&&item.gameId===activeGameId);if(!entry)return;
+    clearRecapSaveFeedback("#customRecapSaveStatus","#saveCustomRecapBtn");
     $("#customRecapId").value=entry.id;
     $("#customRecapFormTitle").textContent="Edit custom summary";
     $("#customRecapTitle").value=entry.title;
     $("#customRecapChapter").innerHTML=recapChapterOptions(entry.chapter);
     $("#customRecapText").value=entry.text;
     $("#cancelCustomRecapEditBtn").classList.remove("hidden");
+    fitRecapTextarea($("#customRecapText"));
   }
 
   function renderCustomRecapList(){
@@ -3125,12 +3323,15 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function openRecapManager({chapter=currentSettings().voiceChapter,phase="pretrial",customId=""}={}){
     if(mode!=="host")return;
+    clearRecapSaveFeedback("#builtInRecapSaveStatus","#saveBuiltInRecapBtn");
+    clearRecapSaveFeedback("#customRecapSaveStatus","#saveCustomRecapBtn");
     $("#builtInRecapPhase").dataset.selection=phase;
     refreshBuiltInRecapEditor({chapter,phase});
     resetCustomRecapForm(chapter);
     renderCustomRecapList();
     if(customId)editCustomRecap(customId);
     if(!$("#recapManagerDialog").open)$("#recapManagerDialog").showModal();
+    requestAnimationFrame(fitRecapTextareas);
   }
 
   async function removeCustomRecap(customId){
@@ -3159,7 +3360,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   function renderGamePicker(){
     const grid=$("#gamePickerGrid");
     grid.innerHTML="";
-    const games=mode==="host"?GAME_DEFINITIONS:GAME_DEFINITIONS.filter(game=>isGameUnlocked(game.id));
+    const games=(mode==="host"?GAME_DEFINITIONS:GAME_DEFINITIONS.filter(game=>isGameUnlocked(game.id))).filter(game=>MAIN_GAME_IDS.includes(game.id));
     games.forEach(game=>{
       const index=GAME_IDS.indexOf(game.id);
       const unlocked=isGameUnlocked(game.id);
@@ -3167,7 +3368,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       const button=document.createElement("button");
       button.type="button";button.className=`game-choice ${unlocked?"":"locked"}`;button.disabled=!unlocked;
       button.innerHTML=`<span class="game-number">GAME ${index+1}</span><strong>${esc(game.title)}</strong><small>${unlocked?(completed?"Completed · board remains available":"Available now"):`Complete ${esc(GAME_DEFINITIONS[index-1]?.title||"the previous game")} to unlock.`}</small>${unlocked?"":'<span class="choice-lock">🔒</span>'}`;
-      if(unlocked)button.onclick=()=>selectGame(game.id);
+      if(unlocked)button.onclick=()=>game.id==="dr2"?$("#editionDialog").showModal():selectGame(game.id);
       grid.appendChild(button);
     });
   }
@@ -3185,25 +3386,26 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#gameKicker").textContent=`CAST CONTROL / ${game.kicker}`;
     $("#reworkedGameSubtitle").textContent=`Live board · ${game.title}`;
     $("#gameSwitcherBtn").textContent=game.title;
-    const nextLocked=GAME_DEFINITIONS.find(game=>!isGameUnlocked(game.id));
+    const nextLocked=GAME_DEFINITIONS.find(game=>MAIN_GAME_IDS.includes(game.id)&&!isGameUnlocked(game.id,false));
     $("#lockedGameBanner").classList.toggle("hidden",!nextLocked);
-    const lastUnlocked=GAME_DEFINITIONS.filter(game=>isGameUnlocked(game.id)).at(-1);
+    const lastUnlocked=GAME_DEFINITIONS.filter(game=>MAIN_GAME_IDS.includes(game.id)&&isGameUnlocked(game.id,false)).at(-1);
+    const prerequisiteLabel=nextLocked?.id==="dr3anime"?"any Danganronpa 2 / 2×2 route":lastUnlocked?.title||"the current board";
     if(nextLocked)$("#lockedGameTitle").textContent=nextLocked.title;
     $("#lockedGameCopy").textContent=mode==="host"
-      ? `Mark ${lastUnlocked?.title||"the current board"} complete in Admin Tools to unlock ${nextLocked?.title||"the next board"}.`
-      : `Complete ${lastUnlocked?.title||"the current board"} to unlock this board.`;
+      ? `Mark ${prerequisiteLabel} complete in Admin Tools to unlock ${nextLocked?.title||"the next board"}.`
+      : `Complete ${prerequisiteLabel} to unlock this board.`;
     $("#junkoVaultControls").classList.toggle("hidden",activeGameId!=="dr1");
     const settings=currentSettings();
-    const phaseProgress=game.kind==="anime" ? .55 : settings.voiceInTrial ? .72 : .28;
+    const phaseProgress=settings.completedUnits?.[settings.voiceChapter]?1:game.kind==="anime" ? .55 : settings.voiceInTrial ? .72 : .28;
     const progress=Math.round(((settings.voiceChapter-1+phaseProgress)/game.maxChapter)*100);
     $("#themeProgressLabel").textContent=game.kind==="anime"
       ? `${game.unitShort}. ${String(settings.voiceChapter).padStart(2,"0")} · WATCHING`
-      : `${game.unitShort}. ${String(settings.voiceChapter).padStart(2,"0")} · ${settings.voiceInTrial?"CLASS TRIAL":"PRE-TRIAL"}`;
+      : `${game.unitShort}. ${String(settings.voiceChapter).padStart(2,"0")} · ${settings.completedUnits?.[settings.voiceChapter]?"COMPLETE":settings.voiceInTrial?"CLASS TRIAL":"PRE-TRIAL"}`;
     $("#themeProgressFill").style.width=`${Math.max(0,Math.min(100,progress))}%`;
   }
 
   function renderPatchNotesVisibility(){
-    const nextLocked=GAME_DEFINITIONS.find(game=>!isGameUnlocked(game.id));
+    const nextLocked=GAME_DEFINITIONS.find(game=>MAIN_GAME_IDS.includes(game.id)&&!isGameUnlocked(game.id));
     $$('[data-reveal-game]').forEach(element=>{
       const gameId=element.dataset.revealGame;
       const allowed=mode==="host"||isGameUnlocked(gameId)||nextLocked?.id===gameId;
@@ -3216,7 +3418,12 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     const index=GAME_IDS.indexOf(gameId);
     if(index<0||index>0&&!isGameUnlocked(gameId)){toast("Complete the previous game first.");return}
     state.settings.completedGames[gameId]=completed;
-    if(!completed)GAME_IDS.slice(index+1).forEach(laterId=>state.settings.completedGames[laterId]=false);
+    if(!completed){
+      if(gameId==="dr1")GAME_IDS.filter(id=>id!=="dr1").forEach(id=>state.settings.completedGames[id]=false);
+      else if(["dr2","dr2x2","dr2slayhem"].includes(gameId)){
+        if(!["dr2","dr2x2","dr2slayhem"].some(id=>state.settings.completedGames[id]))["dr3anime","v3"].forEach(id=>state.settings.completedGames[id]=false);
+      }else if(gameId==="dr3anime")state.settings.completedGames.v3=false;
+    }
     GAME_IDS.slice(1).forEach(id=>{if(!state.roles.some(role=>role.gameId===id))state.roles.push(...createRolesForGame(id))});
     if(!isGameUnlocked(activeGameId))activeGameId="dr1";
     saveState();render();
@@ -3234,7 +3441,9 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       const card=document.createElement("article");card.className=`admin-game-card panel ${unlocked?"":"locked"}`;
       const stateClass=completed?"complete":unlocked?"open":"";
       const stateText=completed?"COMPLETED":unlocked?"AVAILABLE":"LOCKED";
-      card.innerHTML=`<div class="admin-game-state"><span class="section-kicker">GAME ${index+1}</span><span class="game-state-badge ${stateClass}">${stateText}</span></div><h3>${esc(game.title)}</h3><p>${unlocked?"This board is available in the game picker and keeps its own campaign state.":`Complete ${esc(GAME_DEFINITIONS[index-1]?.title||"the previous game")} first.`}</p><label class="toggle-wrap"><input type="checkbox" data-complete-game="${game.id}" ${completed?"checked":""} ${unlocked?"":"disabled"}><span class="toggle"></span><span><strong>Game completed</strong><small>${completed?"Later games may be unlocked":"Mark complete when your group finishes"}</small></span></label>`;
+      const variant=["dr2x2","dr2slayhem"].includes(game.id);
+      const prerequisite=variant?GAME_DEFINITIONS[0].title:game.id==="dr3anime"?"any Danganronpa 2 / 2×2 route":GAME_DEFINITIONS[index-1]?.title||"the previous game";
+      card.innerHTML=`<div class="admin-game-state"><span class="section-kicker">${variant?"GAME 2 · ALTERNATE ROUTE":`GAME ${index+1}`}</span><span class="game-state-badge ${stateClass}">${stateText}</span></div><h3>${esc(game.title)}</h3><p>${unlocked?"This board is available in the game picker and keeps its own campaign state.":`Complete ${esc(prerequisite)} first.`}</p><label class="toggle-wrap"><input type="checkbox" data-complete-game="${game.id}" ${completed?"checked":""} ${unlocked?"":"disabled"}><span class="toggle"></span><span><strong>Game completed</strong><small>${completed?"Later games may be unlocked":"Mark complete when your group finishes"}</small></span></label>`;
       card.querySelector("[data-complete-game]")?.addEventListener("change",event=>setGameCompleted(game.id,event.target.checked));
       grid.appendChild(card);
     });
@@ -3242,6 +3451,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   }
 
   function render(){
+    sessionPlanner?.render();
     if (mode === "player" && activeActorId && !actorById(activeActorId)) {
       activeActorId = null;
       sessionStorage.removeItem(SESSION_ACTOR_KEY);
@@ -3251,6 +3461,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     applyUiTheme();
     synchroniseActorDeathCounts();
     renderGameChrome();
+    renderEndgame();
     renderPatchNotesVisibility();
     const game=gameDefinition(activeGameId);
     const anime=game.kind==="anime";
@@ -3298,7 +3509,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     renderStatistics();
     renderMonopad();
     renderAdminTools();
-    if(initialBoardLoadComplete&&availableGameIds().length>1&&!gamePickerShown){
+    if(initialBoardLoadComplete&&!isLocalPreview&&availableGameIds().length>1&&!gamePickerShown){
       setTimeout(()=>{if(!gamePickerShown&&!document.querySelector("dialog[open]"))showGamePicker({automatic:true})},40);
     }
   }
@@ -3439,6 +3650,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   };
 
   function voiceLibraryProfile(r){
+    if(["dr2x2","dr2slayhem"].includes(r.gameId))return null;
     const library=window.CAST_VOICE_LIBRARY;
     if(!library)return null;
     const requested=r.voiceProfile||r.name;
@@ -3627,7 +3839,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     const prediction=predictionForActor(actor.id,chapter,true);
     const trial=!!currentSettings().trialByChapter[chapter];
     const animeComplete=anime&&!!state.settings.completedGames[activeGameId];
-    const chapterLocked=isChapterPredictionLocked(game.kind,trial,animeComplete,!!resultForChapter(chapter,false)?.victimRoleId);
+    const chapterLocked=!!currentSettings().predictionLocks?.[chapter]||!!currentSettings().completedUnits?.[chapter]||isChapterPredictionLocked(game.kind,trial,animeComplete,!!resultForChapter(chapter,false)?.victimRoleId);
     dock.classList.remove("hidden");
     const token=(kind,label)=>{
       const field=predictionField(kind);
@@ -3955,7 +4167,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     const isExpanded=canExpand && expanded.has(r.id);
     const profileArt=profileImageForRole(r);
     const el=document.createElement("article");
-    el.className=`role-card ${isExpanded?"expanded":""} ${locked?"locked":""} ${spoiler?"spoiler":""}`;
+    el.className=`role-card ${r.name==="Narrator"?"narrator-free":""} ${isExpanded?"expanded":""} ${locked?"locked":""} ${spoiler?"spoiler":""}`;
     el.dataset.roleId=r.id;
 
     const draggable=canDragRole(r);
@@ -3971,7 +4183,9 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         ${imageMarkup(r,"role-mini-img",r.name.slice(0,1).toUpperCase())}
         <div class="role-copy">
           <div class="role-name">${esc(r.name)}</div>
+          ${r.specialRole==="new-2x2"?'<small class="narrator-note">John Danganronpa</small>':''}
           <div class="role-title">${esc(r.title||"No title")}</div>
+          ${r.name==="Narrator"?'<small class="narrator-note">Extra role · does not use a character slot</small>':''}
         </div>
         <div class="role-badges">
           ${voiceButtonMarkup(r,{assigned})}
@@ -4161,7 +4375,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
             ${awards}
             <div class="actor-name">${esc(actor.name)}${online?'<span class="actor-online-indicator" title="Currently logged in" aria-label="Currently logged in"></span>':""}</div>
             <div class="actor-meta">
-              ${anime?'<span>ANIME PREDICTIONS</span>':`<span>${assigned.length}/${currentSettings().maxPerActor} characters</span>
+              ${anime?'<span>ANIME PREDICTIONS</span>':`<span>${assigned.filter(r=>r.name!=="Narrator").length}/${currentSettings().maxPerActor} characters</span>
               <span>${lockedRoleIdFor(actor)?"🔒 locked":"no locked character"}</span>
               <span class="death-counter">☠ ${actorDeaths} ${actorDeaths===1?"death":"deaths"}</span>`}
               ${actor.hasPassword?`<span>🔑 password</span>`:""}
@@ -4442,8 +4656,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     }
 
     if(newActor){
-      const count=rolesForActor(newOwnerId).length;
-      if(count>=currentSettings().maxPerActor){
+      const count=rolesForActor(newOwnerId).filter(role=>role.name!=="Narrator").length;
+      if(r.name!=="Narrator"&&count>=currentSettings().maxPerActor){
         return moveDenied(`${newActor.name} already has the maximum number of characters.`);
       }
     }
@@ -4999,7 +5213,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     const raw=prompt("Maximum characters per voice actor:",currentSettings().maxPerActor);
     if(raw===null)return;
     const n=Math.max(1,Math.min(30,parseInt(raw,10)||currentSettings().maxPerActor));
-    const tooMany=state.actors.filter(a=>rolesForActor(a.id).length>n);
+    const tooMany=state.actors.filter(a=>rolesForActor(a.id).filter(r=>r.name!=="Narrator").length>n);
     if(tooMany.length){
       alert(`Cannot set the limit to ${n} because ${tooMany.map(a=>a.name).join(", ")} already have more characters assigned.`);
       return;
@@ -5066,13 +5280,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       if(choice==="default")localStorage.removeItem(UI_THEME_KEY);
       else localStorage.setItem(UI_THEME_KEY,choice);
     }catch(_){}
-    applyUiTheme();
+    applyUiTheme();renderEndgame();
     toast(choice==="default"?`Using the shared ${state.settings.defaultUiTheme} theme.`:`Using the ${choice} theme on this device.`);
   };
 
   $("#defaultThemeSelect").onchange=event=>{
     if(mode!=="host")return;
-    state.settings.defaultUiTheme=event.target.value==="reworked"?"reworked":"original";
+    state.settings.defaultUiTheme=["reworked","finale"].includes(event.target.value)?event.target.value:"original";
     saveState();render();
     toast(`Default theme changed to ${state.settings.defaultUiTheme}. Personal choices are unchanged.`);
   };
@@ -5083,11 +5297,15 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     if(!role)return;
     $("#dossierDialog").close();openRoleDialog(role);
   };
-  $("#builtInRecapChapter").onchange=()=>refreshBuiltInRecapEditor({chapter:$("#builtInRecapChapter").value,phase:$("#builtInRecapPhase").value});
+  $("#builtInRecapChapter").onchange=()=>{clearRecapSaveFeedback("#builtInRecapSaveStatus","#saveBuiltInRecapBtn");refreshBuiltInRecapEditor({chapter:$("#builtInRecapChapter").value,phase:$("#builtInRecapPhase").value})};
   $("#builtInRecapPhase").onchange=()=>{
+    clearRecapSaveFeedback("#builtInRecapSaveStatus","#saveBuiltInRecapBtn");
     $("#builtInRecapPhase").dataset.selection=$("#builtInRecapPhase").value;
     refreshBuiltInRecapEditor({chapter:$("#builtInRecapChapter").value,phase:$("#builtInRecapPhase").value});
   };
+  $("#builtInRecapText").addEventListener("input",()=>{fitRecapTextarea($("#builtInRecapText"));clearRecapSaveFeedback("#builtInRecapSaveStatus","#saveBuiltInRecapBtn")});
+  [$("#customRecapTitle"),$("#customRecapChapter"),$("#customRecapText")].forEach(field=>field.addEventListener("input",()=>{fitRecapTextarea($("#customRecapText"));clearRecapSaveFeedback("#customRecapSaveStatus","#saveCustomRecapBtn")}));
+  window.addEventListener("resize",()=>{if($("#recapManagerDialog").open)fitRecapTextareas()});
   $("#builtInRecapForm").onsubmit=event=>{
     event.preventDefault();if(mode!=="host")return;
     const chapter=String(Number($("#builtInRecapChapter").value)||1);
@@ -5096,7 +5314,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     if(!text)return toast("Built-in summaries cannot be empty or removed.");
     state.recapOverrides[activeGameId]||={};state.recapOverrides[activeGameId][chapter]||={};
     state.recapOverrides[activeGameId][chapter][phase]=text;
-    saveState();render();refreshBuiltInRecapEditor({chapter,phase});toast("Built-in summary updated.");
+    saveState();render();refreshBuiltInRecapEditor({chapter,phase});showRecapSaveFeedback("#builtInRecapSaveStatus","#saveBuiltInRecapBtn","Built-in summary saved");toast("Built-in summary updated.");
   };
   $("#customRecapForm").onsubmit=event=>{
     event.preventDefault();if(mode!=="host")return;
@@ -5107,7 +5325,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     const existing=state.customRecaps.find(entry=>entry.id===customId&&entry.gameId===activeGameId);
     if(existing)Object.assign(existing,{chapter,title,text});
     else state.customRecaps.push({id:id(),gameId:activeGameId,chapter,title,text,createdAt:Date.now()});
-    saveState();render();resetCustomRecapForm(chapter);renderCustomRecapList();toast(existing?"Custom summary updated.":"Custom summary added.");
+    saveState();render();resetCustomRecapForm(chapter);renderCustomRecapList();showRecapSaveFeedback("#customRecapSaveStatus","#saveCustomRecapBtn",existing?"Custom summary updated":"Custom summary saved");toast(existing?"Custom summary updated.":"Custom summary added.");
   };
   $("#cancelCustomRecapEditBtn").onclick=()=>resetCustomRecapForm();
 
@@ -5216,6 +5434,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   const initialDeepLink=applyDeepLinkRoute();
   await initializeSharedBoard();
   initialBoardLoadComplete=true;
+  {
+    sessionPlanner=window.mountSessionPlanner({
+      load:()=>{try{return isLocalPreview?JSON.parse(localStorage.getItem("danganronpa-session-planner-v1")):null}catch(_){return null}},
+      save:value=>localStorage.setItem("danganronpa-session-planner-v1",JSON.stringify(value)),
+      actors:()=>state.actors,mode:()=>isLocalPreview?mode:"viewer",actorId:()=>activeActorId,local:()=>isLocalPreview,toast
+    });
+  }
+
   render();
   const openedDeepLink=applyDeepLinkRoute()||initialDeepLink;
 

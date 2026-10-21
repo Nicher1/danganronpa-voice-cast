@@ -14,7 +14,7 @@ const inlineScripts = html
   .filter(source => source.trim());
 inlineScripts.forEach((source, index) => new vm.Script(source, { filename: `index-inline-${index + 1}.js` }));
 
-const definitionsMatch = html.match(/const GAME_DEFINITIONS = (\[[\s\S]*?\n  \]);\n  const GAME_IDS/);
+const definitionsMatch = html.match(/const GAME_DEFINITIONS = (\[[\s\S]*?\n  \]);/);
 assert.ok(definitionsMatch, "Game definitions are missing");
 const definitions = vm.runInNewContext(definitionsMatch[1]);
 assert.deepEqual(Array.from(definitions, game => game.id), ["dr1", "dr2", "dr3anime", "v3"]);
@@ -66,9 +66,9 @@ assert.doesNotMatch(html, /👑|🏴‍☠️/);
 assert.ok(html.includes("Only unlocked boards appear"));
 assert.ok(html.includes("function renderPredictionChart"));
 assert.ok(html.includes('data-reveal-game="dr3anime"'));
-assert.ok(html.includes('sharedStateVersion<13'));
+assert.ok(html.includes('sharedStateVersion<16'));
 assert.ok(sql.includes("'dr1', 'dr2', 'dr3anime', 'v3'"));
-assert.ok(html.includes("version:13"));
+assert.ok(html.includes("version:16"));
 assert.ok(html.includes(`const APP_BUILD = "${build.build}"`));
 assert.ok(hostRedirect.includes(`build=${build.build}`));
 assert.ok(html.includes("async function refreshOutdatedBuild()"));
