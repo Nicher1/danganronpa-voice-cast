@@ -1,4 +1,10 @@
-# Local feature preview — 21 October 2026
+# Session planner — 21 October 2026
+
+The shared scheduling implementation is documented in `SHARED_SCHEDULING.md`.
+The following notes describe the earlier device-only preview and visual release.
+The new shared migration supersedes that connection limitation when installed;
+email remains deferred. The stopping-point shortcut has been removed, and the
+host break controls are now labelled Pause session / Resume session.
 
 Today's session is seeded for 21 October 2026, 19:45 Europe/Copenhagen
 (17:45 UTC). Calendar entry always uses Copenhagen civil time; display uses

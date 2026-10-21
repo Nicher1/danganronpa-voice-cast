@@ -139,6 +139,31 @@
       return data;
     }
 
+    async getSchedule() {
+      const { data, error } = await this.client.from("cast_schedules")
+        .select("slug,state,revision,last_request_id,updated_at").eq("slug", this.slug).maybeSingle()
+        .abortSignal(AbortSignal.timeout(12000));
+      if (error) throw error;
+      return data;
+    }
+
+    async scheduleAction(action, payload, requestId) {
+      const { data, error } = await this.client.rpc("cast_schedule_action", {
+        p_slug: this.slug, p_action: action, p_payload: payload, p_request_id: requestId
+      }).abortSignal(AbortSignal.timeout(12000));
+      if (error) throw error;
+      return data;
+    }
+
+    subscribeSchedule(onSchedule, onStatus) {
+      const channel = this.client.channel(`cast-schedule-${this.slug}`)
+        .on("postgres_changes", {
+          event: "UPDATE", schema: "public", table: "cast_schedules", filter: `slug=eq.${this.slug}`
+        }, payload => onSchedule(payload.new))
+        .subscribe(onStatus);
+      return () => this.client.removeChannel(channel);
+    }
+
     async uploadVoiceClip(roleId, file) {
       const safeName = String(file?.name || "sample")
         .normalize("NFKD")

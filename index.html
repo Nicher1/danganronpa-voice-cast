@@ -1164,7 +1164,6 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <label><input type="checkbox" id="predictionLockToggle"> Close guesses</label>
           <label><input type="checkbox" id="panicToggle"> Panic atmosphere</label>
           <label hidden>Next session (your local time) <input type="datetime-local" id="nextSessionInput"></label><button hidden id="saveSessionBtn">Set timer</button><button hidden id="clearSessionBtn" class="ghost">Clear timer</button>
-          <button id="chapter4CheckpointBtn">Set stopping point: Chapter 5 · headmaster’s room</button>
         </div>
         <div id="sessionReadout" class="session-readout" role="status"></div>
         <button id="editionSwitchBtn" class="ghost hidden">Preview DR2 / 2×2 route</button>
@@ -1806,16 +1805,17 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js"></script>
+  <script src="supabase-sync.js?v=20261021-2"></script>
   <script src="voice-clips-v4.js"></script>
   <script src="monopad-data.js?v=4"></script>
   <script src="endgame-data.js?v=20261007"></script>
-  <script src="session-planner.js?v=20261021"></script>
-  <script src="session-planner-ui.js?v=20261021"></script>
+  <script src="session-planner.js?v=20261021-2"></script>
+  <script src="session-planner-store.js?v=20261021-2"></script>
+  <script src="session-planner-ui.js?v=20261021-2"></script>
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.21.1";
+  const APP_BUILD = "2026.10.21.2";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2207,7 +2207,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   const $ = sel => document.querySelector(sel);
   const $$ = sel => [...document.querySelectorAll(sel)];
-  const isLocalPreview = ["127.0.0.1","localhost"].includes(location.hostname);
+  const isLocalPreview = ["127.0.0.1","localhost"].includes(location.hostname) && new URLSearchParams(location.search).get("shared")!=="1";
   let sessionPlanner = null;
   const isGameUnlocked = (gameId,includePreview=true) => {
     if(typeof isLocalPreview!=="undefined"&&isLocalPreview&&includePreview && ["dr2","dr2x2","dr2slayhem"].includes(gameId))return true;
@@ -2249,7 +2249,6 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#chapterCompleteToggle").checked=!!settings.completedUnits?.[key];
     $("#predictionLockToggle").checked=!!settings.predictionLocks?.[key];
     $("#panicToggle").checked=!!settings.panic;
-    $("#chapter4CheckpointBtn").classList.toggle("hidden",activeGameId!=="dr1");
     $("#editionSwitchBtn").classList.toggle("hidden",!isLocalPreview&&!["dr2","dr2x2","dr2slayhem"].includes(activeGameId));
     if(document.activeElement!==$("#nextSessionInput")){
       const date=new Date(settings.nextSessionAt);
@@ -2285,15 +2284,6 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   $("#clearSessionBtn").onclick=()=>setEndgameSetting("nextSessionAt","");
   $("#editionSwitchBtn").onclick=()=>$("#editionDialog").showModal();
   $$('[data-edition]').forEach(button=>button.onclick=()=>{if(selectGame(button.dataset.edition))$("#editionDialog").close()});
-  $("#chapter4CheckpointBtn").onclick=()=>{
-    if(mode!=="host"||activeGameId!=="dr1")return;
-    const settings=currentSettings();
-    settings.voiceChapter=5;settings.voiceInTrial=false;settings.trialByChapter["5"]=false;
-    settings.completedUnits||={};[1,2,3,4].forEach(chapter=>settings.completedUnits[chapter]=true);
-    settings.predictionLocks||={};settings.predictionLocks["4"]=true;
-    currentPopulationGraph()["4"]={...POPULATION_PRESETS["4"],revealed:true};
-    saveState();render();toast("Chapter 5: on the way to the headmaster’s room. Cast assignments and guesses are preserved.");
-  };
   setInterval(renderSessionClock,30000);
 
   function personalThemePreference(){
@@ -2833,7 +2823,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   async function initializeSharedBoard() {
     setSyncStatus("CONNECTING","working");
-    if(["127.0.0.1","localhost"].includes(location.hostname)){
+    if(isLocalPreview){
       if(!localStorage.getItem("preview-snapshot-650")){
         try{
           const response=await fetch("live-public-board.json");
@@ -5435,10 +5425,15 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   await initializeSharedBoard();
   initialBoardLoadComplete=true;
   {
+    let scheduleStore=null;
+    if(!isLocalPreview&&remoteSync){
+      scheduleStore=new window.CastScheduleStore(remoteSync,window.CastSessionPlanner);
+      await scheduleStore.start();
+    }
     sessionPlanner=window.mountSessionPlanner({
-      load:()=>{try{return isLocalPreview?JSON.parse(localStorage.getItem("danganronpa-session-planner-v1")):null}catch(_){return null}},
+      load:()=>{try{return isLocalPreview?JSON.parse(localStorage.getItem("danganronpa-session-planner-v1")):scheduleStore?.state}catch(_){return null}},
       save:value=>localStorage.setItem("danganronpa-session-planner-v1",JSON.stringify(value)),
-      actors:()=>state.actors,mode:()=>isLocalPreview?mode:"viewer",actorId:()=>activeActorId,local:()=>isLocalPreview,toast
+      store:scheduleStore,actors:()=>state.actors,mode:()=>!isLocalPreview&&!remoteReady?"viewer":mode,actorId:()=>activeActorId,local:()=>isLocalPreview,toast
     });
   }
 

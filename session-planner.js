@@ -47,8 +47,8 @@
       const record=s.records[week]||0;
       if(best.voters.length>record){s.records[week]=best.voters.length;s.notices.push({id:`${week}-${best.voters.length}`,week,date:best.date,count:best.voters.length,createdAt:new Date(now).toISOString(),status:'Email pending connection'});changed=true;}
       // A host-selected session always wins over automatic selection for that week.
-      if(!s.sessions.some(x=>monday(day(x.startAt))===week)&&now>=Date.parse(best.startAt)-48*HOUR){
-        const adjusted=new Date(Date.parse(best.startAt)+suggestion(s,best.date,actors)*MIN).toISOString();
+      const adjusted=new Date(Date.parse(best.startAt)+suggestion(s,best.date,actors)*MIN).toISOString();
+      if(!s.autoSelectionDisabled?.[week]&&!s.sessions.some(x=>monday(day(x.startAt))===week)&&Date.parse(adjusted)>now&&now>=Date.parse(adjusted)-48*HOUR){
         rebase(s,best.date,clock(adjusted));s.sessions.push({id:`auto-${best.date}`,startAt:adjusted,endedAt:null,breaks:[],source:'poll'});changed=true;
       }
     }
@@ -58,7 +58,9 @@
     if(action==='vote'){
       if(weekday(p.date)===2)throw Error('Tuesday is unavailable.');
       if(!/^\d{4}-\d{2}-\d{2}$/.test(p.date)||p.date<day(now))throw Error('Choose today or a future date.');
-      s.votes[p.date]||={};s.votes[p.date][p.actorId]={available:!!p.available,offset:Math.max(-240,Math.min(240,Math.round((Number(p.offset)||0)/15)*15))};
+      s.votes[p.date]||={};
+      const offset=p.delta!==undefined?(s.votes[p.date][p.actorId]?.offset||0)+Number(p.delta):p.offset!==undefined?Number(p.offset):(s.votes[p.date][p.actorId]?.offset||0);
+      s.votes[p.date][p.actorId]={available:!!p.available,offset:Math.max(-1440,Math.min(1440,Math.round((offset||0)/15)*15))};
     }else if(action==='schedule'){
       if(weekday(p.date)===2)throw Error('Tuesday is unavailable.');
       if(p.date<day(now))throw Error('Choose today or a future date.');
@@ -69,8 +71,11 @@
       else if(!s.sessions.some(x=>x.startAt===startAt))s.sessions.push({id:p.id||`session-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,startAt,endedAt:null,breaks:[],source:'host'});
     }else if(action==='cancel'){
       const x=s.sessions.find(x=>x.id===p.id);if(!x||Date.parse(x.startAt)<=now)throw Error('Only future sessions can be removed.');s.sessions=s.sessions.filter(x=>x.id!==p.id);
+      s.autoSelectionDisabled||={};s.autoSelectionDisabled[monday(day(x.startAt))]=true;
     }else{
+      if(!['end','break','resume'].includes(action))throw Error('Unknown scheduling action.');
       const x=current(s,now);if(!x)throw Error('There is no current session.');
+      if(p.id&&p.id!==x.id)throw Error('The current session changed. Refresh and try again.');
       if(action==='end'){x.endedAt=new Date(now).toISOString();x.breaks.forEach(b=>{if(!b.endAt)b.endAt=x.endedAt;});}
       else if(action==='break'){if(!x.breaks.some(b=>!b.endAt))x.breaks.push({startAt:new Date(now).toISOString(),endAt:null});}
       else if(action==='resume'){const b=x.breaks.find(b=>!b.endAt);if(b)b.endAt=new Date(now).toISOString();}
