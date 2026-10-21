@@ -1437,10 +1437,34 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         </div>
         <button type="button" class="icon-btn" data-close="patchNotesDialog">×</button>
       </div>
-      <p class="muted small">Version history. Releases are newest first and collapsed until you open them.</p>
+      <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">v0.18</span><span class="patch-release-title"><strong>Dossier text refresh</strong><small>Current release</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">v0.20</span><span class="patch-release-title"><strong>Shared scheduling and session controls</strong><small>Current release · 21 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>One schedule for everyone</h4><p>Sessions and attendance now save to the shared board and update across devices. Players edit their own availability; the host can reply on anyone's behalf. Existing character assignments and guesses are preserved.</p></section>
+            <section class="patch-note"><h4>Calendar planning in Denmark time</h4><p>The host can schedule multiple dates, adjust future sessions or remove them from a Monday–Sunday calendar. Input follows Danish summer/winter time; confirmed timestamps display in each viewer's local timezone. Tuesdays are unavailable. Same-day past times are allowed for testing.</p></section>
+            <section class="patch-note"><h4>Live attendance and arrival times</h4><p>Pick available days or mark Cannot attend. Use −15 / +15 to show an earlier or later arrival; replies save immediately. Day counts and names show who can play. The host can assign players by tapping or dragging their names. Plan ahead opens the full week after the next scheduled session.</p></section>
+            <section class="patch-note"><h4>Automatic session selection</h4><p>The server checks every minute, even with every browser closed. Within 48 hours of the suggested start, it selects the most-supported option with at least three players, including the host's actor. Ties favour the earlier date. Arrival preferences adjust the time in 15-minute steps, with a preference for the proposed start. Host-selected sessions take priority; removing one prevents automatic re-selection that week.</p></section>
+            <section class="patch-note"><h4>Pause session, resume and end</h4><p>The host's session panel offers Pause session / Resume session and End current session while a session is active. The first five minutes show DANGANRONPA NOW, followed by elapsed time. Ending a session opens planning for the next one; otherwise it ends automatically ten hours after its start.</p></section>
+            <section class="patch-note"><h4>Shared play-time statistics</h4><p>Session statistics lists past and active sessions with elapsed time, break time and play time excluding breaks. Pausing records a break without extending the ten-hour session window.</p></section>
+            <section class="patch-note"><h4>Connection feedback and recovery</h4><p>The planner shows when it is saving, live or reconnecting. Interrupted saves can retry safely, and rejected changes show an error instead of appearing saved. The localhost preview remains device-only.</p></section>
+            <section class="patch-note"><h4>Cleanup and pending notifications</h4><p>The one-use stopping-point shortcut has been removed. Weekly attendance records are shared, but email notifications are not connected yet; email setup is deferred.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.19</span><span class="patch-release-title"><strong>Danganronpa Dark and Monopad improvements</strong><small>Previous release · 21 October 2026 · backfilled</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>A darker casting board</h4><p>Danganronpa Dark adds a bold title treatment, pink accents, character posters and a continuous chain strip across the locked-game banner. Story-appropriate quotes replace generic copy. The header now reads Voice casting overview. Personal theme choices remain available.</p></section>
+            <section class="patch-note"><h4>Story memory at the current stopping point</h4><p>Recaps and character descriptions reflect the group's established knowledge, including completed-chapter information when appropriate. An outdated temporary recap has been retired. Added profile measurements respect existing character visibility; these notes omit the underlying story details.</p></section>
+            <section class="patch-note"><h4>Memorial and Narrator clarity</h4><p>The memorial display uses the board's recorded character status and links to the corresponding files. The host retains revival and result controls. Narrator is visibly marked as an extra role and excluded from the interface's character-slot count; the matching shared capacity-rule update is still pending.</p></section>
+            <section class="patch-note"><h4>Guess controls and panic atmosphere</h4><p>Close guesses lets the host disable or reopen prediction controls before a Trial. Panic atmosphere changes the visual mood with stronger pink effects. The manual guess lock currently applies in the interface; additional server enforcement is still pending.</p></section>
+            <section class="patch-note"><h4>Session planner preview</h4><p>This release introduced calendar planning, attendance, countdowns, breaks and session statistics as a device-only preview. The following v0.20 release connects those features across devices.</p></section>
+            <section class="patch-note" data-reveal-game="dr2"><h4>Future edition preparation</h4><p>Separate DR2 and 2×2 route previews are prepared with independent character entries and unknown information left unspecified. Route testing remains a local preview; it does not complete a game or switch the current campaign. Shared writes for the new routes still need a later backend update.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.18</span><span class="patch-release-title"><strong>Dossier text refresh</strong><small>Previous release</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Current-story reminders</h4><p>Monopad descriptions now give concise reminders of information established by the board's current story progress. Existing profile visibility and spoiler protections remain unchanged.</p></section>
           </div>
@@ -1456,7 +1480,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         <details class="patch-release">
           <summary><span class="patch-version">v0.16</span><span class="patch-release-title"><strong>Master-editable story memory and dossiers</strong><small>Previous release</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
-            <section class="patch-note"><h4>Custom stopping-point recaps</h4><p>The master can add, edit, and remove spoiler-safe custom story summaries from the Monopad. A special Chapter 3 entry records the search for Taka and Hifumi's missing bodies without revealing what happens next.</p></section>
+            <section class="patch-note"><h4>Custom stopping-point recaps</h4><p>The master can add, edit, and remove spoiler-safe custom story summaries from the Monopad. Temporary entries record the group's current stopping point without revealing later events.</p></section>
             <section class="patch-note"><h4>Protected built-in summaries</h4><p>Every normal pre-Trial and Trial recap can now be edited by the master, but it cannot be deleted or saved empty.</p></section>
             <section class="patch-note"><h4>Editable character files</h4><p>The master can rewrite a character's Monopad description from either the character editor or the open dossier.</p></section>
           </div>
@@ -1815,7 +1839,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.21.2";
+  const APP_BUILD = "2026.10.21.3";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
