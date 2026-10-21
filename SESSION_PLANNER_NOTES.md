@@ -31,7 +31,7 @@ the locked-game banner. Narrator is marked as an extra role and excluded from
 client-side capacity checks. DR2/2Ã—2 preview access is localhost-only and does
 not mark any game completed.
 
-The frontend release is prepared for GitHub Pages. The hosted page displays today’s
+The frontend release is prepared for GitHub Pages. The hosted page displays today's
 session time; interactive planning remains local-only. No database migrations
 were performed. Before enabling shared planning,
 implement authenticated shared planning, actor-owned votes, host-only session
