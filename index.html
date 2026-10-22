@@ -1052,7 +1052,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
 </style>
 <link rel="stylesheet" href="finale.css?v=20261021-dark">
-<link rel="stylesheet" href="session-planner.css?v=20261021">
+<link rel="stylesheet" href="session-planner.css?v=20261022">
 </head>
 <body>
   <header class="topbar">
@@ -1229,8 +1229,15 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
             </summary>
             <p class="muted tiny">Players and viewers cannot see this section at all. Drag a character out of the vault to reveal it.</p>
             <div id="junkoVaultControls" class="vault-switch-card">
+              <div class="vault-switch-title">Mukuro photo reveal</div>
+              <div class="vault-switch-copy">Show her face on the temporary card and in the Monopad only when you have seen it in the story. This does not change her identity, talent, status, or predictions. The identity switch below takes over the portrait when enabled.</div>
+              <label class="toggle-wrap">
+                <input id="mukuroPortraitToggle" type="checkbox">
+                <span class="toggle"></span>
+                <span><strong>Show Mukuro’s face</strong><small>Off keeps the unknown portrait. Available while her temporary entry is on the board.</small></span>
+              </label>
               <div class="vault-switch-title">Junko / Mukuro identity swap</div>
-              <div class="vault-switch-copy">Reversibly changes the original dead “Junko” card to Mukuro’s real name, talent, and portrait. The separate real Junko stays hidden below until Chapter 6.</div>
+              <div class="vault-switch-copy">Reversibly changes the original dead “Junko” card to Mukuro’s real name, talent, and portrait. The temporary prediction entry is merged into this card and its guesses are preserved. Switching off restores the temporary entry. The separate real Junko stays hidden below until Chapter 6.</div>
               <label class="toggle-wrap">
                 <input id="junkoMukuroToggle" type="checkbox">
                 <span class="toggle"></span>
@@ -1440,7 +1447,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">v0.20</span><span class="patch-release-title"><strong>Shared scheduling and session controls</strong><small>Current release · 21 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">v0.21</span><span class="patch-release-title"><strong>Separate portrait reveal control</strong><small>Current release · 22 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><details><summary>Profile reveal controls · click to reveal details</summary><p>The host can reveal both the main portrait and the Monopad picture together using a separate switch. Both stay hidden until enabled. The identity control remains separate, and restoring the temporary entry preserves the photo choice and predictions.</p></details></section>
+            <section class="patch-note"><h4>Collapsible session schedule</h4><p>Collapse the schedule to keep only its session summary visible. Your browser remembers this choice across updates and reloads.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">v0.20</span><span class="patch-release-title"><strong>Shared scheduling and session controls</strong><small>Previous release · 21 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>One schedule for everyone</h4><p>Sessions and attendance now save to the shared board and update across devices. Players edit their own availability; the host can reply on anyone's behalf. Existing character assignments and guesses are preserved.</p></section>
             <section class="patch-note"><h4>Calendar planning in Denmark time</h4><p>The host can schedule multiple dates, adjust future sessions or remove them from a Monday–Sunday calendar. Input follows Danish summer/winter time; confirmed timestamps display in each viewer's local timezone. Tuesdays are unavailable. Same-day past times are allowed for testing.</p></section>
@@ -1833,13 +1847,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script src="voice-clips-v4.js"></script>
   <script src="monopad-data.js?v=4"></script>
   <script src="endgame-data.js?v=20261007"></script>
+  <script src="unconfirmed-student.js?v=20261022"></script>
   <script src="session-planner.js?v=20261021-2"></script>
   <script src="session-planner-store.js?v=20261021-2"></script>
-  <script src="session-planner-ui.js?v=20261021-2"></script>
+  <script src="session-planner-ui.js?v=20261022"></script>
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.21.3";
+  const APP_BUILD = "2026.10.22.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -1914,7 +1929,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     chihiro:"https://static.wikia.nocookie.net/danganronpa/images/f/f2/Chihiro_Fujisaki_VA_ID.png/revision/latest?cb=20170217202828",
     hifumi:"https://static.wikia.nocookie.net/danganronpa/images/6/6c/Hifumi_Yamada_VA_ID.png/revision/latest?cb=20170217211552",
     junko:"https://static.wikia.nocookie.net/danganronpa/images/5/5b/Guide_Project_Junko_Disguise_10.png/revision/latest?cb=20171012011045",
-    mukuro:"https://static.wikia.nocookie.net/danganronpa/images/0/06/Mukuro_Ikusaba_Illustration.png/revision/latest?cb=20210508221203",
+    mukuro:"assets/monopad/dr1/mukuro-main.png",
     realJunko:"https://static.wikia.nocookie.net/danganronpa/images/5/5e/Junko_Enoshima_Illustration.png/revision/latest?cb=20250121230002",
     taka:"https://static.wikia.nocookie.net/danganronpa/images/a/ac/Kiyotaka_Ishimaru_VA_ID.png/revision/latest?cb=20170217203233",
     kyoko:"https://static.wikia.nocookie.net/danganronpa/images/9/91/Kyoko_Kirigiri_VA_ID.png/revision/latest?cb=20170217165232",
@@ -2152,7 +2167,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function defaultState() {
     return {
-      version:16,
+      version:17,
       settings:{completedGames:emptyCompletionFlags(),games:defaultGameSettings()},
       secretSettings:{games:{dr1:{junkoMukuroRevealed:false,populationPresets:POPULATION_PRESETS},dr2:{populationPresets:DR2_POPULATION_PRESETS},dr3anime:{},v3:{}}},
       predictions:{},
@@ -2377,7 +2392,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function normaliseState(s) {
     const previousVersion=Number(s.version)||0;
-    s.version = 16;
+    s.version = 17;
     const legacySettings=s.settings&&!s.settings.games?{...s.settings}:null;
     if(!s.settings?.games){
       s.settings={
@@ -2579,6 +2594,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           s.roles.push(mkRole("Junko Enoshima","Ultimate Despair",IMG.realJunko,true,{gameId:"dr1",specialRole:"real-junko",voiceProfile:"Junko Enoshima (Real)",voiceRevealChapter:6}));
         }
       }
+      window.CastUnconfirmedStudent.syncIdentity(s,s.secretSettings.games.dr1.junkoMukuroRevealed);
+      window.CastUnconfirmedStudent.ensure(s,mkRole);
       GAME_IDS.slice(1).forEach(gameId=>{
         if(!s.roles.some(role=>role.gameId===gameId))s.roles.push(...createRolesForGame(gameId));
       });
@@ -2918,7 +2935,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         },30000);
       }
       setSyncStatus("LIVE","live");
-      if(mode==="host"&&sharedStateVersion<16)saveState();
+      if(mode==="host"&&sharedStateVersion<17)saveState();
     }catch(error){
       remoteReady=false;
       setSyncStatus("OFFLINE BACKUP","offline");
@@ -3127,6 +3144,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function profileImageForRole(role){
     if(!role)return "";
+    if(role.specialRole==="unconfirmed-student")return role.portraitRevealed?(monopadData.profileImages["Mukuro Ikusaba"]||IMG.mukuro):"assets/monopad/dr1/unconfirmed-student.svg";
     const override=monopadData.profileOverrides?.[role.gameId]?.[role.name]||"";
     if(role.specialRole==="junko-disguise"){
       return role.name==="Mukuro Ikusaba"?(monopadData.profileImages["Mukuro Ikusaba"]||role.image):(monopadData.profileOverrides?.dr1?.["Junko Enoshima"]||role.image);
@@ -3140,6 +3158,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function biographyForRole(role){
     if(!role)return "No profile is available yet.";
+    if(role.specialRole==="unconfirmed-student")return "Identified as the sixteenth student. Further details have not been confirmed.";
     if(role.gameId==="dr1"&&role.specialRole!=="real-junko"&&chapterFourComplete()&&window.CAST_ENDGAME_DATA.chapter4[role.name])return window.CAST_ENDGAME_DATA.chapter4[role.name];
     if(String(role.biography||"").trim())return String(role.biography).trim();
     const gameBios=monopadData.bios?.[["dr2x2","dr2slayhem"].includes(role.gameId)?"dr2":role.gameId]||{};
@@ -3149,7 +3168,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function attachImageFallback(root,role,selector="[data-profile-art]"){
     root.querySelectorAll(selector).forEach(image=>image.addEventListener("error",()=>{
-      const fallback=role.image?new URL(role.image,location.href).href:"";
+      const safeImage=role.specialRole==="unconfirmed-student"&&!role.portraitRevealed?"assets/monopad/dr1/unconfirmed-student.svg":role.image;
+      const fallback=safeImage?new URL(safeImage,location.href).href:"";
       if(fallback&&image.dataset.fallbackTried!=="1"&&image.src!==fallback){image.dataset.fallbackTried="1";image.src=fallback;return}
       image.replaceWith(Object.assign(document.createElement("div"),{className:`${image.className} placeholder dossier-placeholder`,textContent:role.name.slice(0,1).toUpperCase()}));
     }));
@@ -3206,7 +3226,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#dossierDialogName").textContent=role.name;
     $("#dossierDialogTalent").textContent=role.title||"Profile";
     $("#dossierDialogBio").textContent=biographyForRole(role);
-    const measurement=role.gameId==="dr1"?(role.specialRole==="real-junko"?(role.revealed?90:null):window.CAST_ENDGAME_DATA.chest[role.name]):null;
+    const measurement=role.gameId==="dr1"&&role.specialRole!=="unconfirmed-student"?(role.specialRole==="real-junko"?(role.revealed?90:null):window.CAST_ENDGAME_DATA.chest[role.name]):null;
     $("#dossierMeasurement").textContent=`MONOPAD / Chest: ${measurement?measurement+" cm":"Not recorded"}`;
     $("#editDossierBioBtn").dataset.roleId=role.id;
     attachImageFallback(wrap,role);
@@ -3501,6 +3521,9 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#voiceTrialToggleWrap").classList.toggle("hidden",game.kind==="anime");
     $("#voiceSourceStatus").innerHTML=`<strong>Living-character sample source:</strong> ${esc(livingVoiceSourceSummary())}`;
     $("#junkoMukuroToggle").checked=!!currentSecretSettings().junkoMukuroRevealed;
+    const portraitEntry=gameRoles().find(r=>r.specialRole==="unconfirmed-student");
+    $("#mukuroPortraitToggle").checked=!!portraitEntry?.portraitRevealed;
+    $("#mukuroPortraitToggle").disabled=!portraitEntry;
     $("#actorCount").textContent=state.actors.length;
 
     const free=gameRoles().filter(r=>!r.dead && !r.ownerId && currentRoleVisible(r) && (!r.hiddenSpoiler || r.revealed));
@@ -3623,11 +3646,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   }
 
   function imageMarkup(r,cls,placeholder="IMG"){
+    if(r.specialRole==="unconfirmed-student"&&!r.portraitRevealed)return `<img class="${cls}" src="assets/monopad/dr1/unconfirmed-student.svg" alt="Unknown portrait">`;
+    if(r.specialRole==="unconfirmed-student")return `<img class="${cls}" src="${esc(IMG.mukuro)}" alt="" referrerpolicy="no-referrer">`;
     if(r.image) return `<img class="${cls}" src="${esc(r.image)}" alt="" referrerpolicy="no-referrer">`;
     return `<div class="${cls} role-mini-placeholder">${esc(placeholder)}</div>`;
   }
 
   function canDragRole(r){
+    if(r.predictionOnly)return false;
     if(mode==="viewer") return false;
     if(mode==="host") return true;
     if(mode!=="player" || !activeActor()) return false;
@@ -3664,6 +3690,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   };
 
   function voiceLibraryProfile(r){
+    if(r.predictionOnly)return null;
     if(["dr2x2","dr2slayhem"].includes(r.gameId))return null;
     const library=window.CAST_VOICE_LIBRARY;
     if(!library)return null;
@@ -3778,6 +3805,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   }
 
   function voiceButtonMarkup(r,{assigned=false}={}){
+    if(r.predictionOnly)return "";
     const pool=voicePoolForRole(r);
     let markup=pool.clips.length
       ? `<button type="button" class="voice-play-btn official-voice-btn" data-action="play-voice" aria-label="Play an official voice sample for ${esc(r.name)}" title="Play one of ${pool.clips.length} ${esc(pool.label)}">▶</button>`
@@ -4197,6 +4225,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         ${imageMarkup(r,"role-mini-img",r.name.slice(0,1).toUpperCase())}
         <div class="role-copy">
           <div class="role-name">${esc(r.name)}</div>
+          ${r.predictionOnly?'<small class="narrator-note">Prediction entry · alive for now</small>':''}
           ${r.specialRole==="new-2x2"?'<small class="narrator-note">John Danganronpa</small>':''}
           <div class="role-title">${esc(r.title||"No title")}</div>
           ${r.name==="Narrator"?'<small class="narrator-note">Extra role · does not use a character slot</small>':''}
@@ -4215,6 +4244,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <p class="role-biography"><strong>Monopad profile</strong>${esc(biographyForRole(r))}</p>
           ${mode==="host"&&r.modifier?`<div class="role-detail"><strong>Modifier:</strong> ${esc(r.modifier)}</div>`:""}
           ${mode==="host"?`<div class="role-actions">
+            ${r.specialRole==="unconfirmed-student"?`<button type="button" data-action="toggle-portrait">${r.portraitRevealed?"Hide known portrait":"Reveal known portrait"}</button>`:""}
             <button type="button" data-action="edit-role">✎ Edit</button>
             <button type="button" data-action="kill-role" class="danger-text">☠ Mark dead</button>
             ${spoiler?`<button type="button" data-action="reveal-role">👁 Reveal to Library</button>`:""}
@@ -4265,6 +4295,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     if(mode==="host"){
       el.addEventListener("click",e=>{
         const action=e.target.closest("[data-action]")?.dataset.action;
+        if(action==="toggle-portrait"){e.stopPropagation();window.CastUnconfirmedStudent.setPortrait(r,!r.portraitRevealed,IMG.mukuro);saveState();render();return}
         if(action==="edit-role"){e.stopPropagation();openRoleDialog(r);return}
         if(action==="kill-role"){e.stopPropagation();killRole(r.id);return}
         if(action==="delete-role"){e.stopPropagation();deleteRole(r.id);return}
@@ -4633,7 +4664,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   async function moveRole(roleId,newOwnerId,zone){
     const r=roleById(roleId);
-    if(!r||r.dead||r.ownerId===newOwnerId) return;
+    if(!r||r.dead||r.predictionOnly||r.ownerId===newOwnerId) return;
 
     const oldOwnerId=r.ownerId;
     const oldActor=oldOwnerId?actorById(oldOwnerId):null;
@@ -5269,11 +5300,22 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     toast(livingVoiceSourceSummary());
   };
 
+  $("#mukuroPortraitToggle").onchange=e=>{
+    if(mode!=="host"||activeGameId!=="dr1")return;
+    const role=gameRoles().find(r=>r.specialRole==="unconfirmed-student");
+    if(!role)return;
+    window.CastUnconfirmedStudent.setPortrait(role,e.target.checked,IMG.mukuro);
+    saveState();render();
+    toast(e.target.checked?"Mukuro’s photo is now visible in the Monopad.":"Mukuro’s photo is hidden again.");
+  };
+
   $("#junkoMukuroToggle").onchange=e=>{
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
     currentSecretSettings().junkoMukuroRevealed=e.target.checked;
     const role=gameRoles().find(r=>r.specialRole==="junko-disguise");
     applyJunkoIdentity(role,e.target.checked);
+    window.CastUnconfirmedStudent.syncIdentity(state,e.target.checked);
+    if(!e.target.checked)window.CastUnconfirmedStudent.ensure(state,mkRole);
     voiceShuffleBags.clear();saveState();render();
     toast(e.target.checked?"The original Junko card now shows Mukuro’s true identity.":"The original disguise identity has been restored.");
   };

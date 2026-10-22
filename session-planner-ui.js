@@ -4,6 +4,8 @@
     const P=window.CastSessionPlanner,root=document.querySelector('#sessionPlanner'),dialog=document.querySelector('#scheduleDialog');
     let plan=P.normalise(options.load()||(options.local()?null:{sessions:[],votes:{},times:{},notices:[],records:{}})),ahead=false,selectedDate=P.day(),month=P.day().slice(0,7),editingId='',hostActor='',viewWeek='',lastPhase='',busy=false,historyOpen=false;
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    let collapsed=false;
+    try{collapsed=localStorage.getItem('danganronpa-schedule-collapsed')==='true';}catch(_){}
     const names=()=>Object.fromEntries(options.actors().map(a=>[a.id,a.name]));
     const isHost=()=>options.mode()==='host';
     const canUse=()=>options.local()||!!options.store?.ready;
@@ -49,6 +51,27 @@
       root.innerHTML=`<header class="schedule-heading"><div><div class="section-kicker">SESSION SCHEDULE</div><h2 class="${active&&elapsed<5*P.MIN?'session-now':''}">${headline}</h2><p>${active?localDate(active.startAt):next?localDate(next.startAt):'Vote for the days you can play. Default: 19:00 in Denmark.'}</p>${active?.breaks.some(b=>!b.endAt)?'<span class="case-status">ON A BREAK</span>':''}</div><div class="schedule-actions">${isHost()&&canUse()?'<button data-open-schedule>Set / adjust schedule</button>':''}${active&&isHost()&&canUse()?`<button data-break>${active.breaks.some(b=>!b.endAt)?'Resume session':'Pause session'}</button><button data-end>End current session</button>`:''}${next&&!active?`<button data-ahead>${ahead?'Back to next session':'Plan ahead'}</button>`:''}<button data-history>Session statistics</button></div></header>${attendance}<small class="schedule-local" role="status" data-shared-revision="${options.store?.row?.revision||''}">${options.local()?'Schedule saved on this device · preview':esc(options.store?.status||'Shared schedule unavailable')}</small>
       ${!active?`${hostSelector()}${next&&!ahead?`<section class="scheduled-rsvp"><h3>${dateLabel(P.day(next.startAt))} · attendance</h3>${controls(P.day(next.startAt))}</section>`:`<div class="week-navigation"><button data-week="-7" aria-label="Previous planning week">←</button><strong>Week of ${dateLabel(week)} · Monday–Sunday</strong><button data-week="7" aria-label="Next planning week">→</button></div>${poll(week)}`}`:''}
       <section id="sessionHistory" class="${historyOpen?'':'hidden'}"><h3>Session statistics</h3><div class="session-history">${plan.sessions.filter(s=>Date.parse(s.startAt)<=now).sort((a,b)=>Date.parse(b.startAt)-Date.parse(a.startAt)).map(s=>{const d=P.duration(s,now);return `<article><strong>${localDate(s.startAt)}</strong><span>${s.endedAt?'Ended by host':P.stopAt(s)<=now?'Automatic 10h end':'In progress'}</span><dl><dt>Elapsed</dt><dd>${timeLabel(d.total)}</dd><dt>Breaks</dt><dd>${timeLabel(d.breaks)}</dd><dt>Play time</dt><dd>${timeLabel(d.play)}</dd></dl></article>`;}).join('')||'<p>No sessions yet.</p>'}</div></section>`;
+      const heading=root.querySelector('.schedule-heading');
+      const body=document.createElement('div');
+      body.id='sessionScheduleBody';
+      while(heading.nextSibling)body.append(heading.nextSibling);
+      root.append(body);
+      const collapseButton=document.createElement('button');
+      collapseButton.type='button';
+      collapseButton.className='schedule-collapse';
+      collapseButton.setAttribute('aria-controls',body.id);
+      heading.append(collapseButton);
+      function applyCollapsed(){
+        body.hidden=collapsed;
+        heading.querySelector('.schedule-actions').hidden=collapsed;
+        collapseButton.setAttribute('aria-expanded',String(!collapsed));
+        collapseButton.textContent=collapsed?'Expand schedule':'Collapse schedule';
+      }
+      applyCollapsed();
+      collapseButton.onclick=()=>{
+        collapsed=!collapsed;applyCollapsed();
+        try{localStorage.setItem('danganronpa-schedule-collapsed',String(collapsed));}catch(_){}
+      };
       root.querySelector('[data-open-schedule]')?.addEventListener('click',()=>{renderDialog();dialog.showModal();});
       root.querySelector('[data-break]')?.addEventListener('click',()=>act(active.breaks.some(b=>!b.endAt)?'resume':'break',{}));
       root.querySelector('[data-end]')?.addEventListener('click',()=>act('end',{}));
