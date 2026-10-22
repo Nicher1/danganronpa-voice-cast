@@ -1449,7 +1449,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         <details class="patch-release">
           <summary><span class="patch-version">V1.0.0</span><span class="patch-release-title"><strong>Front-page text update</strong><small>Current release · 22 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
-            <section class="patch-note"><details><summary>Front-page wording · click to reveal details</summary><p>Updated the chapter-specific quote on the front page.</p></details></section>
+            <section class="patch-note"><details><summary>Front-page wording · click to reveal details</summary><p>Expanded the chapter-specific front-page quote to its full wording.</p></details></section>
           </div>
         </details>
         <details class="patch-release">
@@ -1860,7 +1860,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.22.2";
+  const APP_BUILD = "2026.10.22.3";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2304,7 +2304,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     if(resolvedUiTheme()!=="finale"){stage.replaceChildren();return}
     const clue=activeGameId==="dr1"&&chapterFourComplete();
     const deaths=gameRoles().filter(role=>role.dead&&(!role.hiddenSpoiler||role.revealed)&&role.name!=="Narrator");
-    stage.innerHTML=`<div><span class="finale-stamp">${slayhem?"JABBERWOCK ISLAND / SLAYHEM":esc(gameDefinition(activeGameId).kicker)} · CASE ${String(key).padStart(2,"0")}</span><h2>${slayhem?"DANGANRONPA 2×2<br><em>SLAYHEM</em>":activeGameId==="dr1"?"DANGANRONPA<br><em>VOICE CAST</em>":"GOODBYE DESPAIR<br><em>VOICE CAST</em>"}</h2><p class="finale-copy">${slayhem?"A different killing game. Build the case from what your group discovers; no Original-route outcomes are assumed.":"MONOPAD // CASTING FILES // DAILY LIFE"}</p><div class="finale-memorial" aria-label="Known losses">${deaths.map(role=>`<button class="finale-frame" data-memorial-role="${esc(role.id)}" aria-label="Open ${esc(role.name)} memorial">${role.image?`<img src="${esc(role.image)}" alt="">`:""}<span>${esc(role.name)}</span></button>`).join("")}</div></div><aside class="finale-aside"><small>${clue?"KYOKO / UNRESOLVED LEAD":"CLASS TRIAL / TRUTH BULLET"}</small><blockquote>${clue?'“Mukuro Ikusaba. The sixteenth student, lying hidden somewhere in this school. The one they call the Ultimate Despair. Watch out for her.”':'“No, that’s wrong!”'}</blockquote><small>${clue?"Identity and whereabouts unresolved":"Makoto Naegi"}</small><blockquote>${activeGameId==="dr1"&&settings.voiceChapter>=5?"“Exactly four chickens.”":"“No, that’s wrong!”"}</blockquote><small>${activeGameId==="dr1"&&settings.voiceChapter>=5?"CHAPTER 05 / GARDEN":"CLASS TRIAL"}</small></aside>`;
+    stage.innerHTML=`<div><span class="finale-stamp">${slayhem?"JABBERWOCK ISLAND / SLAYHEM":esc(gameDefinition(activeGameId).kicker)} · CASE ${String(key).padStart(2,"0")}</span><h2>${slayhem?"DANGANRONPA 2×2<br><em>SLAYHEM</em>":activeGameId==="dr1"?"DANGANRONPA<br><em>VOICE CAST</em>":"GOODBYE DESPAIR<br><em>VOICE CAST</em>"}</h2><p class="finale-copy">${slayhem?"A different killing game. Build the case from what your group discovers; no Original-route outcomes are assumed.":"MONOPAD // CASTING FILES // DAILY LIFE"}</p><div class="finale-memorial" aria-label="Known losses">${deaths.map(role=>`<button class="finale-frame" data-memorial-role="${esc(role.id)}" aria-label="Open ${esc(role.name)} memorial">${role.image?`<img src="${esc(role.image)}" alt="">`:""}<span>${esc(role.name)}</span></button>`).join("")}</div></div><aside class="finale-aside"><small>${clue?"KYOKO / UNRESOLVED LEAD":"CLASS TRIAL / TRUTH BULLET"}</small><blockquote>${clue?'“Mukuro Ikusaba. The sixteenth student, lying hidden somewhere in this school. The one they call the Ultimate Despair. Watch out for her.”':'“No, that’s wrong!”'}</blockquote><small>${clue?"Identity and whereabouts unresolved":"Makoto Naegi"}</small><blockquote>${activeGameId==="dr1"&&settings.voiceChapter>=5?"“What are we gonna do!? Going from five to four is gonna have an impact on the structure of the world!”":"“No, that’s wrong!”"}</blockquote><small>${activeGameId==="dr1"&&settings.voiceChapter>=5?"CHAPTER 05 / GARDEN":"CLASS TRIAL"}</small></aside>`;
     stage.querySelectorAll("[data-memorial-role]").forEach(button=>button.onclick=()=>openDossier(roleById(button.dataset.memorialRole)));
   }
   function setEndgameSetting(key,value){
