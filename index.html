@@ -1447,7 +1447,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">V1.0.0</span><span class="patch-release-title"><strong>Front-page text update</strong><small>Current release · 22 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.0.1</span><span class="patch-release-title"><strong>Clearer session times</strong><small>Current release · 23 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Countdowns in days</h4><p>Session countdowns show days, hours and minutes for waits of 24 hours or more, and omit leading units below their threshold.</p></section>
+            <section class="patch-note"><h4>Local planning times</h4><p>Availability times and the default planning time now use each viewer’s local timezone. Hosts still enter schedules in Danish time, with summer and winter time handled automatically.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.0.0</span><span class="patch-release-title"><strong>Front-page text update</strong><small>Previous release · 22 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><details><summary>Front-page wording · click to reveal details</summary><p>Expanded the chapter-specific front-page quote to its full wording.</p></details></section>
           </div>
@@ -1856,11 +1863,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script src="unconfirmed-student.js?v=20261022"></script>
   <script src="session-planner.js?v=20261021-2"></script>
   <script src="session-planner-store.js?v=20261021-2"></script>
-  <script src="session-planner-ui.js?v=20261022"></script>
+  <script src="session-planner-ui.js?v=20261023"></script>
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.22.3";
+  const APP_BUILD = "2026.10.23.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
