@@ -4,7 +4,7 @@
     const P=window.CastSessionPlanner,root=document.querySelector('#sessionPlanner'),dialog=document.querySelector('#scheduleDialog');
     let plan=P.normalise(options.load()||(options.local()?null:{sessions:[],votes:{},times:{},notices:[],records:{}})),ahead=false,selectedDate=P.day(),month=P.day().slice(0,7),editingId='',hostActor='',viewWeek='',lastPhase='',busy=false,historyOpen=false;
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    let collapsed=false;
+    let collapsed=false,focusedDate='';
     try{collapsed=localStorage.getItem('danganronpa-schedule-collapsed')==='true';}catch(_){}
     const names=()=>Object.fromEntries(options.actors().map(a=>[a.id,a.name]));
     const isHost=()=>options.mode()==='host';
@@ -32,9 +32,11 @@
     }
     function vote(date,actorId,offset,available){if(!actorId)return options.toast('Choose your voice actor first.');act('vote',{date,actorId,offset,available});}
     function votersHtml(date){const ns=names();return P.voters(plan,date,options.actors()).map(v=>`<span class="schedule-person">${esc(ns[v.actorId])}${v.offset?` <small>${P.label(v.offset)}</small>`:''}</span>`).join('')||'<small class="muted">No replies yet</small>';}
-    function controls(date){const actorId=isHost()?hostActor:options.actorId(),v=plan.votes[date]?.[actorId];if(!actorId||options.mode()==='viewer'||!canUse())return '';
+    function controls(date){const actorId=isHost()?hostActor:options.actorId(),v=plan.votes[date]?.[actorId];if(options.mode()==='viewer'||!canUse())return '';
+      if(!actorId)return isHost()?'':'<button type="button" data-vote-login>Choose your voice actor to vote</button>';
       return `<div class="vote-controls"><button data-vote="${date}" aria-pressed="${!!v?.available}">${v?.available?'✓ Available':'I can play'}</button><button data-no="${date}" aria-pressed="${v?.available===false}">Cannot attend</button>${v?.available?`<div class="vote-offset"><button data-offset="${date}|-15" aria-label="15 minutes earlier on ${date}">−15</button><output>${P.label(v.offset)}</output><button data-offset="${date}|15" aria-label="15 minutes later on ${date}">+15</button></div>`:''}</div>`;}
     function bindVotes(scope){
+      scope.querySelectorAll('[data-vote-login]').forEach(b=>b.onclick=()=>options.login?.());
       const id=()=>isHost()?hostActor:options.actorId();
       scope.querySelectorAll('[data-vote]').forEach(b=>b.onclick=()=>vote(b.dataset.vote,id(),undefined,true));
       scope.querySelectorAll('[data-no]').forEach(b=>b.onclick=()=>vote(b.dataset.no,id(),0,false));
@@ -53,9 +55,15 @@
       const attendance=next&&!active?dayVotes(next):'';
       const week=viewWeek||P.pollWeek(plan,now,ahead);
       root.innerHTML=`<header class="schedule-heading"><div><div class="section-kicker">SESSION SCHEDULE</div><h2 class="${active&&elapsed<5*P.MIN?'session-now':''}">${headline}</h2><p>${active?localDate(active.startAt):next?localDate(next.startAt):`Vote for the days you can play. Default: ${localTime(P.instant(week<P.day()?P.day():week))}.`}</p>${active?.breaks.some(b=>!b.endAt)?'<span class="case-status">ON A BREAK</span>':''}</div><div class="schedule-actions">${isHost()&&canUse()?'<button data-open-schedule>Set / adjust schedule</button>':''}${active&&isHost()&&canUse()?`<button data-break>${active.breaks.some(b=>!b.endAt)?'Resume session':'Pause session'}</button><button data-end>End current session</button>`:''}${next&&!active?`<button data-ahead>${ahead?'Back to next session':'Plan ahead'}</button>`:''}<button data-history>Session statistics</button></div></header>${attendance}<small class="schedule-local" role="status" data-shared-revision="${options.store?.row?.revision||''}">${options.local()?'Schedule saved on this device · preview':esc(options.store?.status||'Shared schedule unavailable')}</small>
-      ${!active?`${hostSelector()}${next&&!ahead?`<section class="scheduled-rsvp"><h3>${dateLabel(P.day(next.startAt))} · attendance</h3>${controls(P.day(next.startAt))}</section>`:`<div class="week-navigation"><button data-week="-7" aria-label="Previous planning week">←</button><strong>Week of ${dateLabel(week)} · Monday–Sunday</strong><button data-week="7" aria-label="Next planning week">→</button></div>${poll(week)}`}`:''}
+      ${!active||focusedDate?`${hostSelector()}${next&&!ahead?`<section class="scheduled-rsvp"><h3>${dateLabel(P.day(next.startAt))} · attendance</h3>${controls(P.day(next.startAt))}</section>`:`<div class="week-navigation"><button data-week="-7" aria-label="Previous planning week">←</button><strong>Week of ${dateLabel(week)} · Monday–Sunday</strong><button data-week="7" aria-label="Next planning week">→</button></div>${poll(week)}`}`:''}
       <section id="sessionHistory" class="${historyOpen?'':'hidden'}"><h3>Session statistics</h3><div class="session-history">${plan.sessions.filter(s=>Date.parse(s.startAt)<=now).sort((a,b)=>Date.parse(b.startAt)-Date.parse(a.startAt)).map(s=>{const d=P.duration(s,now);return `<article><strong>${localDate(s.startAt)}</strong><span>${s.endedAt?'Ended by host':P.stopAt(s)<=now?'Automatic 10h end':'In progress'}</span><dl><dt>Elapsed</dt><dd>${timeLabel(d.total)}</dd><dt>Breaks</dt><dd>${timeLabel(d.breaks)}</dd><dt>Play time</dt><dd>${timeLabel(d.play)}</dd></dl></article>`;}).join('')||'<p>No sessions yet.</p>'}</div></section>`;
       const heading=root.querySelector('.schedule-heading');
+      if(isHost()&&options.copyVotingLink){
+        const shareButton=document.createElement('button');
+        shareButton.type='button';shareButton.textContent='Copy voting link';
+        shareButton.onclick=()=>options.copyVotingLink(focusedDate||(next?P.day(next.startAt):''));
+        heading.querySelector('.schedule-actions').append(shareButton);
+      }
       const body=document.createElement('div');
       body.id='sessionScheduleBody';
       while(heading.nextSibling)body.append(heading.nextSibling);
@@ -109,11 +117,24 @@
       dialog.querySelectorAll('[data-drop-day]').forEach(el=>{el.ondragover=e=>{if(!el.classList.contains('unavailable'))e.preventDefault();};el.ondrop=e=>{e.preventDefault();const id=e.dataTransfer.getData('text/actor');if(id&&options.actors().some(a=>a.id===id)&&!el.classList.contains('unavailable'))vote(el.dataset.dropDay,id,0,true);};});
     }
     function tick(){if(isHost()&&options.local()&&P.reconcile(plan,options.actors()))save();render();}
+    function openVoting(date=''){
+      focusedDate='';
+      if(/^\d{4}-\d{2}-\d{2}$/.test(date)){
+        try{P.instant(date);focusedDate=date;}catch(_){}
+      }
+      collapsed=false;
+      if(focusedDate){ahead=true;viewWeek=P.monday(focusedDate);}
+      render();
+      requestAnimationFrame(()=>{
+        const target=(focusedDate&&root.querySelector(`[data-drop-day="${focusedDate}"]`))||root;
+        target.setAttribute('tabindex','-1');target.focus({preventScroll:true});target.scrollIntoView({block:'start'});
+      });
+    }
     const receive=()=>{const stored=options.load();if(stored)plan=P.normalise(stored);render();if(dialog.open&&!dialog.contains(document.activeElement))renderDialog();};
     const unsubscribe=options.store?.subscribe(receive);
     if(options.local())window.addEventListener('storage',receive);
     if(options.local()&&!options.load())save();
     const interval=setInterval(tick,15000);tick();
-    return {render,tick,dispose(){unsubscribe?.();options.store?.dispose();clearInterval(interval);window.removeEventListener('storage',receive);},getPlan:()=>plan};
+    return {render,tick,openVoting,dispose(){unsubscribe?.();options.store?.dispose();clearInterval(interval);window.removeEventListener('storage',receive);},getPlan:()=>plan};
   };
 })();

@@ -1447,7 +1447,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">V1.0.1</span><span class="patch-release-title"><strong>Clearer session times</strong><small>Current release · 23 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.1.0</span><span class="patch-release-title"><strong>Discord schedule and direct voting</strong><small>Current release · 23 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>One updated Discord card</h4><p>The connected schedule card shows local session times, availability and late arrivals. Existing votes update the same message automatically, usually within a minute.</p></section>
+            <section class="patch-note"><h4>Go straight to voting</h4><p>Discord voting links open the selected day and expand the schedule. Choose your existing voice actor to reply. Hosts can also copy a voting link from the schedule header.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.0.1</span><span class="patch-release-title"><strong>Clearer session times</strong><small>Previous release · 23 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Countdowns in days</h4><p>Session countdowns show days, hours and minutes for waits of 24 hours or more, and omit leading units below their threshold.</p></section>
             <section class="patch-note"><h4>Local planning times</h4><p>Availability times and the default planning time now use each viewer’s local timezone. Hosts still enter schedules in Danish time, with summer and winter time handled automatically.</p></section>
@@ -1863,11 +1870,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script src="unconfirmed-student.js?v=20261022"></script>
   <script src="session-planner.js?v=20261021-2"></script>
   <script src="session-planner-store.js?v=20261021-2"></script>
-  <script src="session-planner-ui.js?v=20261023"></script>
+  <script src="session-planner-ui.js?v=20261023-2"></script>
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.23.1";
+  const APP_BUILD = "2026.10.23.2";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -5409,6 +5416,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function applyDeepLinkRoute(){
     const route=location.hash.toLowerCase();
+    if(route==="#schedule"){
+      gamePickerShown=true;
+      sessionPlanner?.openVoting(new URLSearchParams(location.search).get("scheduleDate")||"");
+      return true;
+    }
     if(route!=="#monopad"&&route!==PLAYER_RECAP_HASH)return false;
     activateTab("monopad");
     if(route===PLAYER_RECAP_HASH){
@@ -5482,6 +5494,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   $("#viewerLinkBtn").onclick=()=>copyModeLink("viewer");
   $("#copyPlayerRecapLinkBtn").onclick=()=>copyModeLink("player",{destination:"monopad-summaries",label:"Player recap"});
 
+  async function copyVotingLink(date=""){
+    const url=publicModeUrl("player","schedule");
+    if(date)url.searchParams.set("scheduleDate",date);
+    try{await navigator.clipboard.writeText(url.href);toast("Voting link copied.");}
+    catch(_){prompt("Copy this voting link:",url.href);}
+  }
+
   $("#exportBtn").onclick=()=>{
     const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);
@@ -5512,7 +5531,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     sessionPlanner=window.mountSessionPlanner({
       load:()=>{try{return isLocalPreview?JSON.parse(localStorage.getItem("danganronpa-session-planner-v1")):scheduleStore?.state}catch(_){return null}},
       save:value=>localStorage.setItem("danganronpa-session-planner-v1",JSON.stringify(value)),
-      store:scheduleStore,actors:()=>state.actors,mode:()=>!isLocalPreview&&!remoteReady?"viewer":mode,actorId:()=>activeActorId,local:()=>isLocalPreview,toast
+      store:scheduleStore,actors:()=>state.actors,mode:()=>!isLocalPreview&&!remoteReady?"viewer":mode,actorId:()=>activeActorId,local:()=>isLocalPreview,toast,login:()=>beginLogin(),copyVotingLink
     });
   }
 
