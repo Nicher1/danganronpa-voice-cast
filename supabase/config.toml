@@ -1,0 +1,3 @@
+[functions.discord-voting]
+# Discord signs requests with Ed25519; it does not send a Supabase JWT.
+verify_jwt = false

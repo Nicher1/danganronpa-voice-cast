@@ -120,6 +120,23 @@
       return data;
     }
 
+    async getActorDiscordId(actorId) {
+      const { data, error } = await this.client.rpc("cast_get_actor_discord", {
+        p_slug: this.slug, p_actor_id: actorId
+      });
+      if (error) throw error;
+      return data || "";
+    }
+
+    async setActorDiscordId(actorId, discordId, expectedDiscordId) {
+      const { data, error } = await this.client.rpc("cast_set_actor_discord", {
+        p_slug: this.slug, p_actor_id: actorId,
+        p_discord_id: discordId, p_expected_discord_id: expectedDiscordId
+      });
+      if (error) throw error;
+      return data || "";
+    }
+
     async getPresenceActivity(days = 7) {
       const { data, error } = await this.client.rpc("cast_presence_activity", {
         p_slug: this.slug,

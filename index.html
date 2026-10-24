@@ -1360,6 +1360,12 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
             </select>
           </label>
         </section>
+        <section class="theme-service panel">
+          <div class="section-kicker">FRONT-PAGE WORDING</div>
+          <h3>Front-page quotes</h3>
+          <p>Edit both quotes and their labels for the current game and chapter in the Dark theme.</p>
+          <button id="editFrontQuotesBtn" type="button" class="ghost">Edit front-page quotes</button>
+        </section>
         <section class="database-service panel">
           <div class="section-kicker">DATABASE STATUS</div>
           <h3>Wake / check database</h3>
@@ -1377,6 +1383,20 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       </div>
     </section>
   </main>
+
+  <dialog id="frontQuotesDialog" class="modal">
+    <form id="frontQuotesForm" class="modal-card">
+      <div class="modal-head"><h3>Edit front-page quotes</h3><button type="button" class="icon-btn" data-close="frontQuotesDialog" aria-label="Close quote editor">×</button></div>
+      <p id="frontQuotesContext" class="muted small"></p>
+      <p class="muted small">These appear for everyone viewing this game and chapter in the Dark theme. Use wording appropriate to the group's story progress.</p>
+      <div class="field"><label for="frontQuoteHeading">First quote heading</label><input id="frontQuoteHeading" maxlength="160"></div>
+      <div class="field"><label for="frontQuoteFirst">First quote</label><textarea id="frontQuoteFirst" rows="4" maxlength="1500"></textarea></div>
+      <div class="field"><label for="frontQuoteCredit">First quote caption</label><input id="frontQuoteCredit" maxlength="160"></div>
+      <div class="field"><label for="frontQuoteSecond">Second quote</label><textarea id="frontQuoteSecond" rows="4" maxlength="1500"></textarea></div>
+      <div class="field"><label for="frontQuoteSource">Second quote caption</label><input id="frontQuoteSource" maxlength="160"></div>
+      <div class="actions" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px"><button type="submit" class="primary">Save quotes</button><button id="resetFrontQuotesBtn" type="button" class="ghost">Restore default wording</button></div>
+    </form>
+  </dialog>
 
   <dialog id="dossierDialog" class="modal">
     <div class="modal-card dossier-dialog-card">
@@ -1446,8 +1466,16 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       </div>
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
+        <details class="patch-release" open>
+          <summary><span class="patch-version">V1.2.0</span><span class="patch-release-title"><strong>Editable quotes and Discord actor links</strong><small>Current release · 24 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Edit both front-page quotes</h4><p>Hosts can edit both quotes, their heading and captions directly beside the Dark theme quotes or from Admin Tools. Wording is shared for the selected game and chapter, with a restore-defaults option.</p></section>
+            <section class="patch-note"><h4>Private Discord account links</h4><p>Hosts can add, change or remove a Discord user ID in each saved voice actor's profile. These IDs are private and editable only by the host.</p></section>
+            <section class="patch-note"><h4>Discord voting · setup pending</h4><p>Day buttons and private attendance controls are prepared. Activation still needs the Discord app's server installation and token. Once connected, choose a day, mark whether you can attend, and adjust arrival in 15-minute steps. Each day's reply is saved separately to your linked voice actor.</p></section>
+          </div>
+        </details>
         <details class="patch-release">
-          <summary><span class="patch-version">V1.1.0</span><span class="patch-release-title"><strong>Discord schedule and direct voting</strong><small>Current release · 23 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.1.0</span><span class="patch-release-title"><strong>Discord schedule and direct voting</strong><small>Previous release · 23 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>One updated Discord card</h4><p>The connected schedule card shows local session times, availability and late arrivals. Existing votes update the same message automatically, usually within a minute.</p></section>
             <section class="patch-note"><h4>Go straight to voting</h4><p>Discord voting links open the selected day and expand the schedule. Choose your existing voice actor to reply. Hosts can also copy a voting link from the schedule header.</p></section>
@@ -1756,6 +1784,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         <textarea id="actorHistory" placeholder="Monokuma, Makoto Naegi, Kyoko Kirigiri"></textarea>
       </label>
 
+      <div id="actorDiscordSection" class="host-only" hidden>
+        <label>Discord user ID <span class="muted">(admin only)</span>
+          <input id="actorDiscordId" type="text" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="Numeric Discord user ID">
+        </label>
+        <p id="actorDiscordHelp" class="muted tiny" role="status"></p>
+        <button id="saveActorDiscordBtn" type="button" class="ghost">Save Discord ID</button>
+      </div>
+
       <p class="muted tiny host-only">
         Comma-separated character names. Duplicates are removed automatically.
       </p>
@@ -1863,7 +1899,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js?v=20261021-2"></script>
+  <script src="supabase-sync.js?v=20261024-1"></script>
   <script src="voice-clips-v4.js"></script>
   <script src="monopad-data.js?v=4"></script>
   <script src="endgame-data.js?v=20261007"></script>
@@ -1874,7 +1910,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.23.2";
+  const APP_BUILD = "2026.10.24.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2300,6 +2336,45 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#sessionReadout").innerHTML=`<span class="case-status">${locked?"GUESSES CLOSED":"GUESSES OPEN"}</span>${settings.panic?"PANIC MODE":""}`;
   }
 
+  const frontQuoteFields={heading:"frontQuoteHeading",first:"frontQuoteFirst",credit:"frontQuoteCredit",second:"frontQuoteSecond",source:"frontQuoteSource"};
+  function defaultFrontQuotes(){
+    const clue=activeGameId==="dr1"&&chapterFourComplete(),garden=activeGameId==="dr1"&&currentSettings().voiceChapter>=5;
+    return {
+      heading:clue?"KYOKO / UNRESOLVED LEAD":"CLASS TRIAL / TRUTH BULLET",
+      first:clue?"“Mukuro Ikusaba. The sixteenth student, lying hidden somewhere in this school. The one they call the Ultimate Despair. Watch out for her.”":"“No, that’s wrong!”",
+      credit:clue?"Identity and whereabouts unresolved":"Makoto Naegi",
+      second:garden?"“What are we gonna do!? Going from five to four is gonna have an impact on the structure of the world!”":"“No, that’s wrong!”",
+      source:garden?"CHAPTER 05 / GARDEN":"CLASS TRIAL"
+    };
+  }
+  function frontQuotes(){
+    const defaults=defaultFrontQuotes(),saved=currentSettings().frontQuotes?.[chapterKey()];
+    return Object.fromEntries(Object.entries(defaults).map(([key,value])=>[key,typeof saved?.[key]==="string"?saved[key]:value]));
+  }
+  let frontQuotesTarget=null;
+  function openFrontQuotes(){
+    if(mode!=="host")return;
+    frontQuotesTarget={game:activeGameId,chapter:chapterKey()};
+    $("#frontQuotesContext").textContent=`${gameDefinition(activeGameId).title||gameDefinition(activeGameId).name||activeGameId} · ${storyUnitLabel(activeGameId,currentSettings().voiceChapter)}`;
+    const quotes=frontQuotes();
+    Object.entries(frontQuoteFields).forEach(([key,id])=>$("#"+id).value=quotes[key]);
+    $("#frontQuotesDialog").showModal();
+  }
+  $("#editFrontQuotesBtn").onclick=openFrontQuotes;
+  $("#resetFrontQuotesBtn").onclick=()=>{
+    if(mode!=="host")return;
+    const defaults=defaultFrontQuotes();
+    Object.entries(frontQuoteFields).forEach(([key,id])=>$("#"+id).value=defaults[key]);
+  };
+  $("#frontQuotesForm").onsubmit=event=>{
+    event.preventDefault();if(mode!=="host")return;
+    if(frontQuotesTarget?.game!==activeGameId||frontQuotesTarget?.chapter!==chapterKey()){
+      toast("The active game or chapter changed. Reopen the quote editor.");return;
+    }
+    const settings=currentSettings();settings.frontQuotes??={};
+    settings.frontQuotes[chapterKey()]=Object.fromEntries(Object.entries(frontQuoteFields).map(([key,id])=>[key,$("#"+id).value.trim()]));
+    saveState();$("#frontQuotesDialog").close();render();toast("Front-page quotes saved.");
+  };
   function renderEndgame(){
     const settings=currentSettings(),key=chapterKey();
     const slayhem=activeGameId==="dr2slayhem";
@@ -2316,9 +2391,10 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     renderSessionClock();
     const stage=$("#finaleStage");
     if(resolvedUiTheme()!=="finale"){stage.replaceChildren();return}
-    const clue=activeGameId==="dr1"&&chapterFourComplete();
+    const quotes=frontQuotes();
     const deaths=gameRoles().filter(role=>role.dead&&(!role.hiddenSpoiler||role.revealed)&&role.name!=="Narrator");
-    stage.innerHTML=`<div><span class="finale-stamp">${slayhem?"JABBERWOCK ISLAND / SLAYHEM":esc(gameDefinition(activeGameId).kicker)} · CASE ${String(key).padStart(2,"0")}</span><h2>${slayhem?"DANGANRONPA 2×2<br><em>SLAYHEM</em>":activeGameId==="dr1"?"DANGANRONPA<br><em>VOICE CAST</em>":"GOODBYE DESPAIR<br><em>VOICE CAST</em>"}</h2><p class="finale-copy">${slayhem?"A different killing game. Build the case from what your group discovers; no Original-route outcomes are assumed.":"MONOPAD // CASTING FILES // DAILY LIFE"}</p><div class="finale-memorial" aria-label="Known losses">${deaths.map(role=>`<button class="finale-frame" data-memorial-role="${esc(role.id)}" aria-label="Open ${esc(role.name)} memorial">${role.image?`<img src="${esc(role.image)}" alt="">`:""}<span>${esc(role.name)}</span></button>`).join("")}</div></div><aside class="finale-aside"><small>${clue?"KYOKO / UNRESOLVED LEAD":"CLASS TRIAL / TRUTH BULLET"}</small><blockquote>${clue?'“Mukuro Ikusaba. The sixteenth student, lying hidden somewhere in this school. The one they call the Ultimate Despair. Watch out for her.”':'“No, that’s wrong!”'}</blockquote><small>${clue?"Identity and whereabouts unresolved":"Makoto Naegi"}</small><blockquote>${activeGameId==="dr1"&&settings.voiceChapter>=5?"“What are we gonna do!? Going from five to four is gonna have an impact on the structure of the world!”":"“No, that’s wrong!”"}</blockquote><small>${activeGameId==="dr1"&&settings.voiceChapter>=5?"CHAPTER 05 / GARDEN":"CLASS TRIAL"}</small></aside>`;
+    stage.innerHTML=`<div><span class="finale-stamp">${slayhem?"JABBERWOCK ISLAND / SLAYHEM":esc(gameDefinition(activeGameId).kicker)} · CASE ${String(key).padStart(2,"0")}</span><h2>${slayhem?"DANGANRONPA 2×2<br><em>SLAYHEM</em>":activeGameId==="dr1"?"DANGANRONPA<br><em>VOICE CAST</em>":"GOODBYE DESPAIR<br><em>VOICE CAST</em>"}</h2><p class="finale-copy">${slayhem?"A different killing game. Build the case from what your group discovers; no Original-route outcomes are assumed.":"MONOPAD // CASTING FILES // DAILY LIFE"}</p><div class="finale-memorial" aria-label="Known losses">${deaths.map(role=>`<button class="finale-frame" data-memorial-role="${esc(role.id)}" aria-label="Open ${esc(role.name)} memorial">${role.image?`<img src="${esc(role.image)}" alt="">`:""}<span>${esc(role.name)}</span></button>`).join("")}</div></div><aside class="finale-aside"><small>${esc(quotes.heading)}</small><blockquote>${esc(quotes.first)}</blockquote><small>${esc(quotes.credit)}</small><blockquote>${esc(quotes.second)}</blockquote><small>${esc(quotes.source)}</small>${mode==="host"?'<button type="button" class="ghost" id="editVisibleQuotesBtn">Edit quotes</button>':""}</aside>`;
+    stage.querySelector("#editVisibleQuotesBtn")?.addEventListener("click",openFrontQuotes);
     stage.querySelectorAll("[data-memorial-role]").forEach(button=>button.onclick=()=>openDossier(roleById(button.dataset.memorialRole)));
   }
   function setEndgameSetting(key,value){
@@ -4957,6 +5033,39 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     saveState();render();
   }
 
+  let actorDiscordLoad=0, actorDiscordExpected="";
+  async function prepareActorDiscord(actor){
+    const generation=++actorDiscordLoad;
+    const section=$("#actorDiscordSection"),input=$("#actorDiscordId"),button=$("#saveActorDiscordBtn"),help=$("#actorDiscordHelp");
+    section.hidden=mode!=="host";input.value="";input.disabled=true;button.disabled=true;actorDiscordExpected="";
+    if(mode!=="host")return;
+    if(!actor){help.textContent="Save this actor first, then reopen their profile to link Discord.";return;}
+    if(!remoteReady){help.textContent="Connect to the shared board to edit Discord links.";return;}
+    help.textContent="Loading Discord link…";
+    try{
+      const discordId=await remoteSync.getActorDiscordId(actor.id);
+      if(generation!==actorDiscordLoad||mode!=="host"||$("#actorId").value!==actor.id||!$("#actorDialog").open)return;
+      input.value=discordId;actorDiscordExpected=discordId;input.disabled=false;button.disabled=false;
+      help.textContent="Saved separately from the actor profile. Links Discord voting to this actor. Leave blank and save to unlink.";
+    }catch(error){
+      if(generation===actorDiscordLoad)help.textContent="Discord linking is unavailable: "+window.CastSupabaseSync.errorMessage(error);
+    }
+  }
+  $("#saveActorDiscordBtn").addEventListener("click",async()=>{
+    if(mode!=="host"||!remoteReady)return;
+    const actorId=$("#actorId").value,button=$("#saveActorDiscordBtn"),input=$("#actorDiscordId"),help=$("#actorDiscordHelp");
+    const discordId=input.value.trim(),generation=actorDiscordLoad;
+    if(discordId&&!/^[1-9][0-9]{16,19}$/.test(discordId)){help.textContent="Enter a numeric Discord user ID, not a username.";return;}
+    button.disabled=true;input.disabled=true;help.textContent="Saving Discord link…";
+    try{
+      const saved=await remoteSync.setActorDiscordId(actorId,discordId,actorDiscordExpected);
+      if(generation!==actorDiscordLoad)return;
+      actorDiscordExpected=saved;input.value=saved;
+      help.textContent=saved?"Discord ID saved. This account is linked to this voice actor.":"Discord account unlinked.";
+    }catch(error){if(generation===actorDiscordLoad)help.textContent=window.CastSupabaseSync.errorMessage(error);}
+    finally{if(generation===actorDiscordLoad){button.disabled=false;input.disabled=false;}}
+  });
+
   async function openActorDialog(actor=null,ownEdit=false){
     if(mode==="viewer")return;
     if(mode==="player"&&actor&&actor.id!==activeActorId)return;
@@ -4974,6 +5083,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         ? "Enter a new password to change it. Leave the field blank to keep the current password."
         : "Password is optional. If left blank, this profile can be opened without a password.";
     $("#actorDialog").showModal();
+    prepareActorDiscord(actor);
     setTimeout(()=>$(ownEdit&&actor?"#actorPassword":"#actorName").focus(),40);
   }
 
