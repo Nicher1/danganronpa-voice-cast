@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="360" viewBox="0 0 480 180" shape-rendering="crispEdges">
+  <title>Pixel island coast</title>
+  <defs>
+    <g id="cloud" fill="#f9f3df"><path d="M0 10h8V5h12V0h18v5h12v5h10v10H0z"/><path fill="#c3e7e9" d="M0 18h60v4H0z"/></g>
+    <g id="palm">
+      <path fill="#342f28" d="M28 112h14V82h-4V58h-4V36H22v12h4v28h4v24h-2z"/>
+      <path fill="#a97448" d="M32 106h6V82h-4V58h-4V40h-5v10h4v28h3z"/>
+      <path fill="#65452e" d="M27 54h7v4h-7zm3 18h8v4h-8zm2 18h8v4h-8z"/>
+      <path fill="#123e38" d="M26 36H14v4H4v8h-8v8h-4V40h8v-8h12v-4h12V16h8V8h12v8h-8v12h12v-4h16v4h12v8h8v16h-4v-8H68v-4H56v-4H40v8h8v8h4v16h-6V56h-8V44h-6v12h-8v12h-4V52h4z"/>
+      <path fill="#39875a" d="M28 32H12v4H2v6h12v-4h14zm8 0h20v-4h8v4h10v6H56v-2H36zm-8-4V16h4v-4h8v4h-4v12zM24 44h4v10h-4zm14-2h4v10h-4z"/>
+      <path fill="#73b76d" d="M8 34h16v3H8zm34-3h14v3H42zm-11-13h4v10h-4z"/>
+      <path fill="#705036" d="M25 34h8v7h-8zm10 0h7v8h-7z"/>
+    </g>
+  </defs>
+  <path fill="#68cbdc" d="M0 0h480v180H0z"/>
+  <path fill="#8edce4" d="M0 40h480v52H0z"/>
+  <path fill="#b5e8e9" d="M0 72h480v22H0z"/>
+  <path fill="#fff0bd" d="M342 19h22v5h5v22h-5v5h-22v-5h-5V24h5z"/>
+  <use href="#cloud" x="37" y="20"/><use href="#cloud" x="216" y="42"/><use href="#cloud" x="390" y="11"/>
+  <path fill="#238dac" d="M0 94h480v86H0z"/>
+  <path fill="#14728e" d="M0 111h480v69H0z"/>
+  <path fill="#3fa7b9" d="M0 125h480v55H0z"/>
+  <path fill="#9cddd7" d="M0 145h100v-3h82v-4h94v-4h78v-2h126v48H0z"/>
+  <path fill="#fff3cc" d="M0 152h90v-3h90v-4h98v-4h82v-3h120v42H0z"/>
+  <path fill="#ecd09a" d="M0 158h92v-3h94v-4h96v-4h88v-3h110v36H0z"/>
+  <path fill="#d7b780" d="M0 174h150v-4h80v4h250v6H0z"/>
+  <g fill="#b9edf0"><path d="M20 104h35v2H20zm80 10h23v2h-23zm91-13h42v2h-42zm96 15h28v2h-28zm83-9h40v2h-40zm-329 26h39v2H41zm100-8h58v2h-58zm196 0h34v2h-34z"/></g>
+  <g fill="#208579"><path d="M264 92h12v-5h12v-4h18v4h16v5h12v5h-70z"/><path fill="#13544c" d="M294 83v-9h3v-6h3v15zm2-13h-10v-3h8v-4h8v4h8v3h-10v5h-4z"/></g>
+  <use href="#palm" x="11" y="42"/><use href="#palm" transform="translate(465 31) scale(-1.12 1.12)"/>
+  <path fill="#bba171" d="M51 162h25v3H51zm335-3h29v3h-29zm-231 8h6v2h-6zm103-9h4v2h-4z"/>
+  <path fill="#fff6dd" d="M188 159h4v2h-4zm108 12h6v2h-6z"/>
+  <path fill="#e8799d" d="M322 162h4v-2h4v2h4v3h-4v2h-4v-2h-4z"/>
+</svg>

@@ -1,8 +1,8 @@
 # Discord attendance buttons
 
-## Current deployment (24 October 2026)
+## Current deployment (25 October 2026)
 
-The signature-verified `discord-voting` Edge Function and private database migrations are deployed. Discord accepted the interactions endpoint. Eight initial actor mappings are saved privately (Tiger is named Tigereye on the board). The bot card is **not activated**: the owner still needs to save the bot token in Vault and install the app in the server. The existing pinned webhook card remains active.
+The signature-verified `discord-voting` Edge Function and private database migrations are deployed. Discord accepted the interactions endpoint. Eight initial actor mappings are saved privately (Tiger is named Tigereye on the board). The token is saved in Vault and its bot identity is verified. The bot card is **not activated**: server installation and final card verification are paused until the owner returns to their PC. Installation permissions were prepared but not saved or authorized. Resume only at the owner's request. The existing pinned webhook card remains active.
 
 ## User flow
 

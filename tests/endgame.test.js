@@ -39,7 +39,7 @@ assert.equal(context.builtInRecapText('dr2slayhem',4,'full'),'Our discovered Sla
 assert.ok(context.builtInRecapText('dr2x2',1,'pretrial').length>100);
 let serial=0;
 context.mkRole=(name,title,image,hiddenSpoiler,extra={})=>({id:String(++serial),name,title,image,hiddenSpoiler,...extra});
-context.officialDr2Portrait=n=>`portrait-${n}`;
+vm.runInNewContext(html.slice(html.indexOf('const DR2_PORTRAITS ='),html.indexOf('const officialV3Portrait =')),context);
 vm.runInNewContext(source('createDr2Roles','createAnimeRoles')+source('createRolesForGame','historyKey'),context);
 const original=context.createRolesForGame('dr2x2'),slayhem=context.createRolesForGame('dr2slayhem');
 assert.ok(original.every(r=>r.gameId==='dr2x2'));
@@ -47,7 +47,31 @@ assert.ok(slayhem.every(r=>r.gameId==='dr2slayhem'));
 assert.ok(original.every(r=>!slayhem.some(s=>s.id===r.id)),'Route IDs must be independent');
 assert.equal(original.some(r=>r.specialRole==='new-2x2'),false);
 const john=slayhem.find(r=>r.specialRole==='new-2x2');
-assert.equal(john.name,'Sakutaro Higashi');assert.equal(john.modifier,'John Danganronpa');assert.equal(john.title,'???');
+assert.equal(john.name,'Sakutaro Higashi');assert.equal(john.modifier,'');assert.equal(john.title,'Ultimate ???');
+assert.equal(john.image,'assets/portraits/dr2/higashi.webp');
+for(const role of slayhem.filter(r=>r.name!=='Narrator')){
+  assert.ok(fs.existsSync(role.image),`Official artwork exists for ${role.name}`);
+  const bytes=fs.readFileSync(role.image);
+  assert.equal(bytes.toString('ascii',0,4),'RIFF');
+  assert.equal(bytes.toString('ascii',8,12),'WEBP','Stored portraits must be actual WebP images, not HTML error pages');
+}
+for(const gameId of ['dr2','dr2x2','dr2slayhem']){
+  const legacy={gameId,name:'Hajime Hinata',image:'https://danganronpa.us/reload/img/characters/danganronpa2/c01.jpg'};
+  context.refreshOfficialDr2Portrait(legacy);
+  assert.equal(legacy.image,'assets/portraits/dr2/hinata.webp');
+  const custom={gameId,name:'Hajime Hinata',image:'https://example.com/custom.jpg'};
+  context.refreshOfficialDr2Portrait(custom);
+  assert.equal(custom.image,'https://example.com/custom.jpg','Keep host-customized artwork');
+}
+const oldNewcomer={gameId:'dr2slayhem',name:'John Danganronpa',title:'???',modifier:'John Danganronpa',image:''};
+context.refreshOfficialDr2Portrait(oldNewcomer);
+assert.equal(oldNewcomer.name,'Sakutaro Higashi');assert.equal(oldNewcomer.title,'Ultimate ???');
+assert.equal(oldNewcomer.image,john.image);assert.equal(oldNewcomer.modifier,'');
+const customNewcomer={...oldNewcomer,title:'Custom talent',image:'custom.webp'};
+context.refreshOfficialDr2Portrait(customNewcomer);
+assert.equal(customNewcomer.title,'Custom talent');assert.equal(customNewcomer.image,'custom.webp');
+const dr1={gameId:'dr1',name:'Byakuya Togami',image:'dr1.webp'};
+context.refreshOfficialDr2Portrait(dr1);assert.equal(dr1.image,'dr1.webp');
 context.window.CAST_VOICE_LIBRARY={profiles:{'Hajime Hinata':{chapters:{1:{}}}}};
 vm.runInNewContext(source('voiceLibraryProfile','voicePackForChapter'),context);
 assert.equal(context.voiceLibraryProfile({gameId:'dr2slayhem',name:'Hajime Hinata'}),null);

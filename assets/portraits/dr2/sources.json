@@ -1,0 +1,83 @@
+{
+  "source": "https://www.danganronpa.com/pages/2x2/en/",
+  "downloaded": "2026-10-25",
+  "copyright": "Spike Chunsoft",
+  "images": [
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/1/chara.webp",
+      "name": "hinata"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/19/chara.webp",
+      "name": "komaeda"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/5/chara.webp",
+      "name": "togami"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/16/chara.webp",
+      "name": "tanaka"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/17/chara.webp",
+      "name": "souda"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/10/chara.webp",
+      "name": "hanamura"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/14/chara.webp",
+      "name": "nidai"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/12/chara.webp",
+      "name": "kuzuryu"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/13/chara.webp",
+      "name": "owari"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/18/chara.webp",
+      "name": "nanami"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/15/chara.webp",
+      "name": "sonia"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/8/chara.webp",
+      "name": "saionji"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/9/chara.webp",
+      "name": "koizumi"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/6/chara.webp",
+      "name": "tsumiki"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/7/chara.webp",
+      "name": "mioda"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/11/chara.webp",
+      "name": "pekoyama"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/4/chara.webp",
+      "name": "higashi"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/3/chara.webp",
+      "name": "monokuma"
+    },
+    {
+      "url": "https://www.danganronpa.com/pages/2x2/assets/data/webp/official/character/slide_1/2/chara.webp",
+      "name": "monomi"
+    }
+  ]
+}

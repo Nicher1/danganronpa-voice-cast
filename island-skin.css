@@ -1,0 +1,98 @@
+/* Hand-authored pixel geometry; the application layout and controls stay shared. */
+html[data-ui-theme] body[data-world="island"]{
+  --bg:#83cdd9;--bg2:#0c4056;--panel:#0b3448;--panel-raised:#12465a;
+  --panel-soft:#164d60;--panel-hover:#205c6e;--line:#457b87;--line-strong:#bca777;
+  --text:#fff9e8;--muted:#c1dce0;--pink:#ff74ad;--pink-hot:#ff74ad;
+  --blue:#7ce4eb;--gold:#efd49b;color:#fff9e8;
+  background:linear-gradient(#72c5d9 0,#b7e5e6 650px,#e8cf99 1050px,#d2b783 100%);
+  background-attachment:fixed;
+}
+html[data-ui-theme] body[data-world="island"]::before{display:none}
+html[data-ui-theme] body[data-world="island"] .topbar{background:#092c3e;border-bottom:6px solid #eed49e;box-shadow:0 4px 0 #d9729d}
+html[data-ui-theme] body[data-world="island"] .brand-kicker,html[data-ui-theme] body[data-world="island"] .reworked-brand-kicker{color:#a9edf0}
+html[data-ui-theme] body[data-world="island"] .topbar::after{display:none}
+html[data-ui-theme] body[data-world="island"] .panel,html[data-ui-theme] body[data-world="island"] .actor-card,
+html[data-ui-theme] body[data-world="island"] .dossier-card,html[data-ui-theme] body[data-world="island"] .session-planner,
+html[data-ui-theme] body[data-world="island"] .modal-card,html[data-ui-theme] body[data-world="island"] dialog{
+  background:#0b3448;color:#fff9e8;border-color:#497887;box-shadow:4px 4px 0 #082330;
+}
+html[data-ui-theme] body[data-world="island"] .actor-header,html[data-ui-theme] body[data-world="island"] .panel-header,
+html[data-ui-theme] body[data-world="island"] .role-compact,html[data-ui-theme] body[data-world="island"] .control-strip,
+html[data-ui-theme] body[data-world="island"] .schedule-day{background:#12465a;color:#fff9e8;border-color:#508494}
+html[data-ui-theme] body[data-world="island"] button,html[data-ui-theme] body[data-world="island"] input,
+html[data-ui-theme] body[data-world="island"] textarea,html[data-ui-theme] body[data-world="island"] select,
+html[data-ui-theme] body[data-world="island"] .theme-picker{background:#103c50;color:#fff9e8;border-color:#598898}
+html[data-ui-theme] body[data-world="island"] button.primary,html[data-ui-theme] body[data-world="island"] .tab.active{
+  background:#f0d8a6;color:#102f40;border-color:#fff4d4;box-shadow:3px 3px 0 #e2709d;
+}
+html[data-ui-theme] body[data-world="island"] .tabs{gap:8px}
+html[data-ui-theme] body[data-world="island"] .tab{border-radius:0;background:#0a3449;border-bottom:4px solid #55a0b0}
+html[data-ui-theme] body[data-world="island"] .section-kicker,html[data-ui-theme] body[data-world="island"] .eyebrow{color:#a5e5e7}
+html[data-ui-theme] body[data-world="island"] .game-lock-banner{background:repeating-linear-gradient(135deg,#173f4d 0 8px,#0b2e3e 8px 16px);border-color:#b79b6d;color:#fff3d5}
+html[data-ui-theme] body[data-world="island"] .mode-badge,html[data-ui-theme] body[data-world="island"] .sync-status{color:#e5f5ee;background:#214d59}
+html[data-ui-theme] body[data-world="island"] .calendar-day.selected,html[data-ui-theme] body[data-world="island"] .vote-controls button[aria-pressed=true]{background:#973568;color:#fff}
+html[data-ui-theme] body[data-world="island"] .finale-stage{
+  display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:26px;
+  width:calc(100% - 60px);max-width:1600px;margin:24px auto;padding:32px;
+  min-height:360px;border:4px solid #0a3041;border-bottom:10px solid #e9cb92;
+  border-radius:0;box-shadow:8px 8px 0 #dc769f;
+  background:#7dd3df url('assets/scenery/jabberwock-pixels.svg') center/cover no-repeat;
+  image-rendering:pixelated;position:relative;isolation:isolate;overflow:hidden;
+}
+html[data-ui-theme] body[data-world="island"] .finale-stage h2{
+  color:#fff9e8;font:900 clamp(2.6rem,5.6vw,6.3rem)/.9 Impact,'Arial Black',sans-serif;
+  letter-spacing:-.04em;text-shadow:4px 4px 0 #12394b,7px 7px 0 #e96d9f;
+  margin:26px 0 22px;transform:rotate(-2deg);
+}
+html[data-ui-theme] body[data-world="island"] .finale-stage h2 em{color:#fff1c7;text-shadow:4px 4px 0 #12394b;font-size:.72em;letter-spacing:.04em}
+html[data-ui-theme] body[data-world="island"] .finale-stamp{background:#092f42;color:#fff3ce;box-shadow:4px 4px 0 #f1d4a0;letter-spacing:.16em}
+html[data-ui-theme] body[data-world="island"] .finale-copy{background:#092f42;color:#eaf6e9;display:inline-block;padding:10px 14px;max-width:560px;font:700 .75rem/1.6 ui-monospace,monospace}
+html[data-ui-theme] body[data-world="island"] .finale-aside{align-self:center;border:3px solid #10384b;background:#fff4d9;padding:18px;gap:14px;box-shadow:5px 5px 0 #d8799e}
+html[data-ui-theme] body[data-world="island"] .finale-aside small{color:#73523e;font:800 .65rem/1.5 ui-monospace,monospace}
+html[data-ui-theme] body[data-world="island"] .finale-aside blockquote{color:#183d4c;font:800 1rem/1.5 Arial,sans-serif}
+html[data-ui-theme] body[data-world="island"] .finale-frame{image-rendering:auto;background:#fff0cb;border-color:#fff0cb;box-shadow:3px 3px 0 #173645}
+html[data-ui-theme] body[data-world="island"] .finale-stage button{image-rendering:auto}
+html[data-ui-theme] body[data-world="island"][data-scenario="slayhem"] .finale-stage{box-shadow:8px 8px 0 #ed497b;border-bottom-color:#e5be84}
+/* A face window into the original, unmodified official artwork. */
+.official-face{display:block;position:relative;overflow:hidden}
+.official-face img{position:absolute;width:300%;max-width:none;height:auto;left:-100%;top:-12%;pointer-events:none}
+.official-face[data-character="monokuma"] img,.official-face[data-character="monomi"] img{width:360%;left:-130%;top:-95%}
+.official-face[data-character="togami"] img{width:240%;left:-70%;top:-8%}
+
+/* Panic is a visible scene change without shaking, strobing, sound or obscured controls. */
+.panic-atmosphere{display:none}
+body.panic-active .panic-atmosphere{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:12px max(20px,calc((100vw - 1540px)/2));background:#211019;color:#fff1da;
+  border-block:3px solid #ff557a;font:800 .75rem/1.4 ui-monospace,monospace;letter-spacing:.12em;
+}
+.panic-atmosphere strong{color:#ffadc2}.panic-atmosphere span{font-size:.65rem;color:#f5d0c9}
+html body.panic-active{background:#21111d;--pink-hot:#ff648c;--pink:#ff648c}
+html body.panic-active .topbar{border-bottom-color:#f46086;box-shadow:0 5px 0 #641d39}
+html body.panic-active .finale-stage{
+  border-color:#ff6989;box-shadow:8px 8px 0 #9a2856;
+  background:repeating-linear-gradient(135deg,#6b203320 0 14px,transparent 14px 28px),#291524;
+}
+html body.panic-active .finale-stage::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;box-shadow:inset 0 0 80px #b41f4c55;animation:panic-settle 4s ease-in-out 2}
+html body.panic-active .finale-stage h2{color:#fff0db;text-shadow:4px 4px 0 #7b2546}
+html body.panic-active .finale-stage h2 em{color:#ff8eaf;text-shadow:none}
+html body.panic-active .panel,html body.panic-active .actor-card,html body.panic-active .session-planner{border-color:#a24b67;box-shadow:4px 4px 0 #4b1730}
+html body.panic-active .actor-header,html body.panic-active .panel-header{background:#412234;color:#fff0de}
+html body.panic-active .control-strip{border-left:6px solid #ff648c}
+html body.panic-active .case-status{background:#7e284d;color:#fff3dd;border-color:#ff95b4}
+html[data-ui-theme] body[data-world="island"].panic-active{background:linear-gradient(#222440,#403454 600px,#594056);background-attachment:fixed}
+html[data-ui-theme] body[data-world="island"].panic-active .finale-stage{background:linear-gradient(#36264888,#941c4f55),url('assets/scenery/jabberwock-pixels.svg') center/cover no-repeat;border-color:#ff6989;box-shadow:8px 8px 0 #9a2856}
+html[data-ui-theme] body[data-world="island"].panic-active .topbar{background:#281d30;border-bottom-color:#ff6989;box-shadow:0 4px 0 #9a2856}
+html[data-ui-theme] body[data-world="island"].panic-active .finale-aside{background:#301e32;border-color:#d77a9c}
+html[data-ui-theme] body[data-world="island"].panic-active .finale-aside blockquote{color:#fff1da}
+html[data-ui-theme] body[data-world="island"].panic-active .finale-aside small{color:#ffc6d2}
+@keyframes panic-settle{0%,100%{opacity:.45}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){body.panic-active .finale-stage::before{animation:none}}
+@media(max-width:700px){
+  html[data-ui-theme] body[data-world="island"] .finale-stage{grid-template-columns:1fr;width:calc(100% - 28px);margin:18px 14px;padding:22px 18px;background-position:42% center;gap:24px;min-height:0}
+  html[data-ui-theme] body[data-world="island"] .finale-aside{max-width:none;padding:16px;box-shadow:3px 3px 0 #d8799e}
+  html[data-ui-theme] body[data-world="island"] .finale-stage h2{font-size:clamp(2.3rem,10vw,4.5rem)}
+  body.panic-active .panic-atmosphere{flex-wrap:wrap;gap:4px;padding:10px 16px}
+}
+
+html[data-ui-theme] body[data-world="island"] .rule-banner{background:#174759;color:#e4f4ef;border-color:#508494}
