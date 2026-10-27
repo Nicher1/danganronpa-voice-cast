@@ -1,0 +1,73 @@
+{
+  "description": "Existing character illustrations visually matched to the original poses on the publisher’s 2013 Reload character cards. Original files; no AI generation or editing.",
+  "copyright": "Character artwork © Spike Chunsoft.",
+  "verified": "2026-10-27",
+  "images": [
+    {
+      "name": "Hajime Hinata",
+      "file": "assets/monopad/dr2/hinata.gif",
+      "source": "https://neoapo.com/images/character/7199/1593243cec04a527f694a5d212e295ed.gif",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_01.png"
+    },
+    {
+      "name": "Nagito Komaeda",
+      "file": "assets/monopad/dr2/komaeda.gif",
+      "source": "https://neoapo.com/images/character/7200/5bd870aad18c5b87ff497cc8abf5091e.gif",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_02.png"
+    },
+    {
+      "name": "Byakuya Togami",
+      "file": "assets/monopad/dr2/togami.png",
+      "source": "https://neoapo.com/images/character/12508/4310ed4b9db7f88bc27dab2159cdc86e.png",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_05.png"
+    },
+    {
+      "name": "Fuyuhiko Kuzuryu",
+      "file": "assets/monopad/dr2/kuzuryu.png",
+      "source": "https://neoapo.com/images/character/12473/f68d634881d6d1a12a78ffae12880218.png",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_08.png"
+    },
+    {
+      "name": "Sonia Nevermind",
+      "file": "assets/monopad/dr2/sonia.png",
+      "source": "https://neoapo.com/images/character/12475/93a6abfc0f86f111bd07b61b406949a0.png",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_11.png"
+    },
+    {
+      "name": "Hiyoko Saionji",
+      "file": "assets/monopad/dr2/saionji.png",
+      "source": "https://neoapo.com/images/character/12474/858acc002643ef7f2a41e69a5e8bd643.png",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_12.png"
+    },
+    {
+      "name": "Ibuki Mioda",
+      "file": "assets/monopad/dr2/mioda.png",
+      "source": "https://neoapo.com/images/character/12476/490ef19eaf80d9e015895334e71765c1.png",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_15.png"
+    },
+    {
+      "name": "Gundham Tanaka",
+      "file": "assets/monopad/dr2/tanaka.jpg",
+      "source": "https://ami.animecharactersdatabase.com/uploads/chars/8148-1183987002.jpg",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_03.png"
+    },
+    {
+      "name": "Teruteru Hanamura",
+      "file": "assets/monopad/dr2/hanamura.jpg",
+      "source": "https://ami.animecharactersdatabase.com/uploads/chars/8148-480295921.jpg",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_06.png"
+    },
+    {
+      "name": "Nekomaru Nidai",
+      "file": "assets/monopad/dr2/nidai.png",
+      "source": "https://www.kindpng.com/picc/m/23-239760_nekomaru-nidai-danganronpa-danganronpa-official-character-art-hd.png",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_07.png"
+    },
+    {
+      "name": "Peko Pekoyama",
+      "file": "assets/monopad/dr2/pekoyama.jpg",
+      "source": "https://ami.animecharactersdatabase.com/uploads/chars/8148-1796382694.jpg",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_16.png"
+    }
+  ]
+}

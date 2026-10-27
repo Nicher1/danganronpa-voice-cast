@@ -1,0 +1,54 @@
+/* Layout fixes apply to each theme, including narrow panels in wide windows. */
+.topbar{flex-wrap:wrap}.original-brand-shell{flex:0 1 360px}.top-actions{flex:1 1 520px}
+.brand-mark{flex-shrink:0}.brand-row h1{overflow-wrap:normal;font-size:clamp(29px,3.2vw,43px)}
+.monopad-section-head{display:flex;flex-wrap:wrap;align-items:flex-start;gap:16px 24px}
+.monopad-section-head>div:first-child{flex:1 1 300px;min-width:0;max-width:100%}
+.monopad-section-head>.monopad-section-actions{flex:0 1 320px;min-width:0;max-width:100%;justify-content:flex-start}
+.monopad-section-actions button{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.casting-controls{margin-bottom:14px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.casting-controls>summary{padding:13px 16px;cursor:pointer;color:var(--text);font-size:.83rem}
+.casting-controls>summary span{margin-left:12px;color:var(--muted);font-size:.7rem}
+.casting-controls>summary:focus-visible{outline:2px solid var(--pink);outline-offset:3px}
+.casting-controls .control-strip{margin:0;border-radius:0 0 9px 9px}
+.admin-game-card .toggle-wrap{margin-top:10px;width:100%}
+.admin-preview-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.admin-preview-banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:14px 30px;background:#29263d;color:#fff;border-block:2px solid #a69bff}
+.admin-preview-banner strong{display:block;color:#c7bfff;letter-spacing:.12em;font-size:.75rem}
+.admin-preview-banner span{display:block;font-size:.75rem;margin-top:5px}
+.admin-preview-banner a{color:#fff;text-decoration:underline;font-weight:800;font-size:.8rem}
+/* Slayhem keeps the island silhouette, with charcoal surfaces and pink blood. */
+html[data-ui-theme] body[data-world="island"][data-scenario="slayhem"]{
+  --bg:#1e1f22;--panel:#2b2d31;--panel-soft:#313338;--text:#f2f3f5;--muted:#b5bac1;
+  --line:#4b414e;--blue:#c4cad9;--pink:#ff3699;--pink-hot:#ff3699;
+  background:radial-gradient(ellipse at 75% 0,#61224250,transparent 65%),#1e1f22;color:#f2f3f5;
+}
+html[data-ui-theme] body[data-scenario="slayhem"] :is(.topbar,.panel,.actor-card,.dossier-card,.session-planner,.modal-card,dialog,.casting-controls){background:#2b2d31;color:#f2f3f5;border-color:#4a414d;box-shadow:3px 3px 0 #151519}
+html[data-ui-theme] body[data-scenario="slayhem"] :is(.actor-header,.panel-header,.role-compact,.control-strip,.schedule-day,.rule-banner){background:#313338;color:#e3e5e8;border-color:#4a414d}
+html[data-ui-theme] body[data-scenario="slayhem"] :is(button,input,textarea,select,.theme-picker){background:#383a40;color:#f2f3f5;border-color:#625267}
+html[data-ui-theme] body[data-scenario="slayhem"] :is(button.primary,.tab.active){background:#f52c91;color:#1b0b17;border-color:#ff89c1;box-shadow:3px 3px 0 #66213f}
+html[data-ui-theme] body[data-scenario="slayhem"] :is(.section-kicker,.eyebrow,.brand-kicker,.reworked-brand-kicker){color:#ef9bc5}
+html[data-ui-theme] body[data-scenario="slayhem"] .topbar{border-bottom:4px solid #bd216d}
+html[data-ui-theme] body[data-world="island"][data-scenario="slayhem"] .finale-stage{
+  background:url('assets/scenery/pink-spatter.svg') center/cover no-repeat,linear-gradient(#24232dde,#20202dd9),url('assets/scenery/jabberwock-pixels.svg') center/cover no-repeat;
+  border:2px solid #7a3358;border-bottom:7px solid #bd216d;box-shadow:7px 7px 0 #101114;
+}
+html[data-ui-theme] body[data-scenario="slayhem"] .finale-stage h2{color:#f2f3f5;text-shadow:3px 3px 0 #121015;font-size:clamp(2.5rem,5vw,5.6rem)}
+html[data-ui-theme] body[data-scenario="slayhem"] .blood-title{display:block;max-width:430px;line-height:0;margin:5px 0 -6px;transform:rotate(-2deg)}
+.blood-title img{display:block;width:100%;height:auto;image-rendering:auto;filter:drop-shadow(2px 3px 1px #160912)}
+html[data-ui-theme] body[data-scenario="slayhem"] :is(.finale-copy,.finale-stamp){background:#202127;color:#dfe1e5;box-shadow:none}
+html[data-ui-theme] body[data-scenario="slayhem"] .finale-aside{background:#242429;border-color:#75405c;box-shadow:5px 5px 0 #131317}
+html[data-ui-theme] body[data-scenario="slayhem"] .finale-aside blockquote{color:#f2eaf0}
+html[data-ui-theme] body[data-scenario="slayhem"] .finale-aside small{color:#ec9ac1}
+html[data-ui-theme] body[data-scenario="slayhem"] .game-lock-banner{background:repeating-linear-gradient(135deg,#25262b 0 8px,#1e1f23 8px 16px);border-color:#6d3b55;color:#e9dce4}
+html[data-ui-theme] body[data-world="island"][data-scenario="slayhem"].panic-active{background:radial-gradient(ellipse at 50% 0,#89154f80,transparent 75%),#170e18}
+html[data-ui-theme] body[data-world="island"][data-scenario="slayhem"].panic-active .finale-stage{
+  background:url('assets/scenery/pink-spatter.svg') center/cover no-repeat,repeating-linear-gradient(128deg,#ea08771a 0 18px,transparent 18px 36px),linear-gradient(#48132cce,#210c21ef),url('assets/scenery/jabberwock-pixels.svg') center/cover no-repeat;
+  border:4px solid #ff3699;border-bottom:10px solid #ff3699;box-shadow:8px 8px 0 #7f164d,0 0 45px #f5007a33;
+}
+html[data-ui-theme] body[data-scenario="slayhem"].panic-active :is(.topbar,.actor-header,.panel-header,.control-strip){background:#3b2030;border-color:#ee388c}
+html[data-ui-theme] body[data-scenario="slayhem"].panic-active .panic-atmosphere{background:repeating-linear-gradient(125deg,#721441 0 16px,#391326 16px 32px);border-color:#ff5cab}
+html[data-ui-theme] body[data-scenario="slayhem"].panic-active .blood-title img{filter:drop-shadow(0 0 9px #ff168a88)}
+@media(max-width:700px){.monopad-section-head>.monopad-section-actions{flex-basis:100%}.casting-controls>summary span{display:block;margin:5px 0 0 17px}}
+/* Transparent images blend into their panels instead of sitting on black boxes. */
+html[data-ui-theme] .dossier-card img,html[data-ui-theme] .dossier-dialog-art,html[data-ui-theme] .role-image,html[data-ui-theme] .official-face,html[data-ui-theme] .image-preview{background:transparent}
+html[data-ui-theme] body[data-world="island"] .dossier-card img{object-fit:contain}

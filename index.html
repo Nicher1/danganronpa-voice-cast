@@ -1053,6 +1053,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 </style>
 <link rel="stylesheet" href="finale.css?v=20261021-dark">
 <link rel="stylesheet" href="island-skin.css?v=20261025">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261026">
 <link rel="stylesheet" href="session-planner.css?v=20261022">
 </head>
 <body>
@@ -1126,6 +1127,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     <em id="themeProgressStatus">CONNECTING</em>
   </div>
 
+  <div id="adminPreviewBanner" class="admin-preview-banner" hidden><div><strong>ADMIN PREVIEW</strong><span>Only this tab. Changes are temporary; players and shared progress are unaffected.</span></div><a id="leaveAdminPreview" href="?host=11037">Return to live board</a></div>
   <div class="panic-atmosphere" role="status"><strong>PANIC MODE / STAY SHARP</strong><span>Keep your head. Keep investigating.</span></div>
   <section id="finaleStage" class="finale-stage" aria-label="Killing game atmosphere"></section>
   <main class="app-shell">
@@ -1147,6 +1149,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     </nav>
 
     <section id="castingTab" class="tab-panel active">
+      <details id="castingControls" class="casting-controls" open>
+        <summary><strong>Casting controls</strong><span>Actors, characters and chapter settings</span></summary>
       <div class="control-strip">
         <button id="addActorBtn" class="primary non-viewer">+ Voice actor</button>
         <button id="addRoleBtn" class="host-only">+ Character</button>
@@ -1203,6 +1207,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         <button id="expandAllBtn" class="ghost host-only">Expand all available</button>
         <button id="collapseAllBtn" class="ghost host-only">Collapse all</button>
       </div>
+
+      </details>
 
       <div id="playRuleBanner" class="rule-banner"></div>
       <section id="predictionDock" class="prediction-dock player-only hidden" aria-label="Chapter predictions"></section>
@@ -1469,7 +1475,18 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.3.0</span><span class="patch-release-title"><strong>Atmosphere and portrait refresh</strong><small>Current release · 25 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.4.0</span><span class="patch-release-title"><strong>Private previews and a clearer campaign</strong><small>Current release · 27 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Private admin game previews</h4><p>Every game in Admin Tools has a Preview button, including locked games. Try its real board, artwork and panic atmosphere in a temporary copy, then return to the live board. Preview edits do not change shared progress, attendance or player data.</p></section>
+            <section class="patch-note"><h4>Campaign order and completion</h4><p>The campaign follows DR1, the two 2×2 routes, Ultra Despair Girls, Danganronpa 3, V3 and The Hundred Line. Original and Slayhem have separate completion switches in one 2×2 card. Ultra Despair Girls and The Hundred Line currently provide empty campaign slots for host-added characters and checkpoint recaps. Legacy DR2 data is retained outside the active order.</p></section>
+            <section class="patch-note" data-reveal-game="dr2x2"><h4>A distinct Slayhem atmosphere</h4><p>Slayhem now uses charcoal panels and a pink blood-styled title. Panic deepens the colours and adds stronger warning borders. Goodbye Despair keeps its tropical island skin.</p></section>
+            <section class="patch-note"><h4>Separate Monopad artwork</h4><p>Hosts can set a Monopad illustration separately from each casting portrait. Transparent portraits no longer receive a forced black background, and new image uploads preserve transparency. Existing first-game artwork is preserved.</p></section>
+            <section class="patch-note" data-reveal-game="dr2x2"><h4>Illustrated character files</h4><p>Eleven second-game Monopad files now use existing character illustrations verified against publisher artwork. Other entries retain their official portraits. No AI-generated character artwork is used.</p></section>
+            <section class="patch-note"><h4>Small-screen layout fixes</h4><p>Recap buttons wrap below their heading when space is tight. The casting controls can be collapsed together, and the browser remembers your choice.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.3.0</span><span class="patch-release-title"><strong>Atmosphere and portrait refresh</strong><small>Previous release · 25 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>A visible panic atmosphere</h4><p>Panic mode now adds a clear warning strip, a darker scene and stronger pink borders. A gentle opening glow settles after two cycles; reduced-motion preferences disable it. Controls stay in their familiar places.</p></section>
             <section class="patch-note" data-reveal-game="dr2"><h4>A tropical island skin</h4><p>The second game's boards use pixel palm trees, ocean blues, sandy cream and pink accents. The island shifts to dusk during panic. The same casting and planning controls remain available across DR2 and the separate 2×2 routes.</p></section>
@@ -1705,6 +1722,18 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         </div>
       </div>
 
+      <div class="image-editor">
+        <div id="roleProfileImagePreview" class="image-preview placeholder">Default artwork</div>
+        <div class="image-actions">
+          <strong>Monopad artwork</strong>
+          <label class="button ghost" for="roleProfileImageInput">Choose Monopad image</label>
+          <input id="roleProfileImageInput" type="file" accept="image/*" hidden>
+          <button id="resetProfileImageBtn" type="button" class="ghost">Use default artwork</button>
+          <label>Monopad image URL<input id="roleProfileImageUrl" placeholder="https://..."></label>
+          <p class="muted tiny">Separate from the casting portrait above. Use an illustration here and a transparent portrait on the casting board.</p>
+        </div>
+      </div>
+
       <div class="voice-editor">
         <div class="voice-editor-head">
           <div><strong>Custom voice samples</strong><br><span>Host uploads supplement the built-in spoiler-safe samples.</span></div>
@@ -1905,12 +1934,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     </form>
   </dialog>
 
-  <dialog id="editionDialog" class="modal"><div class="modal-card compact-modal"><div class="eyebrow">CHOOSE YOUR SCHOOL TRIP</div><h2>Danganronpa 2 / 2×2</h2><p>Each route keeps its own cast, progress, predictions and memorial.</p><div class="session-controls"><button data-edition="dr2">Danganronpa 2</button><button data-edition="dr2x2">2×2 · Original</button><button data-edition="dr2slayhem">2×2 · Slayhem</button><button onclick="this.closest('dialog').close()">Cancel</button></div></div></dialog>
+  <dialog id="editionDialog" class="modal"><div class="modal-card compact-modal"><div class="eyebrow">CHOOSE YOUR SCHOOL TRIP</div><h2>Danganronpa 2×2</h2><p>Each route keeps its own cast, progress, predictions and memorial. Finish Goodbye Despair before Slayhem.</p><div class="session-controls"><button data-edition="dr2x2">2×2: Goodbye Despair</button><button data-edition="dr2slayhem">2×2: Slayhem</button><button onclick="this.closest('dialog').close()">Cancel</button></div></div></dialog>
   <div id="toast" class="toast" aria-live="polite"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-sync.js?v=20261024-1"></script>
+  <script src="dr2-monopad-art.js?v=20261027"></script>
+  <script src="admin-preview-safety.js?v=20261026"></script>
   <script src="voice-clips-v4.js"></script>
   <script src="monopad-data.js?v=4"></script>
   <script src="endgame-data.js?v=20261007"></script>
@@ -1921,22 +1952,22 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.25.1";
+  const APP_BUILD = "2026.10.27.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
   const UI_THEME_KEY = "danganronpa-cast-ui-theme-v1";
   const GAME_DEFINITIONS = [
     {id:"dr1",short:"DR1",title:"Danganronpa: Trigger Happy Havoc",kicker:"TRIGGER HAPPY HAVOC",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:15},
-    {id:"dr2",short:"DR2",title:"Danganronpa 2: Goodbye Despair",kicker:"GOODBYE DESPAIR",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16},
+    {id:"dr2x2",short:"2×2",title:"Danganronpa 2×2: Goodbye Despair",kicker:"GOODBYE DESPAIR / 2×2",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16},
+    {id:"dr2slayhem",short:"SLAYHEM",title:"Danganronpa 2×2: Slayhem",kicker:"SLAYHEM / 2×2",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16},
+    {id:"udg",short:"UDG",title:"Danganronpa Another Episode: Ultra Despair Girls",kicker:"ULTRA DESPAIR GIRLS",kind:"custom",maxChapter:100,unit:"Checkpoint",unitShort:"CP",startPopulation:0},
     {id:"dr3anime",short:"DR3",title:"Danganronpa 3",kicker:"THE END OF HOPE'S PEAK",kind:"anime",maxChapter:24,unit:"Episode",unitShort:"EP",startPopulation:16},
-    {id:"v3",short:"V3",title:"Danganronpa V3: Killing Harmony",kicker:"KILLING HARMONY",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16}
+    {id:"v3",short:"V3",title:"Danganronpa V3: Killing Harmony",kicker:"KILLING HARMONY",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16},
+    {id:"hundredline",short:"THL",title:"The Hundred Line: Last Defense Academy",kicker:"LAST DEFENSE ACADEMY",kind:"custom",maxChapter:100,unit:"Checkpoint",unitShort:"CP",startPopulation:0},
+    {id:"dr2",short:"DR2",title:"Danganronpa 2: Goodbye Despair (archive)",kicker:"GOODBYE DESPAIR",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16}
   ];
-  GAME_DEFINITIONS.push(
-    {id:"dr2x2",short:"2×2",title:"Danganronpa 2×2 · Original",kicker:"ORIGINAL / 2×2",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16},
-    {id:"dr2slayhem",short:"SLAYHEM",title:"Danganronpa 2×2 · Slayhem",kicker:"SLAYHEM / 2×2",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16}
-  );
-  const MAIN_GAME_IDS=["dr1","dr2","dr3anime","v3"];
+  const MAIN_GAME_IDS=["dr1","dr2x2","dr2slayhem","udg","dr3anime","v3","hundredline"];
   const GAME_IDS = GAME_DEFINITIONS.map(game=>game.id);
   const gameDefinition = gameId => GAME_DEFINITIONS.find(game=>game.id===gameId)||GAME_DEFINITIONS[0];
   const ANIME_WATCH_ORDER = [
@@ -1950,13 +1981,18 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   const animeWatchEntry = step => ANIME_WATCH_ORDER[Math.max(1,Math.min(ANIME_WATCH_ORDER.length,Number(step)||1))-1];
   const storyUnitLabel = (gameId,step) => gameId==="dr3anime"?animeWatchEntry(step).label:`${gameDefinition(gameId).unit} ${step}`;
   let activeGameId = GAME_IDS.includes(sessionStorage.getItem(SESSION_GAME_KEY))?sessionStorage.getItem(SESSION_GAME_KEY):"dr1";
+  if(activeGameId==="dr2")activeGameId="dr2x2";
   let gamePickerShown = false;
   const params = new URLSearchParams(location.search);
   const requestedMode = params.get("mode");
   const hostAccess = params.get("host") === "11037" || /\/11037\/?$/.test(location.pathname);
   const mode = hostAccess ? "host" : requestedMode === "viewer" ? "viewer" : "player";
+  const previewGameId=mode==="host"&&MAIN_GAME_IDS.includes(params.get("previewGame"))?params.get("previewGame"):null;
+  const isAdminPreview=!!previewGameId;
+  const PREVIEW_STORAGE_KEY="danganronpa-admin-preview-state";
+  if(isAdminPreview)activeGameId=previewGameId;
   const PLAYER_RECAP_HASH="#monopad-summaries";
-  if(hostAccess&&params.get("host")==="11037"){
+  if(hostAccess&&params.get("host")==="11037"&&!isAdminPreview){
     const cleanHostUrl=new URL(location.href);
     cleanHostUrl.pathname=cleanHostUrl.pathname.replace(/\/?$/, "/11037");
     cleanHostUrl.search="";cleanHostUrl.hash="";
@@ -2298,6 +2334,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   let state = loadState();
   let expanded = new Set();
   let pendingImage = "";
+  let pendingProfileImage = "";
   let pendingLoginActorId = null;
   let confirmResolver = null;
   let choiceResolver = null;
@@ -2334,14 +2371,12 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   const isLocalPreview = ["127.0.0.1","localhost"].includes(location.hostname) && new URLSearchParams(location.search).get("shared")!=="1";
   let sessionPlanner = null;
   const isGameUnlocked = (gameId,includePreview=true) => {
-    if(typeof isLocalPreview!=="undefined"&&isLocalPreview&&includePreview && ["dr2","dr2x2","dr2slayhem"].includes(gameId))return true;
-    const canonical=["dr2x2","dr2slayhem"].includes(gameId)?"dr2":gameId;
-    if(canonical==="dr1")return true;
-    return MAIN_GAME_IDS.slice(0,MAIN_GAME_IDS.indexOf(canonical)).every(id=>id==="dr2"
-      ?["dr2","dr2x2","dr2slayhem"].some(key=>state.settings.completedGames[key])
-      :!!state.settings.completedGames[id]);
+    if(typeof isAdminPreview!=="undefined"&&isAdminPreview&&includePreview)return MAIN_GAME_IDS.includes(gameId);
+    if(typeof isLocalPreview!=="undefined"&&isLocalPreview&&includePreview && ["dr2x2","dr2slayhem"].includes(gameId))return true;
+    const index=MAIN_GAME_IDS.indexOf(gameId);
+    return index>=0&&MAIN_GAME_IDS.slice(0,index).every(id=>!!state.settings.completedGames[id]);
   };
-  const availableGameIds = () => GAME_IDS.filter(isGameUnlocked);
+  const availableGameIds = () => MAIN_GAME_IDS.filter(gameId=>isGameUnlocked(gameId));
   const currentSettings = () => state.settings.games[activeGameId];
   const currentSecretSettings = () => state.secretSettings?.games?.[activeGameId]||{};
   const currentPopulationGraph = () => state.populationGraph[activeGameId];
@@ -2411,6 +2446,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     document.body.dataset.world=island?"island":"school";
     document.body.dataset.scenario=slayhem?"slayhem":"original";
     document.body.classList.toggle("panic-active",!!settings.panic);
+    $$('[data-edition]').forEach(button=>button.disabled=!isGameUnlocked(button.dataset.edition));
+    $("#editionSwitchBtn").textContent=isLocalPreview?"Preview 2×2 route":"Choose 2×2 route";
     $("#chapterCompleteToggle").checked=!!settings.completedUnits?.[key];
     $("#predictionLockToggle").checked=!!settings.predictionLocks?.[key];
     $("#panicToggle").checked=!!settings.panic;
@@ -2424,7 +2461,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     if(resolvedUiTheme()!=="finale"&&!island){stage.replaceChildren();return}
     const quotes=frontQuotes();
     const deaths=gameRoles().filter(role=>role.dead&&(!role.hiddenSpoiler||role.revealed)&&role.name!=="Narrator");
-    stage.innerHTML=`<div><span class="finale-stamp">${slayhem?"JABBERWOCK ISLAND / SLAYHEM":esc(gameDefinition(activeGameId).kicker)} · CASE ${String(key).padStart(2,"0")}</span><h2>${slayhem?"DANGANRONPA 2×2<br><em>SLAYHEM</em>":activeGameId==="dr1"?"DANGANRONPA<br><em>VOICE CAST</em>":activeGameId==="dr2x2"?"DANGANRONPA 2×2<br><em>ORIGINAL</em>":"GOODBYE DESPAIR<br><em>VOICE CAST</em>"}</h2><p class="finale-copy">${slayhem?"A different killing game. Build the case from what your group discovers; no Original-route outcomes are assumed.":"MONOPAD // CASTING FILES // DAILY LIFE"}</p><div class="finale-memorial" aria-label="Known losses">${deaths.map(role=>`<button class="finale-frame" data-memorial-role="${esc(role.id)}" aria-label="Open ${esc(role.name)} memorial">${role.image?`<img src="${esc(role.image)}" alt="">`:""}<span>${esc(role.name)}</span></button>`).join("")}</div></div><aside class="finale-aside"><small>${esc(quotes.heading)}</small><blockquote>${esc(quotes.first)}</blockquote><small>${esc(quotes.credit)}</small><blockquote>${esc(quotes.second)}</blockquote><small>${esc(quotes.source)}</small>${mode==="host"?'<button type="button" class="ghost" id="editVisibleQuotesBtn">Edit quotes</button>':""}</aside>`;
+    stage.innerHTML=`<div><span class="finale-stamp">${slayhem?"JABBERWOCK ISLAND / SLAYHEM":esc(gameDefinition(activeGameId).kicker)} · CASE ${String(key).padStart(2,"0")}</span><h2>${slayhem?'DANGANRONPA 2×2<br><em class="blood-title"><img src="assets/scenery/slayhem-wordmark.svg" alt="Slayhem"></em>':activeGameId==="dr1"?"DANGANRONPA<br><em>VOICE CAST</em>":activeGameId==="dr2x2"?"DANGANRONPA 2×2<br><em>GOODBYE DESPAIR</em>":`${esc(gameDefinition(activeGameId).title)}<br><em>VOICE CAST</em>`}</h2><p class="finale-copy">${slayhem?"A different killing game. Build the case from what your group discovers; no Original-route outcomes are assumed.":"MONOPAD // CASTING FILES // DAILY LIFE"}</p><div class="finale-memorial" aria-label="Known losses">${deaths.map(role=>`<button class="finale-frame" data-memorial-role="${esc(role.id)}" aria-label="Open ${esc(role.name)} memorial">${role.image?`<img src="${esc(role.image)}" alt="">`:""}<span>${esc(role.name)}</span></button>`).join("")}</div></div><aside class="finale-aside"><small>${esc(quotes.heading)}</small><blockquote>${esc(quotes.first)}</blockquote><small>${esc(quotes.credit)}</small><blockquote>${esc(quotes.second)}</blockquote><small>${esc(quotes.source)}</small>${mode==="host"?'<button type="button" class="ghost" id="editVisibleQuotesBtn">Edit quotes</button>':""}</aside>`;
     stage.querySelector("#editVisibleQuotesBtn")?.addEventListener("click",openFrontQuotes);
     stage.querySelectorAll("[data-memorial-role]").forEach(button=>button.onclick=()=>openDossier(roleById(button.dataset.memorialRole)));
   }
@@ -2450,6 +2487,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   $("#clearSessionBtn").onclick=()=>setEndgameSetting("nextSessionAt","");
   $("#editionSwitchBtn").onclick=()=>$("#editionDialog").showModal();
   $$('[data-edition]').forEach(button=>button.onclick=()=>{if(selectGame(button.dataset.edition))$("#editionDialog").close()});
+  try{$("#castingControls").open=localStorage.getItem("danganronpa-casting-controls-open")!=="false"}catch(_){}
+  $("#castingControls").addEventListener("toggle",()=>{try{localStorage.setItem("danganronpa-casting-controls-open",String($("#castingControls").open))}catch(_){}});
   setInterval(renderSessionClock,30000);
 
   function personalThemePreference(){
@@ -2758,7 +2797,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function loadState() {
     try {
-      const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      const s = JSON.parse(isAdminPreview?sessionStorage.getItem(PREVIEW_STORAGE_KEY)||localStorage.getItem(STORAGE_KEY):localStorage.getItem(STORAGE_KEY));
       if (s) return normaliseState(s);
     } catch (_) {}
     return defaultState();
@@ -2766,7 +2805,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function cacheState() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      if(isAdminPreview)sessionStorage.setItem(PREVIEW_STORAGE_KEY,JSON.stringify(state));
+      else localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (_) {
       alert("Browser storage is full. Use smaller images or export the board.");
     }
@@ -2925,7 +2965,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   function saveState() {
     synchroniseActorDeathCounts();
     cacheState();
-    if(!remoteReady||applyingRemoteState||mode==="viewer")return;
+    if(isAdminPreview||!remoteReady||applyingRemoteState||mode==="viewer")return;
     const snapshot=remoteSafeState();
     remoteSaveQueue=remoteSaveQueue.then(async()=>{
       setSyncStatus("SAVING","working");
@@ -2993,6 +3033,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   async function initializeSharedBoard() {
     setSyncStatus("CONNECTING","working");
     if(isLocalPreview){
+      if(isAdminPreview){setSyncStatus("ADMIN PREVIEW","offline");return}
       if(!localStorage.getItem("preview-snapshot-650")){
         try{
           const response=await fetch("live-public-board.json");
@@ -3012,6 +3053,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     }
     try{
       remoteSync=new window.CastSupabaseSync(window.CAST_SUPABASE_CONFIG);
+      if(isAdminPreview)remoteSync=window.CastAdminPreview.connection(remoteSync);
       if(mode!=="viewer")await remoteSync.ensureAnonymousUser();
 
       let board=await remoteSync.getBoard();
@@ -3033,6 +3075,12 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
       const sharedStateVersion=Number(board.state?.version)||0;
       applyRemoteBoard(board,{renderNow:false});
+
+      if(isAdminPreview){
+        remoteReady=false;remoteSync=null;
+        setSyncStatus("ADMIN PREVIEW","offline");
+        return;
+      }
 
       remoteReady=mode!=="viewer";
       remoteSync.subscribe(
@@ -3069,6 +3117,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       setSyncStatus("OFFLINE BACKUP","offline");
       console.warn("Shared board unavailable:",window.CastSupabaseSync?.errorMessage(error)||error);
       toast("Shared board is not connected yet. This browser's backup is still available.");
+    }finally{
+      if(isAdminPreview){remoteSync=null;remoteReady=false;setSyncStatus("ADMIN PREVIEW","offline")}
     }
   }
 
@@ -3111,6 +3161,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     return firstVisit;
   }
   function livingVoiceSourceSummary(){
+    if(gameDefinition(activeGameId).kind==="custom")return "This board uses host-added character files and voice samples.";
     if(["dr2x2","dr2slayhem"].includes(activeGameId))return "2×2 uses host-uploaded samples only. Original DR2 recordings are not imported into this route.";
     const current=currentSettings().voiceChapter;
     if(gameDefinition(activeGameId).kind==="anime")return "Danganronpa 3 uses episode predictions; only host-uploaded voice samples are available on this board.";
@@ -3140,7 +3191,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     return !!role&&!role.dead&&role.predictionEligible!==false&&currentRoleVisible(role)&&(!role.hiddenSpoiler||role.revealed)&&role.name!=="Narrator";
   }
   function canEditPrediction(actorId,kind,chapter=currentSettings().voiceChapter){
-    if(mode!=="player"||actorId!==activeActorId)return false;
+    if(mode!=="player"||actorId!==activeActorId||gameDefinition(activeGameId).kind==="custom")return false;
     const key=chapterKey(chapter);
     if(currentSettings().predictionLocks?.[key]||currentSettings().completedUnits?.[key])return false;
     const game=gameDefinition(activeGameId);
@@ -3278,8 +3329,9 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       return role.name==="Mukuro Ikusaba"?(monopadData.profileImages["Mukuro Ikusaba"]||role.image):(monopadData.profileOverrides?.dr1?.["Junko Enoshima"]||role.image);
     }
     if(role.specialRole==="real-junko")return monopadData.profileImages["Junko Enoshima"]||role.image;
+    if(role.profileImage)return role.profileImage;
     if(override)return override;
-    if(["dr2","dr2x2","dr2slayhem"].includes(role.gameId))return role.image||"";
+    if(["dr2","dr2x2","dr2slayhem"].includes(role.gameId))return window.CAST_DR2_MONOPAD_ART?.[role.name]||role.image||"";
     if(role.gameId==="dr3anime")return role.image||monopadData.profileImages[role.name]||"";
     return monopadData.profileImages[role.name]||role.image||"";
   }
@@ -3378,7 +3430,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
     const anime=game.kind==="anime";
     $("#monopadRecapTitle").textContent=anime?"Previous episode":"What happened so far";
-    $("#monopadRecapHelp").textContent=anime
+    $("#monopadRecapHelp").textContent=game.kind==="custom"?"Host-written checkpoint recaps appear here as your group progresses.":anime
       ? `At ${animeWatchEntry(chapterKey()).label}, this recalls only the immediately previous watch-order episode.`
       : currentSettings().voiceInTrial
         ? "Earlier chapters include both their pre-Trial events and Trial outcomes; the current built-in summary stops before this Trial. Master-added stopping points appear alongside them."
@@ -3511,7 +3563,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     if(!isGameUnlocked(gameId)){toast(`${gameDefinition(gameId).title} is still locked.`);return false}
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
     activeGameId=gameId;
-    sessionStorage.setItem(SESSION_GAME_KEY,activeGameId);
+    if(!isAdminPreview)sessionStorage.setItem(SESSION_GAME_KEY,activeGameId);
     expanded.clear();selectedPredictionKind=null;voiceShuffleBags.clear();
     $("#gamePickerDialog").close();
     render();
@@ -3519,18 +3571,26 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     return true;
   }
 
+  function startAdminPreview(gameId){
+    if(mode!=="host"||!MAIN_GAME_IDS.includes(gameId))return;
+    sessionStorage.setItem(PREVIEW_STORAGE_KEY,JSON.stringify(state));
+    const url=new URL("./",location.href);
+    url.searchParams.set("host","11037");url.searchParams.set("previewGame",gameId);
+    location.assign(url.href);
+  }
+
   function renderGamePicker(){
     const grid=$("#gamePickerGrid");
     grid.innerHTML="";
-    const games=(mode==="host"?GAME_DEFINITIONS:GAME_DEFINITIONS.filter(game=>isGameUnlocked(game.id))).filter(game=>MAIN_GAME_IDS.includes(game.id));
+    const games=MAIN_GAME_IDS.map(gameDefinition).filter(game=>mode==="host"||isGameUnlocked(game.id));
     games.forEach(game=>{
-      const index=GAME_IDS.indexOf(game.id);
+      const index=MAIN_GAME_IDS.indexOf(game.id);
       const unlocked=isGameUnlocked(game.id);
       const completed=!!state.settings.completedGames[game.id];
       const button=document.createElement("button");
       button.type="button";button.className=`game-choice ${unlocked?"":"locked"}`;button.disabled=!unlocked;
-      button.innerHTML=`<span class="game-number">GAME ${index+1}</span><strong>${esc(game.title)}</strong><small>${unlocked?(completed?"Completed · board remains available":"Available now"):`Complete ${esc(GAME_DEFINITIONS[index-1]?.title||"the previous game")} to unlock.`}</small>${unlocked?"":'<span class="choice-lock">🔒</span>'}`;
-      if(unlocked)button.onclick=()=>game.id==="dr2"?$("#editionDialog").showModal():selectGame(game.id);
+      button.innerHTML=`<span class="game-number">${game.kind==="anime"?"ANIME":"GAME"} ${index+1}</span><strong>${esc(game.title)}</strong><small>${unlocked?(completed?"Completed · board remains available":"Available now"):`Complete ${esc(gameDefinition(MAIN_GAME_IDS[index-1]).title)} to unlock.`}</small>${unlocked?"":'<span class="choice-lock">🔒</span>'}`;
+      if(unlocked)button.onclick=()=>selectGame(game.id);
       grid.appendChild(button);
     });
   }
@@ -3543,15 +3603,17 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   }
 
   function renderGameChrome(){
+    $("#adminPreviewBanner").hidden=!isAdminPreview;
+    $("#leaveAdminPreview").href=new URL("./?host=11037",location.href).href;
     if(!isGameUnlocked(activeGameId)){activeGameId="dr1";sessionStorage.setItem(SESSION_GAME_KEY,activeGameId)}
     const game=gameDefinition(activeGameId);
     $("#gameKicker").textContent=`CAST CONTROL / ${game.kicker}`;
     $("#reworkedGameSubtitle").textContent=`Live board · ${game.title}`;
     $("#gameSwitcherBtn").textContent=game.title;
     const nextLocked=GAME_DEFINITIONS.find(game=>MAIN_GAME_IDS.includes(game.id)&&!isGameUnlocked(game.id,false));
-    $("#lockedGameBanner").classList.toggle("hidden",!nextLocked);
+    $("#lockedGameBanner").classList.toggle("hidden",isAdminPreview||!nextLocked);
     const lastUnlocked=GAME_DEFINITIONS.filter(game=>MAIN_GAME_IDS.includes(game.id)&&isGameUnlocked(game.id,false)).at(-1);
-    const prerequisiteLabel=nextLocked?.id==="dr3anime"?"any Danganronpa 2 / 2×2 route":lastUnlocked?.title||"the current board";
+    const prerequisiteLabel=lastUnlocked?.title||"the current board";
     if(nextLocked)$("#lockedGameTitle").textContent=nextLocked.title;
     $("#lockedGameCopy").textContent=mode==="host"
       ? `Mark ${prerequisiteLabel} complete in Admin Tools to unlock ${nextLocked?.title||"the next board"}.`
@@ -3569,7 +3631,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   function renderPatchNotesVisibility(){
     const nextLocked=GAME_DEFINITIONS.find(game=>MAIN_GAME_IDS.includes(game.id)&&!isGameUnlocked(game.id));
     $$('[data-reveal-game]').forEach(element=>{
-      const gameId=element.dataset.revealGame;
+      const gameId=element.dataset.revealGame==="dr2"?"dr2x2":element.dataset.revealGame;
       const allowed=mode==="host"||isGameUnlocked(gameId)||nextLocked?.id===gameId;
       element.classList.toggle("hidden",!allowed);
     });
@@ -3577,36 +3639,41 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   async function setGameCompleted(gameId,completed){
     if(mode!=="host")return;
-    const index=GAME_IDS.indexOf(gameId);
-    if(index<0||index>0&&!isGameUnlocked(gameId)){toast("Complete the previous game first.");return}
+    const index=MAIN_GAME_IDS.indexOf(gameId);
+    if(index<0||index>0&&!isGameUnlocked(gameId,false)){toast("Complete the previous game first.");return}
     state.settings.completedGames[gameId]=completed;
     if(!completed){
-      if(gameId==="dr1")GAME_IDS.filter(id=>id!=="dr1").forEach(id=>state.settings.completedGames[id]=false);
-      else if(["dr2","dr2x2","dr2slayhem"].includes(gameId)){
-        if(!["dr2","dr2x2","dr2slayhem"].some(id=>state.settings.completedGames[id]))["dr3anime","v3"].forEach(id=>state.settings.completedGames[id]=false);
-      }else if(gameId==="dr3anime")state.settings.completedGames.v3=false;
+      MAIN_GAME_IDS.slice(index+1).forEach(id=>state.settings.completedGames[id]=false);
     }
     GAME_IDS.slice(1).forEach(id=>{if(!state.roles.some(role=>role.gameId===id))state.roles.push(...createRolesForGame(id))});
     if(!isGameUnlocked(activeGameId))activeGameId="dr1";
     saveState();render();
     toast(`${gameDefinition(gameId).title} marked ${completed?"complete":"not complete"}.`);
-    if(completed&&GAME_IDS[index+1]&&isGameUnlocked(GAME_IDS[index+1]))showGamePicker();
+    if(completed&&MAIN_GAME_IDS[index+1]&&isGameUnlocked(MAIN_GAME_IDS[index+1]))showGamePicker();
   }
 
   function renderAdminTools(){
     if(mode!=="host")return;
     $("#defaultThemeSelect").value=state.settings.defaultUiTheme;
     const grid=$("#adminGamesGrid");grid.innerHTML="";
-    GAME_DEFINITIONS.forEach((game,index)=>{
-      const unlocked=isGameUnlocked(game.id);
-      const completed=!!state.settings.completedGames[game.id];
+    MAIN_GAME_IDS.filter(id=>id!=="dr2slayhem").forEach((gameId,index)=>{
+      const game=gameDefinition(gameId),routes=gameId==="dr2x2"?["dr2x2","dr2slayhem"]:[gameId];
+      const unlocked=isGameUnlocked(game.id,false);
+      const completed=routes.every(id=>!!state.settings.completedGames[id]);
       const card=document.createElement("article");card.className=`admin-game-card panel ${unlocked?"":"locked"}`;
       const stateClass=completed?"complete":unlocked?"open":"";
       const stateText=completed?"COMPLETED":unlocked?"AVAILABLE":"LOCKED";
-      const variant=["dr2x2","dr2slayhem"].includes(game.id);
-      const prerequisite=variant?GAME_DEFINITIONS[0].title:game.id==="dr3anime"?"any Danganronpa 2 / 2×2 route":GAME_DEFINITIONS[index-1]?.title||"the previous game";
-      card.innerHTML=`<div class="admin-game-state"><span class="section-kicker">${variant?"GAME 2 · ALTERNATE ROUTE":`GAME ${index+1}`}</span><span class="game-state-badge ${stateClass}">${stateText}</span></div><h3>${esc(game.title)}</h3><p>${unlocked?"This board is available in the game picker and keeps its own campaign state.":`Complete ${esc(prerequisite)} first.`}</p><label class="toggle-wrap"><input type="checkbox" data-complete-game="${game.id}" ${completed?"checked":""} ${unlocked?"":"disabled"}><span class="toggle"></span><span><strong>Game completed</strong><small>${completed?"Later games may be unlocked":"Mark complete when your group finishes"}</small></span></label>`;
-      card.querySelector("[data-complete-game]")?.addEventListener("change",event=>setGameCompleted(game.id,event.target.checked));
+      const prerequisite=gameDefinition(MAIN_GAME_IDS[MAIN_GAME_IDS.indexOf(gameId)-1]).title;
+      const intro=gameId==="dr2x2"?"Finish Original, then Slayhem. Each route keeps separate progress and character files.":game.kind==="custom"?"Campaign slot ready. Hosts can add character files and checkpoint recaps; a built-in cast is not preloaded.":"This board keeps its own campaign state.";
+      card.innerHTML=`<div class="admin-game-state"><span class="section-kicker">${game.kind==="anime"?"ANIME":"GAME"} ${index+1}</span><span class="game-state-badge ${stateClass}">${stateText}</span></div><h3>${esc(gameId==="dr2x2"?"Danganronpa 2×2":game.title)}</h3><p>${esc(intro)} ${unlocked?"":`Complete ${esc(prerequisite)} first.`}</p>${routes.map(id=>{
+        const done=!!state.settings.completedGames[id],enabled=isGameUnlocked(id,false);
+        const label=id==="dr2x2"?"Original completed":id==="dr2slayhem"?"Slayhem completed":"Game completed";
+        return `<label class="toggle-wrap"><input type="checkbox" data-complete-game="${id}" ${done?"checked":""} ${enabled?"":"disabled"}><span class="toggle"></span><span><strong>${label}</strong><small>${id==="dr2x2"?"Unlocks Slayhem":id==="dr2slayhem"?"Unlocks Ultra Despair Girls":"Mark complete when your group finishes"}</small></span></label>`;
+      }).join("")}`;
+      card.querySelectorAll("[data-complete-game]").forEach(input=>input.addEventListener("change",event=>setGameCompleted(input.dataset.completeGame,event.target.checked)));
+      const previews=document.createElement("div");previews.className="admin-preview-actions";
+      routes.forEach(id=>{const button=document.createElement("button");button.type="button";button.className="ghost";button.textContent=id==="dr2x2"?"Preview Goodbye Despair":id==="dr2slayhem"?"Preview Slayhem":"Preview game";button.onclick=()=>startAdminPreview(id);previews.appendChild(button)});
+      card.appendChild(previews);
       grid.appendChild(card);
     });
     renderActivityOverview();
@@ -3646,7 +3713,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#voiceChapterSelect").innerHTML=Array.from({length:game.maxChapter},(_,index)=>`<option value="${index+1}">${esc(storyUnitLabel(activeGameId,index+1))}</option>`).join("");
     $("#voiceChapterSelect").value=String(currentSettings().voiceChapter);
     $("#voiceTrialToggle").checked=currentSettings().voiceInTrial;
-    $("#voiceTrialToggleWrap").classList.toggle("hidden",game.kind==="anime");
+    $("#voiceTrialToggleWrap").classList.toggle("hidden",game.kind!=="killing");
+    $("#predictionLockToggle").closest("label").classList.toggle("hidden",game.kind==="custom");
     $("#voiceSourceStatus").innerHTML=`<strong>Living-character sample source:</strong> ${esc(livingVoiceSourceSummary())}`;
     $("#junkoMukuroToggle").checked=!!currentSecretSettings().junkoMukuroRevealed;
     const portraitEntry=gameRoles().find(r=>r.specialRole==="unconfirmed-student");
@@ -4000,7 +4068,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function renderPredictionDock(){
     const dock=$("#predictionDock");
-    if(mode!=="player"||!activeActor()){
+    if(mode!=="player"||!activeActor()||gameDefinition(activeGameId).kind==="custom"){
       dock.classList.add("hidden");dock.innerHTML="";return;
     }
     const actor=activeActor();
@@ -5181,6 +5249,9 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#roleBiography").value=r?biographyForRole(r):"";
     $("#roleSpoiler").checked=!!r?.hiddenSpoiler;
     pendingImage=r?.image||"";
+    pendingProfileImage=r?.profileImage||"";
+    $("#roleProfileImageUrl").value=/^https?:/i.test(pendingProfileImage)?pendingProfileImage:"";
+    updateProfileImagePreview();
     $("#roleImageUrl").value=(pendingImage&&/^https?:/i.test(pendingImage))?pendingImage:"";
     $("#roleDialogTitle").textContent=r?"Edit character":"Add character";
     $("#voiceUploadTranscript").value="";
@@ -5256,6 +5327,19 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     }
   }
 
+  function updateProfileImagePreview(){
+    const box=$("#roleProfileImagePreview");
+    box.className="image-preview";
+    box.innerHTML=pendingProfileImage?`<img src="${esc(pendingProfileImage)}" alt="Monopad artwork preview" style="width:100%;height:100%;object-fit:contain">`:"Default artwork";
+  }
+  $("#roleProfileImageUrl").addEventListener("input",e=>{pendingProfileImage=e.target.value.trim();updateProfileImagePreview()});
+  $("#roleProfileImageInput").addEventListener("change",async e=>{
+    const file=e.target.files?.[0];if(!file)return;
+    try{pendingProfileImage=await compressImage(file,1000,.88);$("#roleProfileImageUrl").value="";updateProfileImagePreview()}
+    catch(_){alert("The image could not be read.")}finally{e.target.value=""}
+  });
+  $("#resetProfileImageBtn").onclick=()=>{pendingProfileImage="";$("#roleProfileImageUrl").value="";updateProfileImagePreview()};
+
   $("#roleImageUrl").addEventListener("input",e=>{
     const url=e.target.value.trim();
     if(url){pendingImage=url;updateImagePreview()}
@@ -5286,6 +5370,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       modifier:$("#roleModifier").value.trim(),
       biography:$("#roleBiography").value.trim(),
       image:pendingImage,
+      profileImage:pendingProfileImage,
       hiddenSpoiler
     };
 
@@ -5318,7 +5403,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         const canvas=document.createElement("canvas");canvas.width=width;canvas.height=height;
         canvas.getContext("2d").drawImage(img,0,0,width,height);
         URL.revokeObjectURL(url);
-        resolve(canvas.toDataURL("image/jpeg",quality));
+        resolve(canvas.toDataURL("image/webp",quality));
       };
       img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("image"))};
       img.src=url;
@@ -5667,14 +5752,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   initialBoardLoadComplete=true;
   {
     let scheduleStore=null;
-    if(!isLocalPreview&&remoteSync){
+    if(!isAdminPreview&&!isLocalPreview&&remoteSync){
       scheduleStore=new window.CastScheduleStore(remoteSync,window.CastSessionPlanner);
       await scheduleStore.start();
     }
     sessionPlanner=window.mountSessionPlanner({
-      load:()=>{try{return isLocalPreview?JSON.parse(localStorage.getItem("danganronpa-session-planner-v1")):scheduleStore?.state}catch(_){return null}},
-      save:value=>localStorage.setItem("danganronpa-session-planner-v1",JSON.stringify(value)),
-      store:scheduleStore,actors:()=>state.actors,mode:()=>!isLocalPreview&&!remoteReady?"viewer":mode,actorId:()=>activeActorId,local:()=>isLocalPreview,toast,login:()=>beginLogin(),copyVotingLink
+      load:()=>{try{return isLocalPreview||isAdminPreview?JSON.parse(localStorage.getItem("danganronpa-session-planner-v1")):scheduleStore?.state}catch(_){return null}},
+      save:value=>{if(!isAdminPreview)localStorage.setItem("danganronpa-session-planner-v1",JSON.stringify(value))},
+      store:scheduleStore,actors:()=>state.actors,mode:()=>isAdminPreview||!isLocalPreview&&!remoteReady?"viewer":mode,actorId:()=>activeActorId,local:()=>isLocalPreview||isAdminPreview,toast,login:()=>beginLogin(),copyVotingLink
     });
   }
 

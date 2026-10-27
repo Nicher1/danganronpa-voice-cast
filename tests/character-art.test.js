@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const html=fs.readFileSync('index.html','utf8');const context={window:{},monopadData:{profileImages:{},profileOverrides:{dr1:{'Custom':'original-art'}}},IMG:{mukuro:'revealed'}};
+vm.createContext(context);vm.runInContext(fs.readFileSync('dr2-monopad-art.js','utf8'),context);vm.runInContext(html.slice(html.indexOf('function profileImageForRole('),html.indexOf('function biographyForRole(')),context);
+assert.equal(context.profileImageForRole({name:'Ibuki Mioda',gameId:'dr2x2',image:'front'}),'assets/monopad/dr2/mioda.png');
+assert.equal(context.profileImageForRole({name:'Ibuki Mioda',gameId:'dr2x2',image:'front',profileImage:'custom'}),'custom');
+assert.equal(context.profileImageForRole({name:'Custom',gameId:'dr1',image:'front'}),'original-art');
+assert.equal(context.profileImageForRole({name:'Sakutaro Higashi',gameId:'dr2slayhem',image:'official'}),'official');
+assert.equal(context.profileImageForRole({specialRole:'unconfirmed-student',profileImage:'must-not-leak'}),'assets/monopad/dr1/unconfirmed-student.svg');
+for(const path of Object.values(context.window.CAST_DR2_MONOPAD_ART))assert.ok(fs.statSync(path).size>1000);
+assert.ok(html.includes('canvas.toDataURL("image/webp",quality)'),'Uploads must preserve transparency');
+console.log('Separate artwork, custom overrides, original DR1 choices, protected portraits and all local artwork files verified.');

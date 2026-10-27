@@ -17,7 +17,7 @@ inlineScripts.forEach((source, index) => new vm.Script(source, { filename: `inde
 const definitionsMatch = html.match(/const GAME_DEFINITIONS = (\[[\s\S]*?\n  \]);/);
 assert.ok(definitionsMatch, "Game definitions are missing");
 const definitions = vm.runInNewContext(definitionsMatch[1]);
-assert.deepEqual(Array.from(definitions, game => game.id), ["dr1", "dr2", "dr3anime", "v3"]);
+assert.deepEqual(Array.from(definitions, game => game.id), ["dr1", "dr2x2", "dr2slayhem", "udg", "dr3anime", "v3", "hundredline", "dr2"]);
 assert.equal(definitions.find(game => game.id === "dr3anime").kind, "anime");
 assert.equal(definitions.find(game => game.id === "dr3anime").maxChapter, 24);
 assert.equal(definitions.find(game => game.id === "v3").kind, "killing");
@@ -49,7 +49,7 @@ assert.ok(html.includes('isChapterPredictionLocked(game.kind,trial,animeComplete
 const pickerStart = html.indexOf("function renderGamePicker");
 const pickerEnd = html.indexOf("function showGamePicker", pickerStart);
 const pickerSource = html.slice(pickerStart, pickerEnd);
-assert.ok(pickerSource.includes('mode==="host"?GAME_DEFINITIONS:GAME_DEFINITIONS.filter(game=>isGameUnlocked(game.id))'));
+assert.ok(pickerSource.includes('MAIN_GAME_IDS.map(gameDefinition).filter(game=>mode==="host"||isGameUnlocked(game.id))'));
 assert.match(html, /NEXT KILLING GAME<\/div><h2 id="lockedGameTitle">Next game<\/h2>/);
 assert.ok(html.includes('$("#lockedGameTitle").textContent=nextLocked.title'));
 assert.ok(html.includes("const ANIME_WATCH_ORDER"));
