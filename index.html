@@ -772,7 +772,7 @@ body.mobile-dragging{user-select:none}
 .monopad-section{padding:18px}.monopad-section h2{margin:3px 0 5px}.monopad-dossier-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(210px,100%),1fr));gap:10px;margin-top:15px}
 .dossier-card{display:grid;grid-template-columns:62px minmax(0,1fr);gap:10px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(135deg,rgba(255,255,255,.026),transparent),var(--panel-soft);min-width:0}
 .dossier-card img,.dossier-card .dossier-placeholder{width:62px;height:70px;object-fit:cover;object-position:center top;border-radius:9px;background:#0f1117;border:1px solid rgba(255,255,255,.06)}
-.dossier-card .dossier-placeholder{display:grid;place-items:center;color:var(--muted2);font-weight:950;font-size:1.15rem}.dossier-card-copy{min-width:0}.dossier-card h3{font-size:.8rem;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dossier-card p{font-size:.64rem;color:var(--muted);font-style:italic;margin:3px 0 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dossier-card button{font-size:.63rem;padding:.36rem .5rem;width:100%}
+.dossier-card .dossier-placeholder{display:grid;place-items:center;color:var(--muted2);font-weight:950;font-size:1.15rem}.dossier-card-copy{min-width:0}.profile-art-credit{display:block;margin:5px 0;font-size:.68rem;line-height:1.4;color:var(--muted)}.profile-art-credit a{color:inherit;text-decoration:underline;text-underline-offset:2px}.dossier-card h3{font-size:.8rem;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dossier-card p{font-size:.64rem;color:var(--muted);font-style:italic;margin:3px 0 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dossier-card button{font-size:.63rem;padding:.36rem .5rem;width:100%}
 .monopad-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.monopad-section-head>div{min-width:0}.monopad-section-head button{flex:0 0 auto;font-size:.65rem}.monopad-section-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .recap-feed{display:grid;gap:10px;margin-top:15px}.recap-entry{position:relative;margin:0;padding:13px 13px 13px 16px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.018);color:#d6dbe5;font-size:.76rem;line-height:1.6;overflow-wrap:anywhere}.recap-entry::before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:3px;border-radius:0 3px 3px 0;background:linear-gradient(var(--blue),var(--pink-hot))}.recap-entry.custom::before{background:linear-gradient(var(--gold),var(--pink-hot))}.recap-entry-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}.recap-entry-label{color:var(--blue);font-size:.58rem;font-weight:950;letter-spacing:.1em;text-transform:uppercase}.recap-entry.custom .recap-entry-label{color:var(--gold)}.recap-entry p{margin:0}.recap-entry-actions{display:flex;gap:4px;flex-wrap:wrap}.recap-entry-actions button{padding:.28rem .42rem;font-size:.57rem}.recap-empty{padding:15px;border:1px dashed var(--line);border-radius:11px;color:var(--muted);font-size:.74rem;line-height:1.5}
 #recapManagerDialog{width:min(94vw,860px);max-width:94vw;max-height:94vh;overflow:auto}.recap-manager-card{width:100%}.recap-editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.recap-editor-panel{padding:14px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.018)}.recap-editor-panel h4{margin:0 0 4px}.recap-editor-panel>p{margin:0 0 9px}.recap-editor-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.modal select{display:block;width:100%;margin-top:5px;border:1px solid var(--line);background:#0e1117;color:white;border-radius:10px;padding:10px 11px;outline:none}.recap-manager-list{display:grid;gap:6px;max-height:220px;overflow:auto;margin-top:11px}.recap-manager-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:9px;background:#0e1118}.recap-manager-item strong{display:block;font-size:.69rem}.recap-manager-item small{display:block;color:var(--muted);font-size:.61rem;margin-top:2px}.recap-manager-actions{display:flex;gap:4px}.recap-manager-actions button{padding:.34rem .46rem;font-size:.58rem}.field-help{display:block;margin-top:5px;color:var(--muted);font-size:.65rem;font-weight:500;line-height:1.4}#editDossierBioBtn{margin-top:17px}
@@ -1415,6 +1415,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
             <div><div class="eyebrow">MONOPAD PROFILE</div><h3 id="dossierDialogName">Character</h3></div>
             <button type="button" class="icon-btn" data-close="dossierDialog">×</button>
           </div>
+          <div id="dossierDialogArtCredit"></div>
           <div id="dossierDialogTalent" class="dossier-dialog-talent"></div>
           <div id="dossierDialogBio" class="dossier-dialog-bio"></div><div id="dossierMeasurement" class="report-measurement"></div>
           <button id="editDossierBioBtn" type="button" class="ghost host-only">Edit character description</button>
@@ -1475,7 +1476,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.4.0</span><span class="patch-release-title"><strong>Private previews and a clearer campaign</strong><small>Current release · 27 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.4.1</span><span class="patch-release-title"><strong>More illustrated Monopad files</strong><small>Current release · 27 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note" data-reveal-game="dr2x2"><h4>The remaining character illustrations</h4><p>All eighteen original second-game cast entries now have separate Monopad illustrations, with more distinctive poses and one credited fan illustration. These are existing artworks, with no AI-generated character images. Casting portraits, custom host artwork and first-game image choices are preserved.</p></section>
+            <section class="patch-note"><h4>Discord setup remains paused</h4><p>This update changes the Monopad artwork only. Discord voting activation remains deferred.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.4.0</span><span class="patch-release-title"><strong>Private previews and a clearer campaign</strong><small>Previous release · 27 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Private admin game previews</h4><p>Every game in Admin Tools has a Preview button, including locked games. Try its real board, artwork and panic atmosphere in a temporary copy, then return to the live board. Preview edits do not change shared progress, attendance or player data.</p></section>
             <section class="patch-note"><h4>Campaign order and completion</h4><p>The campaign follows DR1, the two 2×2 routes, Ultra Despair Girls, Danganronpa 3, V3 and The Hundred Line. Original and Slayhem have separate completion switches in one 2×2 card. Ultra Despair Girls and The Hundred Line currently provide empty campaign slots for host-added characters and checkpoint recaps. Legacy DR2 data is retained outside the active order.</p></section>
@@ -1940,7 +1948,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-sync.js?v=20261024-1"></script>
-  <script src="dr2-monopad-art.js?v=20261027"></script>
+  <script src="dr2-monopad-art.js?v=20261027-2"></script>
   <script src="admin-preview-safety.js?v=20261026"></script>
   <script src="voice-clips-v4.js"></script>
   <script src="monopad-data.js?v=4"></script>
@@ -1952,7 +1960,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.27.1";
+  const APP_BUILD = "2026.10.27.2";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -3336,6 +3344,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     return monopadData.profileImages[role.name]||role.image||"";
   }
 
+  function profileArtCreditForRole(role){
+    if(!role||!["dr2","dr2x2","dr2slayhem"].includes(role.gameId))return "";
+    const credit=window.CAST_DR2_MONOPAD_CREDITS?.[role.name];
+    if(!credit||profileImageForRole(role)!==window.CAST_DR2_MONOPAD_ART?.[role.name])return "";
+    return `<small class="profile-art-credit">${esc(credit.label)}: <a href="${esc(credit.url)}" target="_blank" rel="noopener noreferrer">${esc(credit.artist)}</a></small>`;
+  }
+
   function biographyForRole(role){
     if(!role)return "No profile is available yet.";
     if(role.specialRole==="unconfirmed-student")return "Identified as the sixteenth student. Further details have not been confirmed.";
@@ -3403,6 +3418,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     const art=profileImageForRole(role);
     const wrap=$("#dossierDialogArtWrap");
     wrap.innerHTML=art?`<img class="dossier-dialog-art" data-profile-art src="${esc(art)}" alt="Full character artwork of ${esc(role.name)}" referrerpolicy="no-referrer">`:`<div class="dossier-dialog-art dossier-dialog-placeholder">${esc(role.name.slice(0,1).toUpperCase())}</div>`;
+    $("#dossierDialogArtCredit").innerHTML=profileArtCreditForRole(role);
     $("#dossierDialogName").textContent=role.name;
     $("#dossierDialogTalent").textContent=role.title||"Profile";
     $("#dossierDialogBio").textContent=biographyForRole(role);
@@ -3421,7 +3437,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     roles.forEach(role=>{
       const art=profileImageForRole(role);
       const card=document.createElement("article");card.className="dossier-card";
-      card.innerHTML=`${art?`<img data-profile-art src="${esc(art)}" alt="" referrerpolicy="no-referrer">`:`<div class="dossier-placeholder">${esc(role.name.slice(0,1).toUpperCase())}</div>`}<div class="dossier-card-copy"><h3>${esc(role.name)}</h3><p>${esc(role.title||"Profile")}</p><button type="button" class="ghost">Read description</button></div>`;
+      card.innerHTML=`${art?`<img data-profile-art src="${esc(art)}" alt="" referrerpolicy="no-referrer">`:`<div class="dossier-placeholder">${esc(role.name.slice(0,1).toUpperCase())}</div>`}<div class="dossier-card-copy"><h3>${esc(role.name)}</h3><p>${esc(role.title||"Profile")}</p>${profileArtCreditForRole(role)}<button type="button" class="ghost">Read description</button></div>`;
       card.querySelector("button").onclick=()=>openDossier(role);
       attachImageFallback(card,role);
       grid.appendChild(card);
@@ -4438,6 +4454,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       ${canExpand?`
         <div class="role-expanded">
           ${profileArt?`<img class="role-image" data-profile-art src="${esc(profileArt)}" alt="Full character artwork of ${esc(r.name)}" referrerpolicy="no-referrer">`:`<div class="role-image placeholder">No image yet</div>`}
+          ${profileArtCreditForRole(r)}
           <p class="role-biography"><strong>Monopad profile</strong>${esc(biographyForRole(r))}</p>
           ${mode==="host"&&r.modifier?`<div class="role-detail"><strong>Modifier:</strong> ${esc(r.modifier)}</div>`:""}
           ${mode==="host"?`<div class="role-actions">

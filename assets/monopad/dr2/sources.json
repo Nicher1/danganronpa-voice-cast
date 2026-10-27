@@ -1,6 +1,6 @@
 {
-  "description": "Existing character illustrations visually matched to the original poses on the publisher’s 2013 Reload character cards. Original files; no AI generation or editing.",
-  "copyright": "Character artwork © Spike Chunsoft.",
+  "description": "Existing official character illustrations and credited fan artwork. Original downloaded files, without AI generation or editing. Reload illustrations were visually compared with publisher character cards; newer illustrations have their source listed individually.",
+  "copyright": "Danganronpa characters © Spike Chunsoft. Mikan fan illustration credited to Bitikara; remaining artwork from official releases and collaborations.",
   "verified": "2026-10-27",
   "images": [
     {
@@ -68,6 +68,52 @@
       "file": "assets/monopad/dr2/pekoyama.jpg",
       "source": "https://ami.animecharactersdatabase.com/uploads/chars/8148-1796382694.jpg",
       "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_16.png"
+    },
+    {
+      "name": "Kazuichi Soda",
+      "file": "assets/monopad/dr2/souda.png",
+      "source": "https://www.pngfind.com/pngs/b/106-1066409_ainsley-harriott-png.png",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_04.png"
+    },
+    {
+      "name": "Akane Owari",
+      "file": "assets/monopad/dr2/owari.png",
+      "source": "https://pbs.twimg.com/media/FhYs_6uX0Ac9qMC.png",
+      "verifiedAgainst": "https://x.com/danganronpawiki/status/1591511940752605184",
+      "kind": "Danganronpa × Shiro Project:RE collaboration illustration, 2022"
+    },
+    {
+      "name": "Chiaki Nanami",
+      "file": "assets/monopad/dr2/nanami.png",
+      "source": "https://www.pngkit.com/png/full/291-2918551_dr2-chiaki-nanami-danganronpa-2-character-art.png",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_10.png"
+    },
+    {
+      "name": "Mahiru Koizumi",
+      "file": "assets/monopad/dr2/koizumi.png",
+      "source": "https://i.pinimg.com/originals/90/04/ff/9004ff3f2cc2fb8b4ab8d15f92003a4f.png",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_13.png"
+    },
+    {
+      "name": "Mikan Tsumiki",
+      "file": "assets/monopad/dr2/tsumiki.jpg",
+      "source": "https://static.zerochan.net/Tsumiki.Mikan.full.1402867.jpg",
+      "verifiedAgainst": "https://www.zerochan.net/1402867",
+      "artist": "Bitikara",
+      "kind": "Fan illustration",
+      "attributionSource": "https://www.zerochan.net/1402867"
+    },
+    {
+      "name": "Monokuma",
+      "file": "assets/monopad/dr2/monokuma.jpg",
+      "source": "https://www.4gamer.net/games/138/G013812/20120611061/SS/004.jpg",
+      "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_17.png"
+    },
+    {
+      "name": "Monomi",
+      "file": "assets/monopad/dr2/monomi.png",
+      "source": "https://www.spike-chunsoft.co.jp/pages/scps/assets/images/recruit/img_chara05_pc.png",
+      "verifiedAgainst": "https://www.spike-chunsoft.co.jp/pages/scps/danganronpa.html"
     }
   ]
 }
