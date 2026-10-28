@@ -1475,8 +1475,22 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       </div>
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
+        <details class="patch-release">
+          <summary><span class="patch-version">Upcoming</span><span class="patch-release-title"><strong>Discord reminders and fresh schedule cards</strong><small>Prepared locally · bot activation and backend update pending · 28 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Notifications for signed-up players</h4><p>Prepared for bot activation: confirmation and time-change messages, plus a reminder within 30 minutes of the session. The bot will try a DM first and use a targeted channel ping if DMs are blocked.</p></section>
+            <section class="patch-note"><h4>A fresh card after each session</h4><p>Prepared for bot activation: after a session ends, a new schedule card will appear at the bottom of the channel with the saved attendance and linked data. The old bot card will then be removed. These changes are not live yet.</p></section>
+          </div>
+        </details>
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.4.1</span><span class="patch-release-title"><strong>More illustrated Monopad files</strong><small>Current release · 27 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.4.2</span><span class="patch-release-title"><strong>Checkpoint and scoring corrections</strong><small>Current release · 28 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Retained alternate-outcome credits</h4><p>Explicitly awarded character-death credits can remain counted after a character returns to the active cast. Ordinary revival still removes the normal graveyard death count. Saved prediction awards remain separate from current guess markers.</p></section>
+            <section class="patch-note"><h4>Current session checkpoint</h4><p>The shared board and short custom recap now reflect the group's current stopping point, without advancing to the next chapter or revealing later events.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.4.1</span><span class="patch-release-title"><strong>More illustrated Monopad files</strong><small>Previous release · 27 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note" data-reveal-game="dr2x2"><h4>The remaining character illustrations</h4><p>All eighteen original second-game cast entries now have separate Monopad illustrations, with more distinctive poses and one credited fan illustration. These are existing artworks, with no AI-generated character images. Casting portraits, custom host artwork and first-game image choices are preserved.</p></section>
             <section class="patch-note"><h4>Discord setup remains paused</h4><p>This update changes the Monopad artwork only. Discord voting activation remains deferred.</p></section>
@@ -1960,7 +1974,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.27.2";
+  const APP_BUILD = "2026.10.28.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2521,9 +2535,16 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   }
 
   function countRecordedDeathsForActor(board,actorId,gameId=null){
-    return (board.roles||[]).filter(role=>
+    const recorded=(board.roles||[]).filter(role=>
       role.dead&&role.deathRecorded&&role.deathActorId===actorId&&(!gameId||role.gameId===gameId)
     ).length;
+    const alternateCredits=new Set();
+    Object.entries(board.chapterResults||{}).filter(([key])=>!gameId||key.startsWith(`${gameId}:`)).forEach(([key,result])=>{
+      (Array.isArray(result.alternateDeathCredits)?result.alternateDeathCredits:[]).forEach(credit=>{
+        if(credit?.actorId===actorId&&credit.id&&credit.roleId)alternateCredits.add(`${key}:${credit.id}`);
+      });
+    });
+    return recorded+alternateCredits.size;
   }
 
   function synchroniseActorDeathCounts(board=state){
@@ -2676,7 +2697,10 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         blackenedRoleId:String(result.blackenedRoleId||""),
         victimCorrectActorIds:[...new Set(Array.isArray(result.victimCorrectActorIds)?result.victimCorrectActorIds.map(String):[])],
         blackenedCorrectActorIds:[...new Set(Array.isArray(result.blackenedCorrectActorIds)?result.blackenedCorrectActorIds.map(String):[])],
-        hiddenBlackenedCorrectActorIds:[...new Set(Array.isArray(result.hiddenBlackenedCorrectActorIds)?result.hiddenBlackenedCorrectActorIds.map(String):[])]
+        hiddenBlackenedCorrectActorIds:[...new Set(Array.isArray(result.hiddenBlackenedCorrectActorIds)?result.hiddenBlackenedCorrectActorIds.map(String):[])],
+        alternateDeathCredits:(Array.isArray(result.alternateDeathCredits)?result.alternateDeathCredits:[])
+          .filter(credit=>credit&&credit.id&&credit.actorId&&credit.roleId)
+          .map(credit=>({id:String(credit.id),actorId:String(credit.actorId),roleId:String(credit.roleId)}))
       };
     });
     s.chapterResults=cleanedResults;

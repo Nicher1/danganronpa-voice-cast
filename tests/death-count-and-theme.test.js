@@ -37,6 +37,16 @@ board.roles[0].deathActorId = "md";
 helpers.synchroniseActorDeathCounts(board);
 assert.equal(board.actors[0].deathCount, 2, "Recording Hifumi's death again must add one back");
 
+const alternate={id:'alternate-branch',actorId:'md',roleId:'revived'};
+board.roles.push({id:'revived',gameId:'dr1',dead:false,deathRecorded:true,deathActorId:'md'});
+board.chapterResults={'dr1:5':{alternateDeathCredits:[alternate,alternate]}};
+assert.equal(helpers.countRecordedDeathsForActor(board,'md','dr1'),2,'An explicitly awarded alternate ending survives revival and is counted only once');
+assert.equal(helpers.countRecordedDeathsForActor(board,'nicher','dr1'),1,'Alternate credit belongs only to its recorded actor');
+assert.equal(helpers.countRecordedDeathsForActor(board,'md','dr2'),1,'Alternate credit stays in its own game');
+helpers.synchroniseActorDeathCounts(board);
+assert.equal(board.actors[0].deathCount,3);
+assert.equal(helpers.countRecordedDeathsForActor(JSON.parse(JSON.stringify(board)),'md'),3,'Retained credit survives reload');
+
 assert.ok(html.includes('id="uiThemeSelect"'), "Every visitor needs a personal theme selector");
 assert.ok(html.includes('id="defaultThemeSelect"'), "Admin Tools needs a shared default-theme selector");
 assert.ok(html.includes('danganronpa-cast-ui-theme-v1'), "Personal theme preference needs isolated device storage");
