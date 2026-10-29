@@ -790,6 +790,8 @@ body.mobile-dragging{user-select:none}
 .stats-game-row{display:grid;grid-template-columns:minmax(0,1.35fr) repeat(4,minmax(42px,.55fr));gap:5px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.018)}
 .stats-game-row strong{font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stats-game-metric{text-align:center;color:var(--muted);font-size:.57rem;text-transform:uppercase;letter-spacing:.06em}
 .stats-game-metric b{display:block;color:white;font-size:.88rem;letter-spacing:0;margin-top:2px}.stats-game-row.total{border-color:rgba(245,64,148,.35);background:rgba(245,64,148,.045)}
+.stats-game-row.score-editable{grid-template-columns:minmax(30px,.6fr) minmax(32px,.5fr) repeat(2,minmax(60px,1fr)) minmax(36px,.5fr)}
+.score-stepper{display:grid;grid-template-columns:minmax(16px,auto) 24px;gap:4px;align-items:center;width:max-content;margin:4px auto 0}.score-stepper b{margin:0}.score-stepper-actions{display:grid;gap:2px}.score-stepper button{display:grid;place-items:center;width:24px;min-height:24px;padding:0;border-radius:5px;font-size:.9rem;line-height:1}.score-stepper button:disabled{opacity:.3;cursor:default}.score-stepper button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}.score-edit-help{color:var(--muted);font-size:.72rem;margin:0 0 12px}
 .prediction-leaderboard{padding:18px;margin-bottom:16px}.prediction-chart{display:grid;gap:11px;margin-top:16px}
 .prediction-chart-row{display:grid;grid-template-columns:minmax(88px,150px) minmax(180px,1fr) auto;gap:10px;align-items:center}
 .prediction-chart-name{font-size:.74rem;font-weight:950;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.prediction-chart-track{display:flex;height:24px;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:rgba(255,255,255,.018)}
@@ -1483,7 +1485,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           </div>
         </details>
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.4.2</span><span class="patch-release-title"><strong>Checkpoint and scoring corrections</strong><small>Current release · 28 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.4.3</span><span class="patch-release-title"><strong>Host score adjustments</strong><small>Current release · 29 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Adjust Victim and Blackened points</h4><p>Hosts can use + and − beside each player's Victim and Blackened scores in Statistics, separately for each game. Correct totals, charts and leader emblems update automatically. Scores cannot go below zero; death counts remain automatic.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.4.2</span><span class="patch-release-title"><strong>Checkpoint and scoring corrections</strong><small>Previous release · 28 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Retained alternate-outcome credits</h4><p>Explicitly awarded character-death credits can remain counted after a character returns to the active cast. Ordinary revival still removes the normal graveyard death count. Saved prediction awards remain separate from current guess markers.</p></section>
             <section class="patch-note"><h4>Current session checkpoint</h4><p>The shared board and short custom recap now reflect the group's current stopping point, without advancing to the next chapter or revealing later events.</p></section>
@@ -1974,7 +1982,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.28.1";
+  const APP_BUILD = "2026.10.29.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -3271,7 +3279,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     recalculateResult(kind,chapter);
     return true;
   }
-  function predictionCountsForActorGame(actorId,gameId){
+  function predictionScoreAdjustment(actorId,gameId,kind){
+    const value=state.settings.games?.[gameId]?.predictionAdjustments?.[actorId]?.[kind];
+    return Number.isSafeInteger(value)?value:0;
+  }
+  function predictionCountsForActorGame(actorId,gameId,adjusted=true){
     let victim=0,blackened=0,pendingBlackened=0;
     const anime=gameDefinition(gameId).kind==="anime";
     const animeComplete=anime&&!!state.settings.completedGames[gameId];
@@ -3284,8 +3296,29 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         }
       }else if(result.blackenedCorrectActorIds?.includes(actorId))blackened++;
     });
+    if(adjusted){
+      victim=Math.max(0,victim+predictionScoreAdjustment(actorId,gameId,"victim"));
+      const adjustment=predictionScoreAdjustment(actorId,gameId,"blackened");
+      if(anime&&!animeComplete)pendingBlackened=Math.max(0,pendingBlackened+adjustment);
+      else blackened=Math.max(0,blackened+adjustment);
+    }
     const deaths=countRecordedDeathsForActor(state,actorId,gameId);
     return {victim,blackened,pendingBlackened,deaths,total:victim+blackened};
+  }
+  function adjustPredictionScore(actorId,gameId,kind,delta){
+    if(mode!=="host"||!["victim","blackened"].includes(kind)||![-1,1].includes(delta)
+      ||!state.actors.some(actor=>actor.id===actorId)||!availableGameIds().includes(gameId))return false;
+    const pending=kind==="blackened"&&gameDefinition(gameId).kind==="anime"&&!state.settings.completedGames[gameId];
+    const field=pending?"pendingBlackened":kind;
+    const current=predictionCountsForActorGame(actorId,gameId)[field];
+    if(current+delta<0||!Number.isSafeInteger(current+delta))return false;
+    const base=predictionCountsForActorGame(actorId,gameId,false)[field];
+    const settings=state.settings.games[gameId];
+    settings.predictionAdjustments||={};
+    settings.predictionAdjustments[actorId]||={};
+    settings.predictionAdjustments[actorId][kind]=current+delta-base;
+    saveState();render();
+    return true;
   }
   function seriesCountsForActor(actorId){
     const games=availableGameIds().map(gameId=>({gameId,...predictionCountsForActorGame(actorId,gameId)}));
@@ -4189,9 +4222,16 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     });
   }
 
+  function predictionScoreMarkup(actor,gameId,kind,value){
+    if(mode!=="host")return `<b>${value}</b>`;
+    const label=`${actor.name} · ${gameDefinition(gameId).short} · ${kind} points`;
+    const data=`data-score-actor="${esc(actor.id)}" data-score-game="${esc(gameId)}" data-score-kind="${kind}"`;
+    return `<span class="score-stepper"><b>${value}</b><span class="score-stepper-actions"><button type="button" ${data} data-score-delta="1" aria-label="${esc('Add 1 to '+label)}" title="Add 1">+</button><button type="button" ${data} data-score-delta="-1" aria-label="${esc('Subtract 1 from '+label)}" title="Subtract 1" ${value<=0?'disabled':''}>−</button></span></span>`;
+  }
   function renderStatistics(){
     const grid=$("#statsGrid");
     grid.innerHTML="";
+    if(mode==="host")grid.innerHTML='<p class="score-edit-help" style="grid-column:1/-1">Use + / − in each game’s row to adjust Victim or Blackened points. Correct totals update automatically. Deaths are counted automatically.</p>';
     if(!state.actors.length){grid.innerHTML='<div class="panel empty-slot">No actors yet.</div>'}
     state.actors.forEach(actor=>{
       const counts=seriesCountsForActor(actor.id);
@@ -4199,10 +4239,10 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         const game=gameDefinition(item.gameId);
         const animePending=game.kind==="anime"&&!state.settings.completedGames[item.gameId];
         const hiddenNote=mode==="host"&&item.pendingBlackened?`<em class="pending-points">+${item.pendingBlackened} hidden</em>`:"";
-        return `<div class="stats-game-row"><strong title="${esc(game.title)}">${esc(game.short)}</strong>
+        return `<div class="stats-game-row${mode==="host"?' score-editable':''}"><strong title="${esc(game.title)}">${esc(game.short)}</strong>
           <span class="stats-game-metric">Correct<b>${item.total}</b>${hiddenNote}</span>
-          <span class="stats-game-metric">Victim<b>${item.victim}</b></span>
-          <span class="stats-game-metric">Blackened<b>${animePending?"—":item.blackened}</b>${hiddenNote}</span>
+          <span class="stats-game-metric">Victim${predictionScoreMarkup(actor,item.gameId,"victim",item.victim)}</span>
+          <span class="stats-game-metric">Blackened${predictionScoreMarkup(actor,item.gameId,"blackened",animePending?(mode==="host"?item.pendingBlackened:"—"):item.blackened)}${animePending&&mode==="host"?'<em class="pending-points">Hidden until complete</em>':hiddenNote}</span>
           <span class="stats-game-metric">Deaths<b>${item.deaths}</b></span></div>`;
       }).join("");
       const totalHidden=mode==="host"&&counts.totals.pendingBlackened?`<small class="pending-points">(+${counts.totals.pendingBlackened} hidden)</small>`:"";
@@ -4217,6 +4257,12 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         </div>
         <div class="stats-game-list">${gameRows}<div class="stats-game-row total"><strong>ALL SERIES</strong><span class="stats-game-metric">Correct<b>${counts.totals.total}</b>${totalHidden}</span><span class="stats-game-metric">Victim<b>${counts.totals.victim}</b></span><span class="stats-game-metric">Blackened<b>${counts.totals.blackened}</b>${totalHidden}</span><span class="stats-game-metric">Deaths<b>${counts.totals.deaths}</b></span></div></div>`;
       grid.appendChild(card);
+      card.querySelectorAll('[data-score-kind]').forEach(button=>button.addEventListener("click",()=>{
+        const {scoreGame:gameId,scoreKind:kind,scoreDelta:delta}=button.dataset;
+        if(!adjustPredictionScore(actor.id,gameId,kind,Number(delta)))return;
+        const candidates=[...grid.querySelectorAll('[data-score-kind]')].filter(next=>next.dataset.scoreActor===actor.id&&next.dataset.scoreGame===gameId&&next.dataset.scoreKind===kind&&!next.disabled);
+        (candidates.find(next=>next.dataset.scoreDelta===delta)||candidates[0])?.focus({preventScroll:true});
+      }));
     });
     renderPredictionChart();
     renderPopulationChart();
