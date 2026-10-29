@@ -29,6 +29,9 @@
       this.presenceSessionId = this.createPresenceSessionId();
       this.presenceActivityStarted = false;
       this.presenceHeartbeat = null;
+      this.presenceLastSeenAt = 0;
+      this.presenceActivityQueue = Promise.resolve();
+      this.presenceVisible = typeof document === "undefined" || document.visibilityState !== "hidden";
     }
 
     createPresenceSessionId() {
@@ -275,44 +278,94 @@
         });
     }
 
-    async startPresenceActivity() {
-      if (!this.presenceActorId || this.presenceActivityStarted) return false;
+    queuePresenceActivity(action) {
+      const pending = this.presenceActivityQueue.then(action);
+      this.presenceActivityQueue = pending.catch(() => {});
+      return pending;
+    }
+
+    startPresenceActivity() {
+      return this.queuePresenceActivity(() => this.beginPresenceActivity());
+    }
+
+    async beginPresenceActivity() {
+      if (!this.presenceVisible || !this.presenceActorId || this.presenceActivityStarted) return false;
+      const sentAt = Date.now();
+      // An unacknowledged start may still have reached the server. Do not reopen
+      // that same record after a long retry gap.
+      if (this.presenceLastSeenAt && sentAt - this.presenceLastSeenAt >= 90000) {
+        this.retirePresenceActivity(true);
+      }
+      if (!this.presenceHeartbeat) {
+        this.presenceHeartbeat = setInterval(() => {
+          this.touchPresenceActivity(false).catch(error => {
+            console.warn("Presence heartbeat unavailable:", messageOf(error));
+          });
+        }, 30000);
+        this.presenceHeartbeat?.unref?.();
+      }
+      const actorId = this.presenceActorId, sessionId = this.presenceSessionId;
+      this.presenceLastSeenAt ||= sentAt;
       const { error } = await this.client.rpc("cast_presence_start", {
         p_slug: this.slug,
-        p_actor_id: this.presenceActorId,
-        p_session_id: this.presenceSessionId
+        p_actor_id: actorId,
+        p_session_id: sessionId
       });
       if (error) throw error;
+      if (actorId !== this.presenceActorId || sessionId !== this.presenceSessionId) return false;
       this.presenceActivityStarted = true;
-      clearInterval(this.presenceHeartbeat);
-      this.presenceHeartbeat = setInterval(() => {
-        this.touchPresenceActivity(false).catch(error => {
-          console.warn("Presence heartbeat unavailable:", messageOf(error));
-        });
-      }, 30000);
-      this.presenceHeartbeat?.unref?.();
+      this.presenceLastSeenAt = sentAt;
       return true;
     }
 
-    async touchPresenceActivity(ended = false) {
-      if (!this.presenceActorId || !this.presenceActivityStarted) return false;
-      const { error } = await this.client.rpc("cast_presence_touch", {
-        p_slug: this.slug,
-        p_actor_id: this.presenceActorId,
-        p_session_id: this.presenceSessionId,
-        p_ended: !!ended
+    touchPresenceActivity(ended = false) {
+      return this.queuePresenceActivity(async () => {
+        if (!this.presenceActorId) return false;
+        if (!this.presenceActivityStarted) {
+          if (!ended) return this.beginPresenceActivity();
+          this.retirePresenceActivity();
+          return false;
+        }
+        const sentAt = Date.now();
+        // Do not extend an old visit across sleep, offline time or a delayed close.
+        if (sentAt - this.presenceLastSeenAt >= 90000) {
+          this.retirePresenceActivity(!ended);
+          return ended ? true : this.beginPresenceActivity();
+        }
+        try {
+          const { error } = await this.client.rpc("cast_presence_touch", {
+            p_slug: this.slug,
+            p_actor_id: this.presenceActorId,
+            p_session_id: this.presenceSessionId,
+            p_ended: !!ended
+          });
+          if (error) throw error;
+          this.presenceLastSeenAt = sentAt;
+          return true;
+        } finally {
+          // A failed unload still ends locally; the stored last check-in bounds it.
+          if (ended) this.retirePresenceActivity();
+        }
       });
-      if (error) throw error;
-      if (ended) {
+    }
+
+    retirePresenceActivity(keepHeartbeat = false) {
+      if (!keepHeartbeat) {
         clearInterval(this.presenceHeartbeat);
         this.presenceHeartbeat = null;
-        this.presenceActivityStarted = false;
       }
-      return true;
+      this.presenceActivityStarted = false;
+      this.presenceLastSeenAt = 0;
+      this.presenceSessionId = this.createPresenceSessionId();
     }
 
     async endPresenceSession() {
       return this.touchPresenceActivity(true);
+    }
+
+    setPresenceVisibility(visible) {
+      this.presenceVisible = !!visible;
+      return visible ? this.startPresenceActivity() : this.endPresenceSession();
     }
 
     async setPresenceActor(actorId) {

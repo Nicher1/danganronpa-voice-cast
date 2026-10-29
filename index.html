@@ -848,7 +848,7 @@ body.mobile-dragging{user-select:none}
 .activity-panel{padding:17px;overflow:hidden}.activity-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:13px}.activity-panel-head p{margin:0;color:var(--muted);font-size:.7rem;line-height:1.45}.activity-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:14px 0}.activity-metric{padding:9px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.018);color:var(--muted);font-size:.61rem;text-transform:uppercase;letter-spacing:.07em}.activity-metric strong{display:block;margin-top:3px;color:white;font-size:1.05rem;letter-spacing:0;text-transform:none}
 .activity-days{display:grid;gap:8px}.activity-day{padding:10px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.016)}.activity-day-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}.activity-day-head strong{font-size:.72rem}.activity-day-head span{color:var(--muted);font-size:.62rem}
 .activity-timeline{position:relative;height:24px;margin:0 0 5px;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) calc(25% - 1px),rgba(255,255,255,.1) 25%)}.activity-segment{position:absolute;top:5px;height:12px;min-width:3px;border-radius:4px;background:hsl(var(--activity-hue) 82% 61%);box-shadow:0 0 9px hsl(var(--activity-hue) 82% 61% / .34)}.activity-axis{display:grid;grid-template-columns:repeat(5,1fr);color:var(--muted2);font-size:.52rem}.activity-axis span:not(:first-child):not(:last-child){text-align:center}.activity-axis span:last-child{text-align:right}
-.activity-session-list{display:grid;gap:4px;margin-top:8px}.activity-session{display:grid;grid-template-columns:minmax(90px,.8fr) minmax(135px,1.2fr) auto;gap:8px;align-items:center;padding:6px 7px;border-radius:8px;background:#0e1118;color:var(--muted);font-size:.61rem}.activity-session strong{min-width:0;color:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.activity-session strong::before{content:"";display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:hsl(var(--activity-hue) 82% 61%);box-shadow:0 0 7px hsl(var(--activity-hue) 82% 61% / .4)}.activity-session time{font-variant-numeric:tabular-nums}.activity-session .active{color:#bfffdc;font-weight:900}.activity-empty{padding:12px;border:1px dashed var(--line);border-radius:9px;color:var(--muted);font-size:.69rem;line-height:1.5}
+.activity-session-list{display:grid;gap:4px;margin-top:8px}.activity-session{display:grid;grid-template-columns:minmax(90px,.8fr) minmax(135px,1.2fr) auto;gap:8px;align-items:center;padding:6px 7px;border-radius:8px;background:#0e1118;color:var(--muted);font-size:.61rem}.activity-session strong{min-width:0;color:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.activity-session strong::before{content:"";display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:hsl(var(--activity-hue) 82% 61%);box-shadow:0 0 7px hsl(var(--activity-hue) 82% 61% / .4)}.activity-session-range{font-variant-numeric:tabular-nums;line-height:1.6}.activity-session-duration{white-space:nowrap;color:white}.activity-session .active{color:#bfffdc;font-weight:900}.activity-empty{padding:12px;border:1px dashed var(--line);border-radius:9px;color:var(--muted);font-size:.69rem;line-height:1.5}
 .game-state-badge{padding:.28rem .48rem;border-radius:999px;font-size:.58rem;font-weight:950;letter-spacing:.09em;background:rgba(255,255,255,.06);color:var(--muted)}
 .game-state-badge.open{background:rgba(112,184,255,.13);color:#bfe0ff}.game-state-badge.complete{background:rgba(104,220,151,.13);color:#aaf1c6}
 .game-picker-card{width:min(94vw,720px)}
@@ -863,7 +863,7 @@ body.mobile-dragging{user-select:none}
   .stats-game-row{grid-template-columns:minmax(86px,1.2fr) repeat(4,minmax(34px,.55fr));padding:7px 5px}.prediction-chart-row{grid-template-columns:78px minmax(120px,1fr) auto;gap:6px}
   .population-header{flex-direction:column}
   .game-lock-banner,.admin-hero{align-items:flex-start;flex-direction:column}
-  .admin-service-grid{grid-template-columns:1fr}.activity-panel-head{flex-direction:column}.activity-panel-head button{width:100%}.activity-summary{grid-template-columns:1fr}.activity-session{grid-template-columns:1fr auto}.activity-session time{grid-column:1/-1}
+  .admin-service-grid{grid-template-columns:1fr}.activity-panel-head{flex-direction:column}.activity-panel-head button{width:100%}.activity-summary{grid-template-columns:1fr}.activity-session{grid-template-columns:1fr auto}.activity-session-range{grid-column:1/-1;grid-row:2}.activity-session-duration{grid-column:2;grid-row:1}
   .monopad-hero{align-items:flex-start;flex-direction:column}.monopad-layout{grid-template-columns:1fr}.dossier-dialog-body{grid-template-columns:1fr}.dossier-dialog-art{height:310px;min-height:0}.dossier-dialog-copy{padding:17px}
 }
 @media(max-width:350px){
@@ -1385,7 +1385,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         </section>
         <section class="activity-panel panel" style="grid-column:1/-1">
           <div class="activity-panel-head">
-            <div><div class="section-kicker">PRIVATE · MASTER ONLY</div><h3>Last seven days</h3><p>Each visit shows its start, end, and duration. Open sessions update while the actor remains online; an abrupt browser close may round the end to the latest 30-second heartbeat.</p></div>
+            <div><div class="section-kicker">PRIVATE · MASTER ONLY</div><h3>Last seven days</h3><p>Each visit is listed once with its dates and duration. Overlapping connections for the same actor count once. Switching away from the tab ends its visit; returning starts another. A connection gap of 90 seconds also starts a new visit at the next check-in. Older records may include time in background tabs and pauses that cannot be reconstructed.</p></div>
             <button id="refreshActivityBtn" type="button" class="ghost">Refresh activity</button>
           </div>
           <div id="activityOverview"><div class="activity-empty">Activity history will load when the shared database is connected.</div></div>
@@ -1485,7 +1485,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           </div>
         </details>
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.4.3</span><span class="patch-release-title"><strong>Host score adjustments</strong><small>Current release · 29 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.4.4</span><span class="patch-release-title"><strong>Clearer activity sessions</strong><small>Current release · 29 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Dates, durations and separate visits</h4><p>Private admin activity now shows dated start and end times, each visit's duration, and one row per visit across midnight. Overlapping connections for the same actor count once. Updated browsers end visits when the tab is hidden, and start a new visit when it returns or reconnects after a gap of 90 seconds. Older records cannot reveal pauses that were never saved.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.4.3</span><span class="patch-release-title"><strong>Host score adjustments</strong><small>Previous release · 29 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Adjust Victim and Blackened points</h4><p>Hosts can use + and − beside each player's Victim and Blackened scores in Statistics, separately for each game. Correct totals, charts and leader emblems update automatically. Scores cannot go below zero; death counts remain automatic.</p></section>
           </div>
@@ -1969,7 +1975,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js?v=20261024-1"></script>
+  <script src="supabase-sync.js?v=20261029-2"></script>
+  <script src="activity-history.js?v=20261029-2"></script>
   <script src="dr2-monopad-art.js?v=20261027-2"></script>
   <script src="admin-preview-safety.js?v=20261026"></script>
   <script src="voice-clips-v4.js"></script>
@@ -1982,7 +1989,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.29.1";
+  const APP_BUILD = "2026.10.29.2";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2900,22 +2907,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     return (hash+185)%360;
   }
 
-  function activitySessionEnd(session,now=new Date()){
-    const stillOnline=session.is_active===true&&onlineActorIds.has(String(session.actor_id));
-    const recorded=new Date(session.ended_at||session.last_seen_at||session.started_at);
-    return {date:stillOnline?now:recorded,stillOnline};
-  }
-
   function activityClock(date){
-    return date.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+    return date.toLocaleTimeString("en-GB", {hour:"2-digit",minute:"2-digit",hourCycle:"h23"});
   }
 
-  function activityDuration(start,end){
-    const minutes=Math.max(0,Math.round((end-start)/60000));
-    if(minutes<1)return "under 1m";
-    const hours=Math.floor(minutes/60),rest=minutes%60;
-    return hours?`${hours}h${rest?` ${rest}m`:""}`:`${rest}m`;
-  }
+  const activityDuration=window.CastActivityHistory.duration;
 
   function renderActivityOverview(){
     if(mode!=="host")return;
@@ -2939,46 +2935,31 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     }
 
     const now=new Date();
-    const dayStarts=Array.from({length:7},(_,index)=>{
-      const date=new Date(now);date.setHours(0,0,0,0);date.setDate(date.getDate()-index);return date;
-    });
-    const validSessions=presenceActivity.filter(session=>{
-      const start=new Date(session.started_at);
-      return Number.isFinite(start.getTime());
-    });
-    const totalMinutes=validSessions.reduce((sum,session)=>{
-      const start=new Date(session.started_at),end=activitySessionEnd(session,now).date;
-      return sum+Math.max(0,(end-start)/60000);
-    },0);
-    const uniqueActors=new Set(validSessions.map(session=>String(session.actor_id))).size;
-    const days=dayStarts.map((dayStart,index)=>{
-      const dayEnd=new Date(dayStart);dayEnd.setDate(dayEnd.getDate()+1);
-      const sessions=validSessions.filter(session=>{
-        const start=new Date(session.started_at),end=activitySessionEnd(session,now).date;
-        return start<dayEnd&&end>=dayStart;
-      }).sort((a,b)=>new Date(a.started_at)-new Date(b.started_at));
-      const dayLabel=index===0?"Today":dayStart.toLocaleDateString([], {weekday:"long",month:"short",day:"numeric"});
-      const segments=sessions.map(session=>{
-        const originalStart=new Date(session.started_at);
-        const {date:originalEnd,stillOnline}=activitySessionEnd(session,now);
-        const start=new Date(Math.max(originalStart,dayStart));
-        const end=new Date(Math.min(originalEnd,dayEnd));
-        const left=Math.max(0,Math.min(100,(start-dayStart)/86400000*100));
-        const width=Math.max(.22,Math.min(100-left,(end-start)/86400000*100));
-        const actor=actorById(session.actor_id);
-        const title=`${actor?.name||"Deleted actor"}: ${activityClock(originalStart)}–${stillOnline?"now":activityClock(originalEnd)} (${activityDuration(originalStart,originalEnd)})`;
-        return `<i class="activity-segment" style="left:${left.toFixed(3)}%;width:${width.toFixed(3)}%;--activity-hue:${activityHue(session.actor_id)}" title="${esc(title)}"></i>`;
+    const windowStart=new Date(now);windowStart.setHours(0,0,0,0);windowStart.setDate(windowStart.getDate()-6);
+    const visits=window.CastActivityHistory.visits(presenceActivity,{now:+now,onlineActorIds,windowStart:+windowStart});
+    const totalTime=visits.reduce((sum,visit)=>sum+Math.max(0,visit.end-Math.max(visit.start,+windowStart)),0);
+    const uniqueActors=new Set(visits.map(visit=>visit.actor_id)).size;
+    const stamp=value=>window.CastActivityHistory.timestamp(value,now);
+    const days=window.CastActivityHistory.days(visits,now).map((day,index)=>{
+      const {date:dayStart,start:dayStartMs,end:dayEndMs,sessions,segments:dayVisits,continuing}=day;
+      const dayLabel=index===0?"Today":index===1?"Yesterday":dayStart.toLocaleDateString("en-GB", {weekday:"long",month:"short",day:"numeric"});
+      const segments=dayVisits.map(visit=>{
+        const start=Math.max(visit.start,dayStartMs),end=Math.min(visit.end,dayEndMs);
+        const dayLength=dayEndMs-dayStartMs;
+        const left=Math.max(0,Math.min(100,(start-dayStartMs)/dayLength*100));
+        const width=Math.max(.22,Math.min(100-left,(end-start)/dayLength*100));
+        const actor=actorById(visit.actor_id);
+        const title=`${actor?.name||"Deleted actor"}: ${stamp(visit.start)} – ${visit.active?"now":stamp(visit.end)} (${activityDuration(visit.start,visit.end)})`;
+        return `<i class="activity-segment" style="left:${left.toFixed(3)}%;width:${width.toFixed(3)}%;--activity-hue:${activityHue(visit.actor_id)}" title="${esc(title)}"></i>`;
       }).join("");
-      const rows=sessions.length?sessions.map(session=>{
-        const start=new Date(session.started_at);
-        const {date:end,stillOnline}=activitySessionEnd(session,now);
-        const actor=actorById(session.actor_id);
-        return `<div class="activity-session" style="--activity-hue:${activityHue(session.actor_id)}"><strong>${esc(actor?.name||"Deleted actor")}</strong><time>${activityClock(start)}–${stillOnline?'<span class="active">now</span>':activityClock(end)}</time><span>${activityDuration(start,end)}</span></div>`;
-      }).join(""):'<div class="activity-empty">No visits recorded.</div>';
-      return `<section class="activity-day"><div class="activity-day-head"><strong>${esc(dayLabel)}</strong><span>${sessions.length} ${sessions.length===1?"visit":"visits"}</span></div><div class="activity-timeline">${segments}</div><div class="activity-axis"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div><div class="activity-session-list">${rows}</div></section>`;
+      const rows=sessions.length?sessions.map(visit=>{
+        const actor=actorById(visit.actor_id);
+        return `<div class="activity-session" style="--activity-hue:${activityHue(visit.actor_id)}"><strong>${esc(actor?.name||"Deleted actor")}</strong><span class="activity-session-range"><time datetime="${new Date(visit.start).toISOString()}">${esc(stamp(visit.start))}</time> – ${visit.active?'<span class="active">now</span>':`<time datetime="${new Date(visit.end).toISOString()}">${esc(stamp(visit.end))}</time>`}</span><span class="activity-session-duration">${activityDuration(visit.start,visit.end)}</span></div>`;
+      }).join(""):`<div class="activity-empty">${continuing?"Continuing visits are listed once under their start day below.":"No visits recorded."}</div>`;
+      return `<section class="activity-day"><div class="activity-day-head"><strong>${esc(dayLabel)}</strong><span>${sessions.length} ${sessions.length===1?"visit":"visits"}${continuing?` · ${continuing} continuing`:""}</span></div><div class="activity-timeline">${segments}</div><div class="activity-axis"><span>00</span><span>06</span><span>12</span><span>18</span><span>24</span></div><div class="activity-session-list">${rows}</div></section>`;
     }).join("");
     const loaded=presenceActivityLoadedAt?` · updated ${activityClock(new Date(presenceActivityLoadedAt))}`:"";
-    root.innerHTML=`<div class="activity-summary"><div class="activity-metric">Visits<strong>${validSessions.length}</strong></div><div class="activity-metric">Actors<strong>${uniqueActors}</strong></div><div class="activity-metric">Open time<strong>${activityDuration(0,totalMinutes*60000)}</strong></div></div><div class="activity-days">${days}</div><div class="database-check-result">Times use this device’s time zone${loaded}.</div>`;
+    root.innerHTML=`<div class="activity-summary"><div class="activity-metric">Visits<strong>${visits.length}</strong></div><div class="activity-metric">Actors<strong>${uniqueActors}</strong></div><div class="activity-metric">Open time<strong>${activityDuration(0,totalTime)}</strong></div></div><div class="activity-days">${days}</div><div class="database-check-result">Times use this device’s time zone${loaded}.</div>`;
   }
 
   async function loadPresenceActivity({quiet=false}={}){
@@ -5775,8 +5756,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     }
   };
 
-  window.addEventListener("pagehide",event=>{
-    if(!event.persisted)remoteSync?.endPresenceSession?.().catch(()=>{});
+  document.addEventListener("visibilitychange",()=>{
+    remoteSync?.setPresenceVisibility?.(document.visibilityState!=="hidden").catch(()=>{});
+  });
+  window.addEventListener("pagehide",()=>{
+    remoteSync?.setPresenceVisibility?.(false).catch(()=>{});
+  });
+  window.addEventListener("pageshow",()=>{
+    remoteSync?.setPresenceVisibility?.(document.visibilityState!=="hidden").catch(()=>{});
   });
 
   function publicModeUrl(targetMode,destination=""){
