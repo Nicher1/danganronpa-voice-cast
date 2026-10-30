@@ -1,6 +1,14 @@
 /* Layout fixes apply to each theme, including narrow panels in wide windows. */
-.topbar{flex-wrap:wrap}.original-brand-shell{flex:0 1 360px}.top-actions{flex:1 1 520px}
+.topbar{flex-wrap:wrap}.original-brand-shell{flex:0 1 360px}.board-options{flex:0 1 520px;width:100%}
+.board-options>summary{padding:12px 14px;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);cursor:pointer;font-size:.85rem;font-weight:750}
+.board-options>summary:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.board-options[open]>.top-actions{margin-top:12px}
+html[data-ui-theme="reworked"] .topbar::before{pointer-events:none}
 .brand-mark{flex-shrink:0}.brand-row h1{overflow-wrap:normal;font-size:clamp(29px,3.2vw,43px)}
+/* Flex bases describe widths only while the header runs horizontally. */
+@media(max-width:1020px){
+  .original-brand-shell,.board-options,.top-actions{flex:0 1 auto;width:100%}
+}
 .monopad-section-head{display:flex;flex-wrap:wrap;align-items:flex-start;gap:16px 24px}
 .monopad-section-head>div:first-child{flex:1 1 300px;min-width:0;max-width:100%}
 .monopad-section-head>.monopad-section-actions{flex:0 1 320px;min-width:0;max-width:100%;justify-content:flex-start}

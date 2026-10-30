@@ -4,8 +4,7 @@
     const P=window.CastSessionPlanner,root=document.querySelector('#sessionPlanner'),dialog=document.querySelector('#scheduleDialog');
     let plan=P.normalise(options.load()||(options.local()?null:{sessions:[],votes:{},times:{},notices:[],records:{}})),ahead=false,selectedDate=P.day(),month=P.day().slice(0,7),editingId='',hostActor='',viewWeek='',lastPhase='',busy=false,historyOpen=false;
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    let collapsed=false,focusedDate='';
-    try{collapsed=localStorage.getItem('danganronpa-schedule-collapsed')==='true';}catch(_){}
+    let focusedDate='';
     const names=()=>Object.fromEntries(options.actors().map(a=>[a.id,a.name]));
     const isHost=()=>options.mode()==='host';
     const canUse=()=>options.local()||!!options.store?.ready;
@@ -33,7 +32,7 @@
     function vote(date,actorId,offset,available){if(!actorId)return options.toast('Choose your voice actor first.');act('vote',{date,actorId,offset,available});}
     function votersHtml(date){const ns=names();return P.voters(plan,date,options.actors()).map(v=>`<span class="schedule-person">${esc(ns[v.actorId])}${v.offset?` <small>${P.label(v.offset)}</small>`:''}</span>`).join('')||'<small class="muted">No replies yet</small>';}
     function controls(date){const actorId=isHost()?hostActor:options.actorId(),v=plan.votes[date]?.[actorId];if(options.mode()==='viewer'||!canUse())return '';
-      if(!actorId)return isHost()?'':'<button type="button" data-vote-login>Choose your voice actor to vote</button>';
+      if(!actorId)return '';
       return `<div class="vote-controls"><button data-vote="${date}" aria-pressed="${!!v?.available}">${v?.available?'✓ Available':'I can play'}</button><button data-no="${date}" aria-pressed="${v?.available===false}">Cannot attend</button>${v?.available?`<div class="vote-offset"><button data-offset="${date}|-15" aria-label="15 minutes earlier on ${date}">−15</button><output>${P.label(v.offset)}</output><button data-offset="${date}|15" aria-label="15 minutes later on ${date}">+15</button></div>`:''}</div>`;}
     function bindVotes(scope){
       scope.querySelectorAll('[data-vote-login]').forEach(b=>b.onclick=()=>options.login?.());
@@ -46,12 +45,35 @@
     function hostSelector(){if(!isHost()||!canUse())return '';return `<label class="schedule-assign">Reply on behalf of <select data-host-actor aria-label="Voice actor to assign"><option value="">Choose voice actor</option>${options.actors().map(a=>`<option value="${esc(a.id)}" ${hostActor===a.id?'selected':''}>${esc(a.name)}</option>`).join('')}</select></label>`;}
     function poll(week){const today=P.day();return `<div class="schedule-week">${Array.from({length:7},(_,i)=>{const date=P.addDays(week,i),disabled=P.weekday(date)===2||date<today,count=P.voters(plan,date,options.actors()).length,v=plan.votes[date]?.[isHost()?hostActor:options.actorId()];return `<article class="schedule-day ${disabled?'unavailable':''} ${v?.available?'chosen':''}" data-drop-day="${date}"><span class="attendance-count" aria-label="${count} available">${count}</span><h4>${dateLabel(date)}</h4><p>${localTime(P.instant(date,plan.times[date]||'19:00'))}</p>${P.weekday(date)===2?'<strong class="day-cross" aria-label="Tuesday unavailable">×</strong><small>Tuesday is unavailable</small>':`${votersHtml(date)}${disabled?'':controls(date)}`}${isHost()&&canUse()&&!disabled?`<button class="ghost" data-pick="${date}">Schedule this day</button>`:''}</article>`;}).join('')}</div>`;}
     function bindPick(scope){scope.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{selectedDate=b.dataset.pick;month=selectedDate.slice(0,7);editingId='';renderDialog();if(!dialog.open)dialog.showModal();});}
+    function canCountDown(session,now){
+      if(session.source!=='poll')return true;
+      // An automatic booking must not turn a vote tie into a countdown.
+      return P.likelySession(plan,P.monday(P.day(session.startAt)),options.actors(),now)?.date===P.day(session.startAt);
+    }
+    function renderBanner(now,active,next){
+      const banner=document.querySelector('#nextSessionBanner');if(!banner)return;
+      const leaders=!active&&!next&&canUse()?P.likelySessions(plan,P.pollWeek(plan,now),options.actors(),now):[];
+      const likely=leaders.length===1?leaders[0]:null;
+      let state='unplanned',title='Next session not planned yet',copy='Head to Schedule to fill in the days you can play.',action='Fill in your days';
+      if(!canUse()){state='unavailable';title='Schedule unavailable';copy='Reconnecting to the shared schedule. Open Schedule to check its status.';action='Open Schedule';}
+      else if(active){state='active';title=active.breaks.some(b=>!b.endAt)?'Session in progress · on a break':'Session in progress';copy=`Started ${localDate(active.startAt)}.`;action='View session';}
+      else if(next){state='confirmed';title=`Next session · ${localDate(next.startAt)}`;copy='Confirmed · check Schedule to update your attendance.';action='View / update attendance';}
+      else if(likely){state='likely';title=`Likely session · ${localDate(likely.startAt)}`;copy=`${likely.count} ${likely.count===1?'person':'people'} available · this day leads this planning week. Not confirmed yet. Average arrival rounded down to 15 minutes.`;action='View / update your days';}
+      else if(leaders.length>1){state='tied';title=`Next session is either ${new Intl.ListFormat(undefined,{type:'disjunction'}).format(leaders.map(candidate=>localDate(candidate.startAt)))}`;copy=`${leaders[0].count} people available on each of these days · tied for the lead. Not confirmed yet. Head to Schedule to update your days.`;action='View / update your days';}
+      const countdownAt=state==='confirmed'&&canCountDown(next,now)?next.startAt:state==='likely'?likely.startAt:null;
+      const countdown=countdownAt?`<p><time data-countdown-at="${countdownAt}" datetime="${countdownAt}">${state==='likely'?'Estimated start':'Starts'} in ${timeLabel(Date.parse(countdownAt)-now)}</time></p>`:'';
+      const content=`<div><div class="section-kicker">${state==='likely'?'LIKELY · NOT CONFIRMED':state==='tied'?'TIED DAYS · NOT CONFIRMED':state==='confirmed'?'CONFIRMED SESSION':'NEXT SESSION'}</div><h2>${esc(title)}</h2><p>${esc(copy)}</p>${countdown}</div><a class="button" href="#schedule">${action}</a>`;
+      if(banner.innerHTML!==content)banner.innerHTML=content;
+      banner.dataset.sessionState=state;
+      banner.querySelector('a').onclick=e=>{e.preventDefault();const url=new URL(location.href);url.hash='schedule';url.searchParams.delete('scheduleDate');history.replaceState(null,'',url);openVoting();};
+    }
     function render(){
       if(busy)return;busy=true;
       const now=Date.now(),active=P.current(plan,now),next=P.upcoming(plan,now),phase=active?'active':'planning';
       if(lastPhase==='active'&&phase==='planning'){ahead=false;viewWeek='';}lastPhase=phase;
       const elapsed=active?now-Date.parse(active.startAt):0;
-      let headline=active?(elapsed<5*P.MIN?'DANGANRONPA NOW':`Current session began ${timeLabel(elapsed)} ago`):next?`Next Danganronpa in ${timeLabel(Date.parse(next.startAt)-now)}`:'Choose our next Danganronpa day';
+      renderBanner(now,active,next);
+      let headline=active?(elapsed<5*P.MIN?'DANGANRONPA NOW':`Current session began ${timeLabel(elapsed)} ago`):next?(canCountDown(next,now)?`Next Danganronpa in ${timeLabel(Date.parse(next.startAt)-now)}`:'Next planned session'):'Which days can you play?';
       const attendance=next&&!active?dayVotes(next):'';
       const week=viewWeek||P.pollWeek(plan,now,ahead);
       root.innerHTML=`<header class="schedule-heading"><div><div class="section-kicker">SESSION SCHEDULE</div><h2 class="${active&&elapsed<5*P.MIN?'session-now':''}">${headline}</h2><p>${active?localDate(active.startAt):next?localDate(next.startAt):`Vote for the days you can play. Default: ${localTime(P.instant(week<P.day()?P.day():week))}.`}</p>${active?.breaks.some(b=>!b.endAt)?'<span class="case-status">ON A BREAK</span>':''}</div><div class="schedule-actions">${isHost()&&canUse()?'<button data-open-schedule>Set / adjust schedule</button>':''}${active&&isHost()&&canUse()?`<button data-break>${active.breaks.some(b=>!b.endAt)?'Resume session':'Pause session'}</button><button data-end>End current session</button>`:''}${next&&!active?`<button data-ahead>${ahead?'Back to next session':'Plan ahead'}</button>`:''}<button data-history>Session statistics</button></div></header>${attendance}<small class="schedule-local" role="status" data-shared-revision="${options.store?.row?.revision||''}">${options.local()?'Schedule saved on this device · preview':esc(options.store?.status||'Shared schedule unavailable')}</small>
@@ -64,26 +86,12 @@
         shareButton.onclick=()=>options.copyVotingLink(focusedDate||(next?P.day(next.startAt):''));
         heading.querySelector('.schedule-actions').append(shareButton);
       }
-      const body=document.createElement('div');
-      body.id='sessionScheduleBody';
-      while(heading.nextSibling)body.append(heading.nextSibling);
-      root.append(body);
-      const collapseButton=document.createElement('button');
-      collapseButton.type='button';
-      collapseButton.className='schedule-collapse';
-      collapseButton.setAttribute('aria-controls',body.id);
-      heading.append(collapseButton);
-      function applyCollapsed(){
-        body.hidden=collapsed;
-        heading.querySelector('.schedule-actions').hidden=collapsed;
-        collapseButton.setAttribute('aria-expanded',String(!collapsed));
-        collapseButton.textContent=collapsed?'Expand schedule':'Collapse schedule';
+      const help=document.createElement('p');help.className='schedule-help';
+      help.textContent=options.mode()==='viewer'?'See who can play and when. Open a player link to add your availability.':'Choose every day you can play. Use −15 / +15 for earlier or later arrival. Your replies save automatically. Times are shown in your local timezone.';
+      heading.after(help);
+      if(options.mode()==='player'&&!options.actorId()&&canUse()){
+        const login=document.createElement('button');login.type='button';login.className='primary';login.dataset.voteLogin='';login.textContent='Choose your voice actor to vote';help.after(login);
       }
-      applyCollapsed();
-      collapseButton.onclick=()=>{
-        collapsed=!collapsed;applyCollapsed();
-        try{localStorage.setItem('danganronpa-schedule-collapsed',String(collapsed));}catch(_){}
-      };
       root.querySelector('[data-open-schedule]')?.addEventListener('click',()=>{renderDialog();dialog.showModal();});
       root.querySelector('[data-break]')?.addEventListener('click',()=>act(active.breaks.some(b=>!b.endAt)?'resume':'break',{}));
       root.querySelector('[data-end]')?.addEventListener('click',()=>act('end',{}));
@@ -118,11 +126,12 @@
     }
     function tick(){if(isHost()&&options.local()&&P.reconcile(plan,options.actors()))save();render();}
     function openVoting(date=''){
+      options.openSchedule?.();
       focusedDate='';
       if(/^\d{4}-\d{2}-\d{2}$/.test(date)){
         try{P.instant(date);focusedDate=date;}catch(_){}
       }
-      collapsed=false;
+      ahead=false;viewWeek='';
       if(focusedDate){ahead=true;viewWeek=P.monday(focusedDate);}
       render();
       requestAnimationFrame(()=>{

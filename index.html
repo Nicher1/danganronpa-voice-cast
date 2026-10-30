@@ -1055,8 +1055,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 </style>
 <link rel="stylesheet" href="finale.css?v=20261021-dark">
 <link rel="stylesheet" href="island-skin.css?v=20261025">
-<link rel="stylesheet" href="slayhem-and-layout.css?v=20261026">
-<link rel="stylesheet" href="session-planner.css?v=20261022">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261030">
+<link rel="stylesheet" href="session-planner.css?v=20261030">
 </head>
 <body>
   <header class="topbar">
@@ -1095,6 +1095,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <div id="reworkedSessionLine" class="reworked-session"></div>
     </div>
 
+    <details class="board-options">
+      <summary>Game, appearance &amp; account</summary>
     <div class="top-actions">
       <span id="modeBadge" class="badge">HOST</span>
       <span id="syncStatus" class="badge sync working">CONNECTING</span>
@@ -1121,7 +1123,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <label class="button ghost host-only" for="importInput">Import</label>
       <input id="importInput" type="file" accept=".json,application/json" hidden>
     </div>
+    </details>
   </header>
+
+  <section id="nextSessionBanner" class="next-session-banner" aria-label="Next session">
+    <div><div class="section-kicker">NEXT SESSION</div><h2>Loading the schedule…</h2></div>
+    <a class="button" href="#schedule">Open Schedule</a>
+  </section>
 
   <div id="themeProgress" class="theme-progress" aria-label="Current story progress">
     <strong id="themeProgressLabel">CH. 01 · PRE-TRIAL</strong>
@@ -1131,26 +1139,30 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <div id="adminPreviewBanner" class="admin-preview-banner" hidden><div><strong>ADMIN PREVIEW</strong><span>Only this tab. Changes are temporary; players and shared progress are unaffected.</span></div><a id="leaveAdminPreview" href="?host=11037">Return to live board</a></div>
   <div class="panic-atmosphere" role="status"><strong>PANIC MODE / STAY SHARP</strong><span>Keep your head. Keep investigating.</span></div>
-  <section id="finaleStage" class="finale-stage" aria-label="Killing game atmosphere"></section>
   <main class="app-shell">
-    <section id="lockedGameBanner" class="game-lock-banner hidden" aria-label="Locked game">
-      <div class="game-lock-copy">
-        <span class="game-lock-icon">🔒</span>
-        <div><div class="section-kicker">NEXT KILLING GAME</div><h2 id="lockedGameTitle">Next game</h2><p id="lockedGameCopy">The next board remains locked until the host unlocks it.</p></div>
-      </div>
-      <button id="lockedGameAdminBtn" class="ghost host-only">Open Admin Tools</button>
-    </section>
-    <section id="sessionPlanner" class="session-planner" aria-label="Session schedule"></section>
     <dialog id="scheduleDialog"></dialog>
-    <nav class="tabs">
+    <nav class="tabs" aria-label="Board sections">
       <button class="tab active" data-tab="casting"><span class="tab-icon">◆</span> Assignments</button>
+      <button class="tab" data-tab="schedule"><span class="tab-icon">▦</span> Schedule</button>
       <button class="tab" data-tab="memorial"><span class="tab-icon">☠</span> Memorial <span id="deadCount" class="counter">0</span></button>
       <button class="tab" data-tab="statistics"><span class="tab-icon">▥</span> Statistics</button>
       <button class="tab" data-tab="monopad"><span class="tab-icon">◈</span> Monopad</button>
       <button class="tab host-only" data-tab="admin"><span class="tab-icon">⚙</span> Admin Tools</button>
     </nav>
 
+    <section id="scheduleTab" class="tab-panel" aria-label="Schedule">
+      <section id="sessionPlanner" class="session-planner" aria-label="Session schedule"></section>
+    </section>
+
     <section id="castingTab" class="tab-panel active">
+      <section id="lockedGameBanner" class="game-lock-banner hidden" aria-label="Locked game">
+        <div class="game-lock-copy">
+          <span class="game-lock-icon">🔒</span>
+          <div><div class="section-kicker">NEXT KILLING GAME</div><h2 id="lockedGameTitle">Next game</h2><p id="lockedGameCopy">The next board remains locked until the host unlocks it.</p></div>
+        </div>
+        <button id="lockedGameAdminBtn" class="ghost host-only">Open Admin Tools</button>
+      </section>
+      <section id="finaleStage" class="finale-stage" aria-label="Killing game atmosphere"></section>
       <details id="castingControls" class="casting-controls" open>
         <summary><strong>Casting controls</strong><span>Actors, characters and chapter settings</span></summary>
       <div class="control-strip">
@@ -1477,6 +1489,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       </div>
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
+        <details class="patch-release" open>
+          <summary><span class="patch-version">V1.5.0</span><span class="patch-release-title"><strong>Clearer scheduling and phone layouts</strong><small>Current release · 30 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Session summary above, planning in Schedule</h4><p>A compact banner shows the next confirmed session, a clearly labelled likely date, or an invitation to fill in your days. Schedule is the second tab; Discord voting links open it directly, including the linked day. Voting, attendance and host scheduling stay together there.</p></section>
+            <section class="patch-note"><h4>Likely dates need at least three votes</h4><p>A leading day needs three or more available voters. Two or three days tied for the lead appear as alternatives, without a countdown; four or more tied days stay undecided. Estimated arrival times average the available voters and round down to the nearest quarter hour. Countdowns appear only for a single likely date or a confirmed session. These estimates do not book sessions.</p></section>
+            <section class="patch-note"><h4>Less clutter on phones and computers</h4><p>Game, appearance and account controls are grouped in an expandable menu. Fixed-height gaps in the phone header are removed, and game artwork and locked-game notices stay on Assignments. Scheduling has clearer instructions and larger phone controls.</p></section>
+          </div>
+        </details>
         <details class="patch-release">
           <summary><span class="patch-version">Upcoming</span><span class="patch-release-title"><strong>Discord reminders and fresh schedule cards</strong><small>Prepared locally · bot activation and backend update pending · 28 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
@@ -1485,7 +1505,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           </div>
         </details>
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.4.4</span><span class="patch-release-title"><strong>Clearer activity sessions</strong><small>Current release · 29 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.4.4</span><span class="patch-release-title"><strong>Clearer activity sessions</strong><small>Previous release · 29 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Dates, durations and separate visits</h4><p>Private admin activity now shows dated start and end times, each visit's duration, and one row per visit across midnight. Overlapping connections for the same actor count once. Updated browsers end visits when the tab is hidden, and start a new visit when it returns or reconnects after a gap of 90 seconds. Older records cannot reveal pauses that were never saved.</p></section>
           </div>
@@ -1983,13 +2003,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script src="monopad-data.js?v=4"></script>
   <script src="endgame-data.js?v=20261007"></script>
   <script src="unconfirmed-student.js?v=20261022"></script>
-  <script src="session-planner.js?v=20261021-2"></script>
+  <script src="session-planner.js?v=20261030"></script>
   <script src="session-planner-store.js?v=20261021-2"></script>
-  <script src="session-planner-ui.js?v=20261023-2"></script>
+  <script src="session-planner-ui.js?v=20261030"></script>
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.29.2";
+  const APP_BUILD = "2026.10.30.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -5702,20 +5722,30 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   $("#cancelCustomRecapEditBtn").onclick=()=>resetCustomRecapForm();
 
   function activateTab(tabName){
-    $$(".tab").forEach(button=>button.classList.toggle("active",button.dataset.tab===tabName));
+    $$(".tab").forEach(button=>{button.classList.toggle("active",button.dataset.tab===tabName);if(button.dataset.tab===tabName)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current");});
     $$(".tab-panel").forEach(panel=>panel.classList.toggle("active",panel.id===`${tabName}Tab`));
     if(tabName==="admin"&&remoteReady&&!presenceActivityLoading&&Date.now()-presenceActivityLoadedAt>60000){
       loadPresenceActivity({quiet:true});
     }
   }
-  $$(".tab").forEach(btn=>btn.onclick=()=>activateTab(btn.dataset.tab));
+  $$(".tab").forEach(btn=>btn.onclick=()=>{
+    activateTab(btn.dataset.tab);
+    const url=new URL(location.href);url.hash=btn.dataset.tab==="casting"?"":btn.dataset.tab;
+    if(btn.dataset.tab!=="schedule")url.searchParams.delete("scheduleDate");
+    history.replaceState(null,"",url);
+  });
 
   function applyDeepLinkRoute(){
     const route=location.hash.toLowerCase();
     if(route==="#schedule"){
       gamePickerShown=true;
+      activateTab("schedule");
       sessionPlanner?.openVoting(new URLSearchParams(location.search).get("scheduleDate")||"");
       return true;
+    }
+    if(["#casting","#memorial","#statistics","#admin"].includes(route)){
+      if(route==="#admin"&&mode!=="host")return false;
+      activateTab(route.slice(1));return true;
     }
     if(route!=="#monopad"&&route!==PLAYER_RECAP_HASH)return false;
     activateTab("monopad");
@@ -5833,7 +5863,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     sessionPlanner=window.mountSessionPlanner({
       load:()=>{try{return isLocalPreview||isAdminPreview?JSON.parse(localStorage.getItem("danganronpa-session-planner-v1")):scheduleStore?.state}catch(_){return null}},
       save:value=>{if(!isAdminPreview)localStorage.setItem("danganronpa-session-planner-v1",JSON.stringify(value))},
-      store:scheduleStore,actors:()=>state.actors,mode:()=>isAdminPreview||!isLocalPreview&&!remoteReady?"viewer":mode,actorId:()=>activeActorId,local:()=>isLocalPreview||isAdminPreview,toast,login:()=>beginLogin(),copyVotingLink
+      store:scheduleStore,actors:()=>state.actors,mode:()=>isAdminPreview||!isLocalPreview&&!remoteReady?"viewer":mode,actorId:()=>activeActorId,local:()=>isLocalPreview||isAdminPreview,toast,login:()=>beginLogin(),copyVotingLink,openSchedule:()=>activateTab("schedule")
     });
   }
 

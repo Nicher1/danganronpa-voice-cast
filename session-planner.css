@@ -2,4 +2,27 @@
 #scheduleDialog{width:min(1100px,96vw);max-width:96vw;max-height:94dvh;padding:0;overflow:auto}#scheduleDialog .schedule-editor{width:100%;max-width:none}.month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.month-grid>strong{text-align:center;font-size:.7rem;padding:8px}.calendar-day{position:relative;border-radius:3px;min-height:50px;padding:10px;font-size:.9rem}.calendar-day.current-week{background:#77bddd20}.calendar-day.week-remaining{border-color:#409eb9}.calendar-day.today{outline:2px solid var(--pink);outline-offset:-3px}.calendar-day.selected{background:var(--pink);color:#fff}.calendar-day.other-month{opacity:.5}.calendar-cross{position:absolute;color:#ed2374;font:bold 38px/1 sans-serif;inset:2px;pointer-events:none}.calendar-dot{color:#ed2374;font-size:9px;position:absolute;bottom:3px;right:5px}.calendar-day:disabled{opacity:.5}#scheduleForm{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin:18px 0}#scheduleForm label{font-size:.8rem;display:grid;gap:5px}#scheduleForm input{padding:9px;max-width:100%;color-scheme:dark}.scheduled-list article{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px;border-bottom:1px solid var(--line);font-size:.78rem}.scheduled-list strong{flex:1}.schedule-actor-bank{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.schedule-actor-bank button{touch-action:none;user-select:none;min-height:44px}.schedule-actor-bank .selected,.schedule-actor-bank .dragging{outline:3px solid var(--pink)}.schedule-editor details{padding:12px;border-top:1px solid var(--line);font-size:.78rem}
 @media(max-width:850px){.schedule-week{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:550px){.session-planner{margin:14px 12px;padding:15px}.schedule-week{grid-template-columns:repeat(2,minmax(0,1fr))}.schedule-day{padding:28px 9px 10px}.schedule-heading{display:block}.schedule-actions{margin-top:12px}.calendar-day{padding:4px;min-height:42px}.schedule-editor{padding:14px!important}.schedule-heading h2{font-size:1.25rem}.month-grid{gap:2px}}
 
-.session-planner [hidden]{display:none!important}.schedule-collapse{font-size:.75rem;margin-left:auto}
+.session-planner [hidden]{display:none!important}
+/* The summary stays near the top; editing lives in the Schedule tab. */
+.next-session-banner{display:flex;align-items:center;justify-content:space-between;gap:18px;max-width:1590px;margin:16px auto;padding:16px 20px;width:calc(100% - 60px);border:1px solid var(--line);border-left:4px solid var(--pink);border-radius:12px;background:var(--panel);color:var(--text)}
+.next-session-banner>div{min-width:0}.next-session-banner h2{margin:5px 0;font-size:clamp(1rem,2vw,1.3rem);line-height:1.35;overflow-wrap:anywhere}
+.next-session-banner p{margin:4px 0 0;color:var(--muted);font-size:.8rem;line-height:1.5}.next-session-banner .button{flex-shrink:0;min-height:44px;font-size:.8rem}
+.next-session-banner[data-session-state="likely"],.next-session-banner[data-session-state="tied"]{border-left-color:var(--gold)}
+#scheduleTab .session-planner{margin:0;max-width:none;width:100%}
+.schedule-help{color:var(--muted);line-height:1.6;font-size:.85rem;border-bottom:1px solid var(--line);padding-bottom:14px}
+.session-planner .schedule-local{display:block;margin-top:12px}
+.session-planner [data-vote-login]{max-width:100%;min-height:44px}
+.tabs{flex-wrap:wrap}
+html[data-ui-theme="reworked"] .tabs{flex-wrap:wrap}
+html[data-ui-theme] #castingTab .finale-stage{width:calc(100% - 8px);margin:0 8px 22px 0}
+@media(max-width:720px){
+  .next-session-banner{width:calc(100% - 20px);margin:12px 10px;padding:14px;align-items:stretch;flex-direction:column;gap:12px}
+  .next-session-banner .button{width:100%}
+  html[data-ui-theme="reworked"] .tab:last-child{grid-column:auto}
+  #scheduleTab .session-planner{padding:14px}
+  .schedule-actions button,.vote-controls button{min-height:44px}
+  .tabs .tab{min-height:44px}
+  .schedule-week{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .week-navigation strong{min-width:0;text-align:center}
+}
+@media(max-width:380px){.schedule-week{grid-template-columns:1fr}}

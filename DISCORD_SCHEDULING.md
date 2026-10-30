@@ -13,9 +13,11 @@ calculated against the actual session start, including any rescheduling. No new
 Discord login or voting database is introduced.
 
 Each voting link opens player mode at `#schedule`, optionally with a
-`scheduleDate=YYYY-MM-DD` query parameter. The schedule expands even if that user
-previously collapsed it. The usual actor/password login is offered at the vote
-controls. The host can copy this link from the schedule header.
+`scheduleDate=YYYY-MM-DD` query parameter. This opens the second tab, Schedule,
+and focuses the linked date. A previous collapsed
+preference cannot hide the poll. The usual actor/password login is offered above
+the days. The host can copy this link from the schedule header. Existing Discord
+links work without changing or sending any Discord messages.
 
 ## Installation
 
