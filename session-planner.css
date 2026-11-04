@@ -4,7 +4,7 @@
 
 .session-planner [hidden]{display:none!important}
 /* The summary stays near the top; editing lives in the Schedule tab. */
-.next-session-banner{display:flex;align-items:center;justify-content:space-between;gap:18px;max-width:1590px;margin:16px auto;padding:16px 20px;width:calc(100% - 60px);border:1px solid var(--line);border-left:4px solid var(--pink);border-radius:12px;background:var(--panel);color:var(--text)}
+.next-session-banner{display:flex;align-items:center;justify-content:space-between;gap:18px;max-width:none;margin:16px auto;padding:16px 20px;width:calc(100% - 60px);border:1px solid var(--line);border-left:4px solid var(--pink);border-radius:12px;background:var(--panel);color:var(--text)}
 .next-session-banner>div{min-width:0}.next-session-banner h2{margin:5px 0;font-size:clamp(1rem,2vw,1.3rem);line-height:1.35;overflow-wrap:anywhere}
 .next-session-banner p{margin:4px 0 0;color:var(--muted);font-size:.8rem;line-height:1.5}.next-session-banner .button{flex-shrink:0;min-height:44px;font-size:.8rem}
 .next-session-banner[data-session-state="likely"],.next-session-banner[data-session-state="tied"]{border-left-color:var(--gold)}

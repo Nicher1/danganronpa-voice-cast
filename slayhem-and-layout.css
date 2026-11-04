@@ -57,6 +57,11 @@ html[data-ui-theme] body[data-scenario="slayhem"].panic-active :is(.topbar,.acto
 html[data-ui-theme] body[data-scenario="slayhem"].panic-active .panic-atmosphere{background:repeating-linear-gradient(125deg,#721441 0 16px,#391326 16px 32px);border-color:#ff5cab}
 html[data-ui-theme] body[data-scenario="slayhem"].panic-active .blood-title img{filter:drop-shadow(0 0 9px #ff168a88)}
 @media(max-width:700px){.monopad-section-head>.monopad-section-actions{flex-basis:100%}.casting-controls>summary span{display:block;margin:5px 0 0 17px}}
+/* Wide screens: the hero and the next-session banner follow the full content width, so the quote column grows with it. */
+@media(min-width:1700px){
+  html[data-ui-theme="finale"] .finale-stage,html[data-ui-theme] body[data-world="island"] .finale-stage{grid-template-columns:minmax(0,1fr) clamp(320px,22vw,520px)}
+  html[data-ui-theme] .finale-aside blockquote,html[data-ui-theme] body[data-world="island"] .finale-aside blockquote{font-size:clamp(1rem,.85vw,1.35rem)}
+}
 /* Transparent images blend into their panels instead of sitting on black boxes. */
 html[data-ui-theme] .dossier-card img,html[data-ui-theme] .dossier-dialog-art,html[data-ui-theme] .role-image,html[data-ui-theme] .official-face,html[data-ui-theme] .image-preview{background:transparent}
 html[data-ui-theme] body[data-world="island"] .dossier-card img{object-fit:contain}

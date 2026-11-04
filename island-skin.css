@@ -33,7 +33,7 @@ html[data-ui-theme] body[data-world="island"] .mode-badge,html[data-ui-theme] bo
 html[data-ui-theme] body[data-world="island"] .calendar-day.selected,html[data-ui-theme] body[data-world="island"] .vote-controls button[aria-pressed=true]{background:#973568;color:#fff}
 html[data-ui-theme] body[data-world="island"] .finale-stage{
   display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:26px;
-  width:calc(100% - 60px);max-width:1600px;margin:24px auto;padding:32px;
+  width:calc(100% - 60px);max-width:none;margin:24px auto;padding:32px;
   min-height:360px;border:4px solid #0a3041;border-bottom:10px solid #e9cb92;
   border-radius:0;box-shadow:8px 8px 0 #dc769f;
   background:#7dd3df url('assets/scenery/jabberwock-pixels.svg') center/cover no-repeat;
