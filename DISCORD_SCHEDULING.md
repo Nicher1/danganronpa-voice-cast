@@ -68,13 +68,13 @@ Discord messages. Coverage includes timezone conversion, rebased arrivals,
 deleted actors, Markdown/mention handling, private-schema permissions,
 deduplication, PATCH updates, rate limits, and uncertain first-post failures.
 
-## 30-minute reminder
+## Card repost and 30-minute reminder
 
 Run discord-reminder-migration.sql after the schedule and actor-links migrations. It runs inside Supabase every minute, so your PC can be off.
 
-- 30 minutes before a session, one message is posted that pings linked players who voted yes. Unlinked yes-voters are named without a ping.
-- The old schedule card is deleted and the new card sits at the bottom. Webhooks cannot pin.
-- Each session is reminded once. If Discord's answer is unknown it is not retried, to avoid a double ping.
-- A rescheduled session can be reminded again.
+- 10 hours before a session (or right away if the session is created later than that), a fresh schedule card is posted without pings and the old card is deleted, so the new card sits at the bottom. Webhooks cannot pin.
+- 30 minutes before, a separate short message pings linked players who voted yes. Unlinked yes-voters are named without a ping. The card is not touched.
+- Each step happens once per session. If Discord's answer is unknown it is not retried, to avoid a double post or ping.
+- A rescheduled session can be handled again.
 - Only listed users can be pinged, never @everyone or roles.
 
