@@ -140,6 +140,20 @@
       return data || "";
     }
 
+    async getDiscordSettings() {
+      const { data, error } = await this.client.rpc("cast_get_discord_settings", { p_slug: this.slug });
+      if (error) throw error;
+      return data || {};
+    }
+
+    async setDiscordSettings(card, reminder) {
+      const { data, error } = await this.client.rpc("cast_set_discord_settings", {
+        p_slug: this.slug, p_card: !!card, p_reminder: !!reminder
+      });
+      if (error) throw error;
+      return data || {};
+    }
+
     async getPresenceActivity(days = 7) {
       const { data, error } = await this.client.rpc("cast_presence_activity", {
         p_slug: this.slug,

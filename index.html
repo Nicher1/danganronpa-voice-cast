@@ -1395,6 +1395,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <button id="wakeDatabaseBtn" type="button" class="ghost">Wake and verify now</button>
           <div id="databaseCheckResult" class="database-check-result">No manual check in this session yet.</div>
         </section>
+        <section class="database-service panel">
+          <div class="section-kicker">DISCORD</div>
+          <h3>Schedule card and reminder</h3>
+          <p>The card shows the next session in Discord. The reminder pings the players who voted yes, 30 minutes before the start.</p>
+          <label class="discord-switch"><input id="discordCardToggle" type="checkbox" disabled> Schedule card</label>
+          <label class="discord-switch"><input id="discordReminderToggle" type="checkbox" disabled> 30-minute reminder</label>
+          <div id="discordSettingsResult" class="database-check-result" role="status">Not loaded yet.</div>
+        </section>
         <section class="activity-panel panel" style="grid-column:1/-1">
           <div class="activity-panel-head">
             <div><div class="section-kicker">PRIVATE · MASTER ONLY</div><h3>Last seven days</h3><p>Each visit is listed once with its dates and duration. Overlapping connections for the same actor count once. Switching away from the tab ends its visit; returning starts another. A connection gap of 90 seconds also starts a new visit at the next check-in. Older records may include time in background tabs and pauses that cannot be reconstructed.</p></div>
@@ -5727,9 +5735,41 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   };
   $("#cancelCustomRecapEditBtn").onclick=()=>resetCustomRecapForm();
 
+  async function loadDiscordSettings(){
+    const card=$("#discordCardToggle"),reminder=$("#discordReminderToggle"),result=$("#discordSettingsResult");
+    if(!card||!remoteReady||!remoteSync?.getDiscordSettings)return;
+    try{
+      const s=await remoteSync.getDiscordSettings();
+      card.checked=!!s.card;reminder.checked=!!s.reminder;
+      card.disabled=reminder.disabled=!s.configured;
+      reminder.disabled=!s.configured||!s.card;
+      result.className="database-check-result"+(s.card?" live":"");
+      result.textContent=!s.configured?"Discord is not connected yet.":s.card?(s.reminder?"Card and reminder are on.":"Card is on. Reminder is off."):"Card and reminder are off.";
+    }catch(error){
+      const message=window.CastSupabaseSync?.errorMessage(error)||String(error);
+      result.className="database-check-result error";
+      result.textContent=message.includes("cast_get_discord_settings")?"Install the reminder database update to use these switches.":message;
+    }
+  }
+  async function saveDiscordSettings(){
+    const card=$("#discordCardToggle"),reminder=$("#discordReminderToggle"),result=$("#discordSettingsResult");
+    card.disabled=reminder.disabled=true;
+    try{
+      await remoteSync.setDiscordSettings(card.checked,reminder.checked);
+      toast(card.checked?(reminder.checked?"Discord card and reminder are on.":"Discord card is on."):"Discord is off.");
+    }catch(error){
+      result.className="database-check-result error";
+      result.textContent=window.CastSupabaseSync?.errorMessage(error)||String(error);
+    }
+    await loadDiscordSettings();
+  }
+  $("#discordCardToggle").onchange=saveDiscordSettings;
+  $("#discordReminderToggle").onchange=saveDiscordSettings;
+
   function activateTab(tabName){
     $$(".tab").forEach(button=>{button.classList.toggle("active",button.dataset.tab===tabName);if(button.dataset.tab===tabName)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current");});
     $$(".tab-panel").forEach(panel=>panel.classList.toggle("active",panel.id===`${tabName}Tab`));
+    if(tabName==="admin")loadDiscordSettings();
     if(tabName==="admin"&&remoteReady&&!presenceActivityLoading&&Date.now()-presenceActivityLoadedAt>60000){
       loadPresenceActivity({quiet:true});
     }
