@@ -4,7 +4,7 @@
 html[data-ui-theme="finale"]{--pink-hot:#ff248b;--pink:#ff248b;--panel:#17151c;--line:#514653;--text:#f6f0dd;--muted:#c0b6c4;--bg:#100f14}
 html[data-ui-theme="finale"] body{background:radial-gradient(ellipse at 90% 0%,#4e163f80,transparent 52%),repeating-linear-gradient(115deg,#ffffff03 0 1px,transparent 1px 7px),#100f14;color:#f6f0dd}
 html[data-ui-theme="finale"] .topbar{border-bottom:4px solid #ff248b;background:#111015}
-html[data-ui-theme="finale"] .finale-stage{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:26px;margin:24px auto;max-width:1600px;padding:30px;border:2px solid #f6f0dd;box-shadow:8px 8px 0 #ff248b;position:relative;overflow:hidden;background:radial-gradient(circle at 78% 24%,#ff248b24 0 3px,transparent 4px) 0 0/13px 13px,#17151c}
+html[data-ui-theme="finale"] .finale-stage{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:26px;margin:24px auto;max-width:none;padding:30px;border:2px solid #f6f0dd;box-shadow:8px 8px 0 #ff248b;position:relative;overflow:hidden;background:radial-gradient(circle at 78% 24%,#ff248b24 0 3px,transparent 4px) 0 0/13px 13px,#17151c}
 .finale-stage h2{font:900 clamp(2.4rem,5vw,5.8rem)/.88 Impact,'Arial Black',sans-serif;letter-spacing:-.025em;text-transform:uppercase;margin:14px 0 20px;max-width:850px;transform:rotate(-2deg)}
 .finale-stage h2 em{color:#ff248b;font-style:normal}
 .finale-stamp{font:900 .72rem monospace;letter-spacing:.22em;background:#f6f0dd;color:#16131b;display:inline-block;padding:7px 12px;transform:rotate(-2deg)}

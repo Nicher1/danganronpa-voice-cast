@@ -1053,10 +1053,10 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 
 </style>
-<link rel="stylesheet" href="finale.css?v=20261021-dark">
-<link rel="stylesheet" href="island-skin.css?v=20261025">
-<link rel="stylesheet" href="slayhem-and-layout.css?v=20261030">
-<link rel="stylesheet" href="session-planner.css?v=20261030">
+<link rel="stylesheet" href="finale.css?v=20261104">
+<link rel="stylesheet" href="island-skin.css?v=20261104">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261104">
+<link rel="stylesheet" href="session-planner.css?v=20261104">
 </head>
 <body>
   <header class="topbar">
@@ -1490,7 +1490,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.5.0</span><span class="patch-release-title"><strong>Clearer scheduling and phone layouts</strong><small>Current release · 30 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.1</span><span class="patch-release-title"><strong>Wider screens line up</strong><small>Current release · 4 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Header banner follows the page width</h4><p>On large monitors the main Danganronpa Voice Cast banner and the next-session banner now start and end in line with the tabs and the rest of the page, instead of stopping early. On wide screens the quote column grows with the banner. Phones, tablets and ordinary computer screens look the same as before.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.0</span><span class="patch-release-title"><strong>Clearer scheduling and phone layouts</strong><small>30 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Session summary above, planning in Schedule</h4><p>A compact banner shows the next confirmed session, a clearly labelled likely date, or an invitation to fill in your days. Schedule is the second tab; Discord voting links open it directly, including the linked day. Voting, attendance and host scheduling stay together there.</p></section>
             <section class="patch-note"><h4>Likely dates need at least three votes</h4><p>A leading day needs three or more available voters. Two or three days tied for the lead appear as alternatives, without a countdown; four or more tied days stay undecided. Estimated arrival times average the available voters and round down to the nearest quarter hour. Countdowns appear only for a single likely date or a confirmed session. These estimates do not book sessions.</p></section>
@@ -2009,7 +2015,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script>
 
 (async () => {
-  const APP_BUILD = "2026.10.30.1";
+  const APP_BUILD = "2026.11.04.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
