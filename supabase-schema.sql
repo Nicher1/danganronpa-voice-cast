@@ -608,6 +608,10 @@ begin
             when coalesce(chapter_result ->> 'blackenedRoleId', '') <> '' then coalesce(existing_entry ->> 'blackenedRoleId', '')
             else coalesce(incoming_entry ->> 'blackenedRoleId', '')
           end,
+          'mastermindRoleId', case
+            when coalesce(chapter_result ->> 'mastermindRoleId', '') <> '' then coalesce(existing_entry ->> 'mastermindRoleId', '')
+            else coalesce(incoming_entry ->> 'mastermindRoleId', '')
+          end,
           'locked', false
         );
         merged_predictions := jsonb_set(
