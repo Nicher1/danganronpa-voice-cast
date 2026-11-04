@@ -67,3 +67,14 @@ on `NODE_PATH`. It uses real PostgreSQL with a mocked HTTP transport; it sends n
 Discord messages. Coverage includes timezone conversion, rebased arrivals,
 deleted actors, Markdown/mention handling, private-schema permissions,
 deduplication, PATCH updates, rate limits, and uncertain first-post failures.
+
+## 30-minute reminder
+
+Run discord-reminder-migration.sql after the schedule and actor-links migrations. It runs inside Supabase every minute, so your PC can be off.
+
+- 30 minutes before a session, one message is posted that pings linked players who voted yes. Unlinked yes-voters are named without a ping.
+- The old schedule card is deleted and the new card sits at the bottom. Webhooks cannot pin.
+- Each session is reminded once. If Discord's answer is unknown it is not retried, to avoid a double ping.
+- A rescheduled session can be reminded again.
+- Only listed users can be pinged, never @everyone or roles.
+
