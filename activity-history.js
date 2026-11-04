@@ -2,6 +2,8 @@
 (function(root){
   "use strict";
   const FRESH_MS=90000;
+  // Visits by the same actor closer together than this are shown as one.
+  const MERGE_GAP_MS=5*60000;
 
   function sessionEnd(session,now,onlineActorIds){
     const lastSeen=new Date(session.last_seen_at||session.started_at).getTime();
@@ -10,7 +12,7 @@
     return {end:active?now:Math.min(now,new Date(session.ended_at||session.last_seen_at||session.started_at).getTime()),active};
   }
 
-  // Count the union of an actor's connections, keeping every recorded gap.
+  // Count the union of an actor's connections, joining breaks shorter than MERGE_GAP_MS.
   function visits(records,{now=Date.now(),onlineActorIds=new Set(),windowStart=-Infinity}={}){
     now=Number(now);
     const byActor=new Map();
@@ -27,7 +29,7 @@
       connections.sort((a,b)=>a.start-b.start||a.end-b.end);
       let previous;
       for(const connection of connections){
-        if(previous&&connection.start<=previous.end){
+        if(previous&&connection.start<=previous.end+MERGE_GAP_MS){
           previous.end=Math.max(previous.end,connection.end);
           previous.active||=connection.active;
         }else{

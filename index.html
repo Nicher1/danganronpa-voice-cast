@@ -1430,7 +1430,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         </section>
         <section class="activity-panel panel" style="grid-column:1/-1">
           <div class="activity-panel-head">
-            <div><div class="section-kicker">PRIVATE · MASTER ONLY</div><h3>Last seven days</h3><p>Each visit is listed once with its dates and duration. Overlapping connections for the same actor count once. Switching away from the tab ends its visit; returning starts another. A connection gap of 90 seconds also starts a new visit at the next check-in. Older records may include time in background tabs and pauses that cannot be reconstructed.</p></div>
+            <div><div class="section-kicker">PRIVATE · MASTER ONLY</div><h3>Last seven days</h3><p>Each visit is listed once with its dates and duration. Overlapping connections for the same actor count once. Switching away from the tab ends its visit; returning starts another, but breaks shorter than 5 minutes are shown as one visit. A connection gap of 90 seconds also starts a new visit at the next check-in. Older records may include time in background tabs and pauses that cannot be reconstructed.</p></div>
             <button id="refreshActivityBtn" type="button" class="ghost">Refresh activity</button>
           </div>
           <div id="activityOverview"><div class="activity-empty">Activity history will load when the shared database is connected.</div></div>
@@ -1534,7 +1534,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.5.4</span><span class="patch-release-title"><strong>Character variety badge</strong><small>Current release · 4 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.5</span><span class="patch-release-title"><strong>Spyware for ego boosting</strong><small>Current release · 4 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Tidier activity list</h4><p>The host's private activity list now joins visits by the same person that are less than 5 minutes apart, so tab switching no longer fills the list with one-minute rows.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.4</span><span class="patch-release-title"><strong>Character variety badge</strong><small>4 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Longest voice history</h4><p>Statistics now show the length of each actor's voice history. Whoever has the longest history, or everyone tied for it, gets a small badge on their card. In the first game the badge is Toko's face.</p></section>
             <section class="patch-note"><h4>Statistics rows fit narrow cards</h4><p>The Correct, Victim, Blackened and Deaths labels no longer overlap on narrow statistics cards.</p></section>
@@ -2069,7 +2075,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase-config.js"></script>
   <script src="supabase-sync.js?v=20261029-2"></script>
-  <script src="activity-history.js?v=20261029-2"></script>
+  <script src="activity-history.js?v=20261104-1"></script>
   <script src="dr2-monopad-art.js?v=20261027-2"></script>
   <script src="admin-preview-safety.js?v=20261026"></script>
   <script src="voice-clips-v4.js"></script>
@@ -2084,7 +2090,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.04.8";
+  const APP_BUILD = "2026.11.04.9";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
