@@ -7,6 +7,8 @@
 -- Webhooks cannot pin messages; pinning would need a bot.
 begin;
 alter table cast_discord.connections add column if not exists pending_delete_id text;
+-- Off until the host switches it on in Admin Tools.
+alter table cast_discord.connections add column if not exists reminder_enabled boolean not null default false;
 
 create table if not exists cast_discord.reminders (
   slug text not null references cast_discord.connections(slug) on delete cascade,
@@ -48,6 +50,7 @@ begin
   if not pg_try_advisory_xact_lock(hashtext('cast-discord'), hashtext(p_slug)) then return 'Already syncing'; end if;
   select * into c from cast_discord.connections where slug = p_slug for update;
   if not found or not c.enabled then return 'Disabled'; end if;
+  if not c.reminder_enabled then return 'Reminders off'; end if;
   if c.retry_after > p_now then return 'Waiting to retry'; end if;
 
   select decrypted_secret into hook from vault.decrypted_secrets where id = c.secret_id;
@@ -147,7 +150,37 @@ begin
 end $$;
 
 revoke all on all functions in schema cast_discord from public, anon, authenticated;
+
+-- Host-only switches for Admin Tools: the schedule card and the 30-minute reminder.
+create or replace function public.cast_get_discord_settings(p_slug text)
+returns jsonb language plpgsql security definer set search_path = pg_catalog, public as $$
+declare c cast_discord.connections;
+begin
+  if not public.cast_is_host(p_slug) then raise exception 'Host access required.'; end if;
+  select * into c from cast_discord.connections where slug = p_slug;
+  if not found then return jsonb_build_object('configured', false, 'card', false, 'reminder', false); end if;
+  return jsonb_build_object('configured', c.secret_id is not null, 'card', c.enabled, 'reminder', c.reminder_enabled,
+    'status', c.last_status);
+end $$;
+
+create or replace function public.cast_set_discord_settings(p_slug text, p_card boolean, p_reminder boolean)
+returns jsonb language plpgsql security definer set search_path = pg_catalog, public as $$
+begin
+  if not public.cast_is_host(p_slug) then raise exception 'Host access required.'; end if;
+  if p_card is null or p_reminder is null then raise exception 'Choose on or off.'; end if;
+  if not exists (select 1 from cast_discord.connections where slug = p_slug and secret_id is not null) then
+    raise exception 'Discord is not connected yet.';
+  end if;
+  update cast_discord.connections
+    set enabled = p_card, reminder_enabled = p_card and p_reminder
+    where slug = p_slug;
+  return public.cast_get_discord_settings(p_slug);
+end $$;
+revoke all on function public.cast_get_discord_settings(text), public.cast_set_discord_settings(text, boolean, boolean) from public, anon, authenticated;
+grant execute on function public.cast_get_discord_settings(text), public.cast_set_discord_settings(text, boolean, boolean) to authenticated;
+notify pgrst, 'reload schema';
+
 -- Every minute; it does nothing unless a session starts within the next 30 minutes.
 select cron.schedule('cast-discord-reminder', '* * * * *',
-  $job$select cast_discord.remind(slug) from cast_discord.connections where enabled;$job$);
+  $job$select cast_discord.remind(slug) from cast_discord.connections where enabled and reminder_enabled;$job$);
 commit;

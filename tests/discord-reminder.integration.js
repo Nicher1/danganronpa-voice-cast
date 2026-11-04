@@ -16,7 +16,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
     create type extensions.http_response as (status integer,content_type varchar,headers extensions.http_header[],content varchar);
     create function extensions.http_header(text,text) returns extensions.http_header language sql as $$select ($1,$2)::extensions.http_header$$;
     create function extensions.http_set_curlopt(text,text) returns boolean language sql as $$select true$$;
-    create sequence msg_seq start 998;create table http_control(post_status integer,delete_status integer,fail_post boolean);insert into http_control values(200,204,false);
+    create sequence msg_seq start 998;create table host_flag(is_host boolean);insert into host_flag values(true);create function cast_is_host(text) returns boolean language sql as $$select is_host from host_flag$$;create table http_control(post_status integer,delete_status integer,fail_post boolean);insert into http_control values(200,204,false);
     create table http_calls(request extensions.http_request);
     create function extensions.http(r extensions.http_request) returns extensions.http_response language plpgsql as $$
       begin
@@ -41,6 +41,16 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   const remind=async at=>(await db.query("select cast_discord.remind('board',$1::timestamptz) as r",[at])).rows[0].r;
   const calls=async()=>(await db.query('select (request).method as m,(request).uri as u,(request).content as c from http_calls order by 1')).rows;
 
+  assert.equal(await remind('2030-10-30T17:31:00Z'),'Reminders off');                // off by default after install
+  assert.equal((await db.query('select count(*)::int n from http_calls')).rows[0].n,0);
+  const settings=async(...a)=>(await db.query(a.length?"select public.cast_set_discord_settings('board',$1,$2) r":"select public.cast_get_discord_settings('board') r",a)).rows[0].r;
+  assert.deepEqual(await settings(),{configured:true,card:true,reminder:false,status:null});
+  assert.equal((await settings(false,true)).reminder,false);                         // reminder cannot run without the card
+  assert.equal((await settings(true,true)).reminder,true);
+  await db.exec('update host_flag set is_host=false');
+  await assert.rejects(settings(true,false),/Host access required/);
+  await assert.rejects(settings(),/Host access required/);
+  await db.exec('update host_flag set is_host=true');
   assert.equal(await remind('2030-10-30T17:00:00Z'),'No reminder due');          // 60 minutes before
   assert.equal(await remind('2030-10-30T18:01:00Z'),'No reminder due');          // already started
   assert.equal((await calls()).length,0);
