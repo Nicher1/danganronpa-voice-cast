@@ -1,3 +1,5 @@
+// Schedule tab screen: draws the plan from session-planner.js and sends the user's
+// actions (votes, start times, host controls) to the store.
 (function(){
   'use strict';
   window.mountSessionPlanner=function(options){

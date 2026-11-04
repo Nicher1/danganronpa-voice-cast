@@ -1,3 +1,4 @@
+// Visit history for the host's seven-day activity timeline in Admin Tools.
 (function(root){
   "use strict";
   const FRESH_MS=90000;

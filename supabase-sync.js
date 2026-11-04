@@ -1,3 +1,6 @@
+// Database layer: every call from the site to Supabase goes through CastSupabaseSync.
+// Host-only actions (saving the board, Discord links and switches) are checked again
+// in the database, so hiding a button here is never the only protection.
 (function () {
   "use strict";
 

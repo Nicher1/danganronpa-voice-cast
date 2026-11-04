@@ -1,3 +1,6 @@
+// Schedule rules with no page code: sessions, weekly votes, start-time suggestions and
+// Copenhagen time handling (the calendar always uses Copenhagen civil time, so summer
+// and winter time changes stay correct). Tested in tests/session-planner.test.js.
 (function(root){
   'use strict';
   const ZONE='Europe/Copenhagen',MIN=60000,HOUR=60*MIN;
