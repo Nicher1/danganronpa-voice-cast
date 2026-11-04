@@ -795,7 +795,7 @@ body.mobile-dragging{user-select:none}
 .stats-total{font-size:1.7rem;font-weight:950;letter-spacing:-.04em;margin-top:12px}
 .stats-total span{display:block;font-size:.63rem;letter-spacing:.11em;color:var(--muted);text-transform:uppercase}
 .actor-award.variety{border-color:rgba(176,132,255,.5);background:linear-gradient(145deg,rgba(176,132,255,.18),rgba(245,64,148,.08));font-size:1.05rem;line-height:1}
-.actor-award.variety img{display:block;width:23px;height:23px;object-fit:cover;object-position:center top;border-radius:6px}
+.actor-award img{display:block;width:23px;height:23px;object-fit:cover;object-position:center top;border-radius:6px}
 .actor-award.variety.mini{width:20px;height:20px;padding:1px;margin-left:5px;vertical-align:middle;border-radius:6px;box-shadow:none}.actor-award.variety.mini img{width:16px;height:16px;border-radius:4px}
 .stats-breakdown{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
 .stats-breakdown div{padding:8px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.018);font-size:.67rem;color:var(--muted)}
@@ -1402,6 +1402,12 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <p>Edit both quotes and their labels for the current game and chapter in the Dark theme.</p>
           <button id="editFrontQuotesBtn" type="button" class="ghost">Edit front-page quotes</button>
         </section>
+        <section class="theme-service panel">
+          <div class="section-kicker">BADGES</div>
+          <h3>Badge pictures</h3>
+          <p>Choose the picture for each leader badge in the current game. Leave a picture empty to use the default.</p>
+          <button id="editBadgeImagesBtn" type="button" class="ghost">Edit badge pictures</button>
+        </section>
         <section class="database-service panel">
           <div class="section-kicker">DATABASE STATUS</div>
           <h3>Wake / check database</h3>
@@ -1439,6 +1445,16 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <div class="field"><label for="frontQuoteSecond">Second quote</label><textarea id="frontQuoteSecond" rows="4" maxlength="1500"></textarea></div>
       <div class="field"><label for="frontQuoteSource">Second quote caption</label><input id="frontQuoteSource" maxlength="160"></div>
       <div class="actions" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px"><button type="submit" class="primary">Save quotes</button><button id="resetFrontQuotesBtn" type="button" class="ghost">Restore default wording</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="badgeImagesDialog" class="modal">
+    <form id="badgeImagesForm" class="modal-card">
+      <div class="modal-head"><h3>Badge pictures</h3><button type="button" class="icon-btn" data-close="badgeImagesDialog" aria-label="Close badge pictures">×</button></div>
+      <p id="badgeImagesContext" class="muted small"></p>
+      <p class="muted small">Paste a link starting with https:// to a picture. Everyone viewing this game sees it. Leave a field empty to use the default badge.</p>
+      <div id="badgeImagesFields"></div>
+      <div class="actions" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px"><button type="submit" class="primary">Save pictures</button></div>
     </form>
   </dialog>
 
@@ -1516,6 +1532,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <summary><span class="patch-version">V1.5.4</span><span class="patch-release-title"><strong>Character variety badge</strong><small>Current release · 4 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Most different characters voiced</h4><p>Statistics now show how many different characters each actor has voiced in the current game. Whoever has voiced the most gets a small badge on their card. In the first game the badge is Toko's face.</p></section>
+            <section class="patch-note"><h4>Choose your own badge pictures</h4><p>The host can set the picture for each leader badge, per game, in Admin Tools. The prediction bar also stretches across the page on wide screens.</p></section>
           </div>
         </details>
         <details class="patch-release">
@@ -4376,7 +4393,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <div>Victim guesses<strong>${counts.totals.victim}</strong></div>
           <div>Blackened guesses<strong>${counts.totals.blackened}</strong></div>
           <div>Total deaths<strong>${counts.totals.deaths}</strong></div>
-          <div>Characters voiced · ${esc(gameDefinition(activeGameId).short)}<strong>${voicedCharacterCount(actor)}${varietyLeaders.has(actor.id)?' <span class="actor-award variety mini" aria-hidden="true">'+(VARIETY_AWARD_FACES[activeGameId]?`<img src="${esc(VARIETY_AWARD_FACES[activeGameId])}" alt="">`:"🎭")+'</span>':""}</strong></div>
+          <div>Characters voiced · ${esc(gameDefinition(activeGameId).short)}<strong>${voicedCharacterCount(actor)}${varietyLeaders.has(actor.id)?' <span class="actor-award variety mini" aria-hidden="true">'+badgeFaceMarkup("variety","🎭").replace(' loading="lazy"',"")+'</span>':""}</strong></div>
         </div>
         <div class="stats-game-list">${gameRows}<div class="stats-game-row total"><strong>ALL SERIES</strong><span class="stats-game-metric">Correct<b>${counts.totals.total}</b>${totalHidden}</span><span class="stats-game-metric">Victim<b>${counts.totals.victim}</b></span><span class="stats-game-metric">Blackened<b>${counts.totals.blackened}</b>${totalHidden}</span><span class="stats-game-metric">Deaths<b>${counts.totals.deaths}</b></span></div></div>`;
       grid.appendChild(card);
@@ -4769,12 +4786,48 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     return new Set(maximum>=2?values.filter(item=>item.value===maximum).map(item=>item.id):[]);
   }
   const VARIETY_AWARD_FACES={dr1:IMG.toko};
-  function varietyAwardMarkup(){
-    const face=VARIETY_AWARD_FACES[activeGameId];
-    const label="Most different characters voiced in the current game";
-    return `<span class="actor-award variety" role="img" aria-label="${label}" title="${label}">${face?`<img src="${esc(face)}" alt="" loading="lazy">`:"🎭"}</span>`;
+  const BADGE_KINDS={
+    hope:{title:"Most correct predictions",label:"Most correct predictions in the current game"},
+    monokuma:{title:"Most assigned-character deaths",label:"Most assigned-character deaths in the current game"},
+    variety:{title:"Most different characters voiced",label:"Most different characters voiced in the current game"}
+  };
+  // Host-chosen badge pictures are saved per game; only web addresses and bundled assets are accepted.
+  function validBadgeImage(value){
+    const url=String(value||"").trim();
+    return /^(https:\/\/|assets\/)[^\s"'<>]+$/i.test(url)?url:"";
   }
+  function customBadgeImage(kind,gameId=activeGameId){
+    return validBadgeImage(state.settings.games?.[gameId]?.badgeImages?.[kind]);
+  }
+  function badgeFaceMarkup(kind,fallback=""){
+    const custom=customBadgeImage(kind)||(kind==="variety"?VARIETY_AWARD_FACES[activeGameId]:"");
+    return custom?`<img src="${esc(custom)}" alt="" loading="lazy">`:fallback;
+  }
+  function awardMarkup(kind){
+    const info=BADGE_KINDS[kind];
+    const fallback=kind==="hope"?HOPE_PEAK_AWARD_ICON:kind==="monokuma"?MONOKUMA_AWARD_ICON:"🎭";
+    return `<span class="actor-award ${kind}" role="img" aria-label="${info.label}" title="${info.label}">${badgeFaceMarkup(kind,fallback)}</span>`;
+  }
+  const varietyAwardMarkup=()=>awardMarkup("variety");
 
+  $("#editBadgeImagesBtn").onclick=()=>{
+    if(mode!=="host")return;
+    const game=gameDefinition(activeGameId);
+    $("#badgeImagesContext").textContent=game.title||game.name||activeGameId;
+    $("#badgeImagesFields").innerHTML=Object.entries(BADGE_KINDS).map(([kind,info])=>`<div class="field"><label for="badgeImage-${kind}">${esc(info.title)}</label><input id="badgeImage-${kind}" data-badge-kind="${kind}" type="url" maxlength="500" placeholder="${kind==="variety"&&VARIETY_AWARD_FACES[activeGameId]?"Default: character face":"Default badge"}" value="${esc(customBadgeImage(kind))}"></div>`).join("");
+    $("#badgeImagesDialog").showModal();
+  };
+  $("#badgeImagesForm").onsubmit=event=>{
+    event.preventDefault();if(mode!=="host")return;
+    const images={};
+    for(const input of $$("#badgeImagesFields [data-badge-kind]")){
+      const raw=input.value.trim(),url=validBadgeImage(raw);
+      if(raw&&!url){toast(`${BADGE_KINDS[input.dataset.badgeKind].title}: use a link starting with https://`);input.focus();return}
+      if(url)images[input.dataset.badgeKind]=url;
+    }
+    currentSettings().badgeImages=images;
+    saveState();$("#badgeImagesDialog").close();render();toast("Badge pictures saved.");
+  };
   const HOPE_PEAK_AWARD_ICON=`<svg viewBox="0 0 48 48" aria-hidden="true">
     <path d="M15 20 5 16l6 7-7 1 10 4M33 20l10-4-6 7 7 1-10 4" fill="none" stroke="#f4cc65" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="m17 11 3-5 4 4 4-4 3 5" fill="#f4cc65" stroke="#fff3b0" stroke-width="1.4" stroke-linejoin="round"/>
@@ -4833,7 +4886,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         }
       }
 
-      const awards=`<div class="actor-awards">${hopeLeaderIds.has(actor.id)?`<span class="actor-award hope" role="img" aria-label="Most correct predictions in the current game" title="Most correct predictions in the current game">${HOPE_PEAK_AWARD_ICON}</span>`:""}${monokumaLeaderIds.has(actor.id)?`<span class="actor-award monokuma" role="img" aria-label="Most assigned-character deaths in the current game" title="Most assigned-character deaths in the current game">${MONOKUMA_AWARD_ICON}</span>`:""}${varietyLeaderIds.has(actor.id)?varietyAwardMarkup():""}</div>`;
+      const awards=`<div class="actor-awards">${hopeLeaderIds.has(actor.id)?awardMarkup("hope"):""}${monokumaLeaderIds.has(actor.id)?awardMarkup("monokuma"):""}${varietyLeaderIds.has(actor.id)?awardMarkup("variety"):""}</div>`;
       const animeBlackened=state.settings.completedGames.dr3anime?String(gameCounts.blackened):"—";
       const animeBody=anime?`
         <div class="anime-score-card">
