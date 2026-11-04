@@ -2460,6 +2460,15 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   const frontQuoteFields={heading:"frontQuoteHeading",first:"frontQuoteFirst",credit:"frontQuoteCredit",second:"frontQuoteSecond",source:"frontQuoteSource"};
   function defaultFrontQuotes(){
     const clue=activeGameId==="dr1"&&chapterFourComplete(),garden=activeGameId==="dr1"&&currentSettings().voiceChapter>=5;
+    // Kyoko's trial lines are only shown once chapter 5 is marked complete (spoiler safety).
+    const kyoko=activeGameId==="dr1"&&(currentSettings().voiceChapter>5||!!currentSettings().completedUnits?.["5"]);
+    if(kyoko)return {
+      heading:"KYOKO / CHAPTER 05 TRIAL",
+      first:"“Because among everyone, you were least likely to be the mastermind.”",
+      credit:"Kyoko Kirigiri",
+      second:"“If you vote for me, and I die here, the mystery of this school will stay hidden forever.”",
+      source:"Kyoko Kirigiri / CHAPTER 05 TRIAL"
+    };
     return {
       heading:clue?"KYOKO / UNRESOLVED LEAD":"CLASS TRIAL / TRUTH BULLET",
       first:clue?"“Mukuro Ikusaba. The sixteenth student, lying hidden somewhere in this school. The one they call the Ultimate Despair. Watch out for her.”":"“No, that’s wrong!”",
