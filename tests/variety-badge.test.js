@@ -12,18 +12,18 @@ const ctx = vm.runInNewContext(`
   const currentRoleVisible=r=>!r.hiddenSpoiler||r.revealed;
   const state={
     roles:[{gameId:"dr1",name:"Toko"},{gameId:"dr1",name:"Genocide Jill"},{gameId:"dr1",name:"Secret",hiddenSpoiler:true,revealed:false},{gameId:"dr2",name:"Other"}],
-    actors:[{id:"a",history:["toko","Genocide Jill","Secret","Other"]},{id:"b",history:["Toko"]},{id:"c",history:[]}]};
+    actors:[{id:"a",history:["Toko","Genocide Jill","Anything"]},{id:"b",history:["Toko"]},{id:"c",history:[]}]};
   ${html.slice(a, b)};
   ({count:id=>voicedCharacterCount(state.actors.find(x=>x.id===id)),leadersJson:()=>JSON.stringify([...activeGameVarietyLeaderIds()].sort()),state})`);
-assert.equal(ctx.count("a"), 2, "Counts only visible characters from the current game, ignoring case");
+assert.equal(ctx.count("a"), 3, "The count is the length of the voice history");
 assert.equal(ctx.count("b"), 1);
 const leaders = () => JSON.parse(ctx.leadersJson());
 assert.deepEqual(leaders(), ["a"]);
-ctx.state.actors[1].history = ["Toko", "Genocide Jill"];
+ctx.state.actors[1].history = ["Toko", "Genocide Jill", "Other"];
 assert.deepEqual(leaders(), ["a", "b"], "Ties share the badge");
 ctx.state.actors[0].history = ["Toko"];
 ctx.state.actors[1].history = ["Toko"];
-assert.deepEqual(leaders(), [], "One character is not enough for a badge");
+assert.deepEqual(leaders(), [], "One entry is not enough for a badge");
 const v = html.indexOf("function validBadgeImage"), w = html.indexOf("function customBadgeImage", v);
 assert.ok(v > 0 && w > v, "Badge image validation is missing");
 const validBadgeImage = vm.runInNewContext(`${html.slice(v, w)};validBadgeImage`);
