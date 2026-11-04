@@ -1,3 +1,4 @@
+// Local art files for the second game's Monopad, keyed by character name.
 window.CAST_DR2_MONOPAD_ART = {
   "Hajime Hinata": "assets/monopad/dr2/hinata.gif",
   "Nagito Komaeda": "assets/monopad/dr2/komaeda.gif",

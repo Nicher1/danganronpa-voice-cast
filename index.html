@@ -2023,6 +2023,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script>
 
 (async () => {
+  // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
   const APP_BUILD = "2026.11.04.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
@@ -2038,6 +2039,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     {id:"hundredline",short:"THL",title:"The Hundred Line: Last Defense Academy",kicker:"LAST DEFENSE ACADEMY",kind:"custom",maxChapter:100,unit:"Checkpoint",unitShort:"CP",startPopulation:0},
     {id:"dr2",short:"DR2",title:"Danganronpa 2: Goodbye Despair (archive)",kicker:"GOODBYE DESPAIR",kind:"killing",maxChapter:6,unit:"Chapter",unitShort:"CH",startPopulation:16}
   ];
+  // Games in unlock order. A game opens once the one before it is marked complete in Admin Tools.
   const MAIN_GAME_IDS=["dr1","dr2x2","dr2slayhem","udg","dr3anime","v3","hundredline"];
   const GAME_IDS = GAME_DEFINITIONS.map(game=>game.id);
   const gameDefinition = gameId => GAME_DEFINITIONS.find(game=>game.id===gameId)||GAME_DEFINITIONS[0];
@@ -2571,6 +2573,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   $("#castingControls").addEventListener("toggle",()=>{try{localStorage.setItem("danganronpa-casting-controls-open",String($("#castingControls").open))}catch(_){}});
   setInterval(renderSessionClock,30000);
 
+  // Theme choice: a visitor's own pick wins; otherwise the host's shared default applies.
+  // A new theme must be added here, to the theme picker and to resolvedUiTheme below.
   function personalThemePreference(){
     try{
       const saved=localStorage.getItem(UI_THEME_KEY);

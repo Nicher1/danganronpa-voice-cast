@@ -1,3 +1,5 @@
+// Monopad profile data: portraits, biographies and details per character. Portraits
+// are linked from the Danganronpa Wiki; local art is in assets/monopad/.
 (function(){
   "use strict";
 
