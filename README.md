@@ -14,8 +14,8 @@ This repository is public. Keep everything in it spoiler-safe (see "Rules" below
 - **Database:** Supabase stores the shared board, schedule and activity. The site talks
   to it through `supabase-sync.js`. Connection details are in `supabase-config.js`
   (the publishable key there is meant to be public).
-- **Discord:** a webhook posts and updates the schedule card and sends the 30 minute
-  reminder. It runs inside Supabase, so no PC needs to be on. See the Discord docs below.
+- **Discord:** a webhook posts and updates the schedule card, reposts it 10 hours before a
+  session, and pings yes-voters 30 minutes before. It runs inside Supabase, so no PC needs to be on. See the Discord docs below.
 - **Host tools:** the host opens the host page and logs in with the host password. Host
   only controls (the Admin Tools tab and the edit buttons) appear after that.
 

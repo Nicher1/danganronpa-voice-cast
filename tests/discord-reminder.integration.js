@@ -51,46 +51,69 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   await assert.rejects(settings(true,false),/Host access required/);
   await assert.rejects(settings(),/Host access required/);
   await db.exec('update host_flag set is_host=true');
-  assert.equal(await remind('2030-10-30T17:00:00Z'),'No reminder due');          // 60 minutes before
+  assert.equal(await remind('2030-10-30T07:00:00Z'),'No reminder due');          // 11 hours before: too early
   assert.equal(await remind('2030-10-30T18:01:00Z'),'No reminder due');          // already started
   assert.equal((await calls()).length,0);
 
-  assert.equal(await remind('2030-10-30T17:31:00Z'),'Reminder sent');            // 29 minutes before
+  // Step 1: 9 hours before, one fresh card with no pings; the old card is deleted.
+  assert.equal(await remind('2030-10-30T09:00:00Z'),'Card reposted');
   let c=await calls();
-  const post=c.find(x=>x.m==='POST'),del=c.find(x=>x.m==='DELETE');
-  const body=JSON.parse(post.c);
-  assert.match(post.u,/\?wait=true$/);
+  let cardPost=JSON.parse(c.find(x=>x.m==='POST').c);
+  assert.ok(cardPost.embeds.length===1);
+  assert.ok(!cardPost.content);
+  assert.deepEqual(cardPost.allowed_mentions,{parse:[]});
+  assert.match(c.find(x=>x.m==='DELETE').u,/\/messages\/111$/);
+  let row=(await db.query('select message_id,pending_delete_id from cast_discord.connections')).rows[0];
+  assert.equal(row.message_id,'998');assert.equal(row.pending_delete_id,null);
+  assert.equal(await remind('2030-10-30T10:00:00Z'),'No reminder due');          // card only once, ping not due yet
+  assert.equal((await calls()).filter(x=>x.m==='POST').length,1);
+
+  // Step 2: 29 minutes before, a separate ping message. The card is not touched.
+  assert.equal(await remind('2030-10-30T17:31:00Z'),'Reminder sent');
+  c=await calls();
+  const posts=c.filter(x=>x.m==='POST');
+  assert.equal(posts.length,2);
+  const body=JSON.parse(posts[1].c);
+  assert.match(posts[1].u,/\?wait=true$/);
   assert.match(body.content,/<@100000000000000001> <@100000000000000002>/);       // yes voters with a link
   assert.ok(!body.content.includes('100000000000000003'));                        // Carol said no
   assert.match(body.content,/Also playing: ＠everyone Dave/);                      // unlinked yes voter: name only, no mention
   assert.deepEqual(body.allowed_mentions,{parse:[],users:['100000000000000001','100000000000000002']});
-  assert.ok(body.embeds.length===1);
-  assert.match(del.u,/\/messages\/111$/);                                         // old card removed
-  let row=(await db.query('select message_id,pending_delete_id,last_status from cast_discord.connections')).rows[0];
-  assert.equal(row.message_id,'998');assert.equal(row.pending_delete_id,null);
+  assert.ok(!body.embeds);
+  assert.equal(c.filter(x=>x.m==='DELETE').length,1);                             // no second delete
+  assert.equal((await db.query('select message_id from cast_discord.connections')).rows[0].message_id,'998');
+  assert.equal(await remind('2030-10-30T17:40:00Z'),'No reminder due');          // pings once
+  assert.equal((await calls()).filter(x=>x.m==='POST').length,2);
 
-  assert.equal(await remind('2030-10-30T17:40:00Z'),'Already reminded');         // pings once
-  assert.equal((await calls()).filter(x=>x.m==='POST').length,1);
-
-  // Failed delete is retried and never re-pings.
+  // A session created inside the 30-minute window gets the card first, then the ping on the next run.
   plan.sessions=[{id:'s2',startAt:'2030-10-31T18:00:00Z',endedAt:null}];plan.times['2030-10-31']='19:00';
   plan.votes['2030-10-31']={a:{available:true,offset:0}};
   await db.query('update cast_schedules set state=$1',[JSON.stringify(plan)]);
+  // Failed delete is retried and never re-posts the card.
   await db.exec('update http_control set delete_status=500');
-  assert.equal(await remind('2030-10-31T17:45:00Z'),'Reminder sent');
+  assert.equal(await remind('2030-10-31T17:45:00Z'),'Card reposted');
   assert.equal((await db.query('select pending_delete_id from cast_discord.connections')).rows[0].pending_delete_id,'998');
-  assert.equal(await remind('2030-10-31T17:50:00Z'),'Cleanup pending');
+  assert.equal(await remind('2030-10-31T17:46:00Z'),'Cleanup pending');
   await db.exec("update http_control set delete_status=404;update cast_discord.connections set retry_after=null");
-  assert.equal(await remind('2030-10-31T17:52:00Z'),'Already reminded');
+  assert.equal(await remind('2030-10-31T17:48:00Z'),'Reminder sent');
   assert.equal((await db.query('select pending_delete_id from cast_discord.connections')).rows[0].pending_delete_id,null);
+  assert.equal(await remind('2030-10-31T17:49:00Z'),'No reminder due');
 
-  // Uncertain POST is never retried (no double ping).
+  // Uncertain POST is never retried (no double post).
   plan.sessions=[{id:'s3',startAt:'2030-11-01T18:00:00Z',endedAt:null}];plan.times['2030-11-01']='19:00';
   plan.votes['2030-11-01']={a:{available:true,offset:0}};
   await db.query('update cast_schedules set state=$1',[JSON.stringify(plan)]);
   await db.exec('update http_control set fail_post=true');
-  assert.equal(await remind('2030-11-01T17:45:00Z'),'Reminder uncertain');
-  assert.equal(await remind('2030-11-01T17:46:00Z'),'Already reminded');
+  assert.equal(await remind('2030-11-01T09:00:00Z'),'Card uncertain');
+  assert.equal(await remind('2030-11-01T09:01:00Z'),'No reminder due');
+  await db.exec('update http_control set fail_post=false');
+  assert.equal(await remind('2030-11-01T17:35:00Z'),'Reminder sent');
+  await db.exec('update http_control set fail_post=true');
+  plan.sessions=[{id:'s3b',startAt:'2030-11-01T20:00:00Z',endedAt:null}];plan.times['2030-11-01']='21:00';
+  await db.query('update cast_schedules set state=$1',[JSON.stringify(plan)]);
+  await db.exec("insert into cast_discord.reminders(slug,session_id,start_at,kind,status) values('board','s3b','2030-11-01T20:00:00Z','card','sent')");
+  assert.equal(await remind('2030-11-01T19:45:00Z'),'Reminder uncertain');
+  assert.equal(await remind('2030-11-01T19:46:00Z'),'No reminder due');
   await db.exec('update http_control set fail_post=false');
 
   // Rate limit: no record, retried later.
@@ -98,14 +121,15 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   plan.votes['2030-11-02']={a:{available:true,offset:0}};
   await db.query('update cast_schedules set state=$1',[JSON.stringify(plan)]);
   await db.exec('update http_control set post_status=429');
-  assert.equal(await remind('2030-11-02T17:45:00Z'),'Reminder HTTP 429');
-  assert.equal(await remind('2030-11-02T17:46:00Z'),'Waiting to retry');
+  assert.equal(await remind('2030-11-02T09:00:00Z'),'Card HTTP 429');
+  assert.equal(await remind('2030-11-02T09:01:00Z'),'Waiting to retry');
   await db.exec('update http_control set post_status=200');
-  assert.equal(await remind('2030-11-02T17:48:00Z'),'Reminder sent');
+  assert.equal(await remind('2030-11-02T09:03:00Z'),'Card reposted');
 
-  // Nobody available: nothing is posted.
+  // Nobody available: the card is still reposted, but no ping is posted.
   plan.sessions=[{id:'s5',startAt:'2030-11-03T18:00:00Z',endedAt:null}];plan.times['2030-11-03']='19:00';
   await db.query('update cast_schedules set state=$1',[JSON.stringify(plan)]);
+  assert.equal(await remind('2030-11-03T09:00:00Z'),'Card reposted');
   const before=(await calls()).length;
   assert.equal(await remind('2030-11-03T17:45:00Z'),'Nobody to remind');
   assert.equal((await calls()).length,before);
