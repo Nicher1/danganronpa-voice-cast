@@ -24,6 +24,13 @@ assert.equal(days[0].continuing,1);assert.equal(days[1].sessions.length,3);
 assert.equal(history.timestamp(tiger[0].start,new Date(now)),'19:14 yesterday');
 assert.equal(history.timestamp(tiger[1].end,new Date(now)),'06:44 today');
 assert.match(history.timestamp(ms('2026-10-21T19:14:00+02:00'),new Date(now)),/21 Oct 2026/);
+const flicker=history.visits([
+  record('f','2026-10-29T10:00:00+01:00','2026-10-29T10:01:00+01:00'),
+  record('f','2026-10-29T10:03:00+01:00','2026-10-29T10:04:00+01:00'),
+  record('f','2026-10-29T10:09:30+01:00','2026-10-29T10:10:00+01:00')
+],{now});
+assert.equal(flicker.length,2,'Breaks under 5 minutes join into one visit; longer breaks stay separate');
+assert.equal(history.duration(flicker[0].start,flicker[0].end),'4m');
 const stale=history.visits(rows,{now:now+120000,onlineActorIds:new Set(['tiger'])});
 assert.equal(stale.find(x=>x.start===tiger[2].start).active,false,'Cached is_active cannot keep a stale visit open');
 assert.equal(stale.find(x=>x.start===tiger[2].start).end,ms(rows[3].last_seen_at));
