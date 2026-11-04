@@ -1531,7 +1531,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         <details class="patch-release" open>
           <summary><span class="patch-version">V1.5.4</span><span class="patch-release-title"><strong>Character variety badge</strong><small>Current release · 4 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
-            <section class="patch-note"><h4>Most different characters voiced</h4><p>Statistics now show how many different characters each actor has voiced in the current game. Whoever has voiced the most gets a small badge on their card. In the first game the badge is Toko's face.</p></section>
+            <section class="patch-note"><h4>Longest voice history</h4><p>Statistics now show the length of each actor's voice history. Whoever has the longest history, or everyone tied for it, gets a small badge on their card. In the first game the badge is Toko's face.</p></section>
             <section class="patch-note"><h4>Choose your own badge pictures</h4><p>The host can set the picture for each leader badge, per game, in Admin Tools. The prediction bar also stretches across the page on wide screens.</p></section>
           </div>
         </details>
@@ -2078,7 +2078,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.04.6";
+  const APP_BUILD = "2026.11.04.7";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -4393,7 +4393,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <div>Victim guesses<strong>${counts.totals.victim}</strong></div>
           <div>Blackened guesses<strong>${counts.totals.blackened}</strong></div>
           <div>Total deaths<strong>${counts.totals.deaths}</strong></div>
-          <div>Characters voiced · ${esc(gameDefinition(activeGameId).short)}<strong>${voicedCharacterCount(actor)}${varietyLeaders.has(actor.id)?' <span class="actor-award variety mini" aria-hidden="true">'+badgeFaceMarkup("variety","🎭").replace(' loading="lazy"',"")+'</span>':""}</strong></div>
+          <div>Voice history<strong>${voicedCharacterCount(actor)}${varietyLeaders.has(actor.id)?' <span class="actor-award variety mini" aria-hidden="true">'+badgeFaceMarkup("variety","🎭").replace(' loading="lazy"',"")+'</span>':""}</strong></div>
         </div>
         <div class="stats-game-list">${gameRows}<div class="stats-game-row total"><strong>ALL SERIES</strong><span class="stats-game-metric">Correct<b>${counts.totals.total}</b>${totalHidden}</span><span class="stats-game-metric">Victim<b>${counts.totals.victim}</b></span><span class="stats-game-metric">Blackened<b>${counts.totals.blackened}</b>${totalHidden}</span><span class="stats-game-metric">Deaths<b>${counts.totals.deaths}</b></span></div></div>`;
       grid.appendChild(card);
@@ -4772,13 +4772,9 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     return new Set(maximum?values.filter(item=>item.value===maximum).map(item=>item.id):[]);
   }
 
-  // Different characters an actor has voiced in one game, counted from their voice history.
-  // Only characters the viewer may see are counted, so hidden roles cannot leak through a total.
-  function voicedCharacterCount(actor,gameId=activeGameId){
-    const history=new Set(normaliseHistory(actor?.history).map(historyKey));
-    const names=new Set();
-    state.roles.filter(r=>r.gameId===gameId&&currentRoleVisible(r)&&history.has(historyKey(r.name))).forEach(r=>names.add(historyKey(r.name)));
-    return names.size;
+  // The number of different entries in an actor's voice history; the longest history leads.
+  function voicedCharacterCount(actor){
+    return normaliseHistory(actor?.history).length;
   }
   function activeGameVarietyLeaderIds(){
     const values=state.actors.map(actor=>({id:actor.id,value:voicedCharacterCount(actor)}));
@@ -4789,7 +4785,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   const BADGE_KINDS={
     hope:{title:"Most correct predictions",label:"Most correct predictions in the current game"},
     monokuma:{title:"Most assigned-character deaths",label:"Most assigned-character deaths in the current game"},
-    variety:{title:"Most different characters voiced",label:"Most different characters voiced in the current game"}
+    variety:{title:"Longest voice history",label:"Longest voice history"}
   };
   // Host-chosen badge pictures are saved per game; only web addresses and bundled assets are accepted.
   function validBadgeImage(value){
