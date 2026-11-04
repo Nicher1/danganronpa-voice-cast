@@ -1500,7 +1500,15 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.5.1</span><span class="patch-release-title"><strong>Wider screens line up</strong><small>Current release · 4 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.2</span><span class="patch-release-title"><strong>Gift guide and Discord reminder switches</strong><small>Current release · 4 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Loved gifts in Monopad profiles</h4><p>Opening a first-game student's Monopad profile now lists the gifts they love, with a link to the source. Profiles scroll on short phone screens so nothing is cut off.</p></section>
+            <section class="patch-note"><h4>Discord controls for the host</h4><p>Admin Tools has a new Discord panel where the host can switch the schedule card and the 30-minute reminder on or off. The reminder only pings linked players who voted yes, and it is off until the host turns it on.</p></section>
+            <section class="patch-note"><h4>New front-page quotes</h4><p>The front-page quote pair has been refreshed. Host-edited quotes still take priority.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.1</span><span class="patch-release-title"><strong>Wider screens line up</strong><small>4 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Header banner follows the page width</h4><p>On large monitors the main Danganronpa Voice Cast banner and the next-session banner now start and end in line with the tabs and the rest of the page, instead of stopping early. On wide screens the quote column grows with the banner. Phones, tablets and ordinary computer screens look the same as before.</p></section>
           </div>
@@ -2027,7 +2035,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.04.1";
+  const APP_BUILD = "2026.11.04.2";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
