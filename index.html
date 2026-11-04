@@ -778,6 +778,7 @@ body.mobile-dragging{user-select:none}
 #recapManagerDialog{width:min(94vw,860px);max-width:94vw;max-height:94vh;overflow:auto}.recap-manager-card{width:100%}.recap-editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.recap-editor-panel{padding:14px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.018)}.recap-editor-panel h4{margin:0 0 4px}.recap-editor-panel>p{margin:0 0 9px}.recap-editor-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.modal select{display:block;width:100%;margin-top:5px;border:1px solid var(--line);background:#0e1117;color:white;border-radius:10px;padding:10px 11px;outline:none}.recap-manager-list{display:grid;gap:6px;max-height:220px;overflow:auto;margin-top:11px}.recap-manager-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:9px;background:#0e1118}.recap-manager-item strong{display:block;font-size:.69rem}.recap-manager-item small{display:block;color:var(--muted);font-size:.61rem;margin-top:2px}.recap-manager-actions{display:flex;gap:4px}.recap-manager-actions button{padding:.34rem .46rem;font-size:.58rem}.field-help{display:block;margin-top:5px;color:var(--muted);font-size:.65rem;font-weight:500;line-height:1.4}#editDossierBioBtn{margin-top:17px}
 #dossierDialog{width:min(94vw,820px);max-width:94vw;overflow-x:hidden;overflow-y:auto}
 .dossier-dialog-card{width:100%;max-width:100%;padding:0;overflow:hidden}.dossier-dialog-body{display:grid;grid-template-columns:minmax(230px,.82fr) minmax(0,1.18fr);min-width:0;min-height:410px;overflow:hidden}#dossierDialogArtWrap{display:flex;align-items:stretch;min-width:0;max-width:100%;overflow:hidden}.dossier-dialog-art{display:block;width:100%;max-width:100%;min-width:0;height:100%;max-height:650px;min-height:410px;object-fit:contain;object-position:center top;background:linear-gradient(145deg,rgba(112,184,255,.08),rgba(245,64,148,.045)),#0d1016}.dossier-dialog-placeholder{display:grid;place-items:center;color:var(--muted2);font-size:3rem}.dossier-dialog-copy{padding:23px;align-self:center;min-width:0;max-width:100%;overflow-wrap:anywhere}.dossier-dialog-copy .modal-head{padding-bottom:14px}.dossier-dialog-copy h3{font-size:clamp(1.45rem,4vw,2.2rem);line-height:1}.dossier-dialog-talent{color:var(--blue);font-weight:850;font-size:.8rem;margin:12px 0}.dossier-dialog-bio{color:#d9dee8;font-size:.88rem;line-height:1.72;white-space:pre-line;overflow-wrap:anywhere}
+.dossier-gifts{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}.dossier-gifts h4{margin:0 0 8px;font-size:.78rem;letter-spacing:.08em;color:var(--pink-hot,#ff248b)}.dossier-gift-list{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}.dossier-gift-list li{padding:4px 9px;border:1px solid var(--line);border-radius:999px;background:var(--panel);font-size:.78rem;line-height:1.3}.dossier-gift-list small{color:var(--muted);margin-right:5px}.dossier-gifts-source{margin:8px 0 0;font-size:.7rem}.dossier-gifts-source a{color:inherit}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:12px;margin-bottom:16px}
 .stats-card{padding:15px}
 .stats-name{font-size:1rem;font-weight:950;padding-bottom:9px;border-bottom:1px solid var(--line)}
@@ -1440,6 +1441,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <div id="dossierDialogArtCredit"></div>
           <div id="dossierDialogTalent" class="dossier-dialog-talent"></div>
           <div id="dossierDialogBio" class="dossier-dialog-bio"></div><div id="dossierMeasurement" class="report-measurement"></div>
+          <div id="dossierGifts" class="dossier-gifts" hidden></div>
           <button id="editDossierBioBtn" type="button" class="ghost host-only">Edit character description</button>
         </div>
       </div>
@@ -2015,6 +2017,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   <script src="admin-preview-safety.js?v=20261026"></script>
   <script src="voice-clips-v4.js"></script>
   <script src="monopad-data.js?v=4"></script>
+<script src="gift-guide-data.js?v=20261104"></script>
   <script src="endgame-data.js?v=20261007"></script>
   <script src="unconfirmed-student.js?v=20261022"></script>
   <script src="session-planner.js?v=20261030"></script>
@@ -3498,6 +3501,15 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   function visibleRecapParagraphs(){return visibleRecapEntries().map(entry=>entry.text)}
 
+  // Loved gifts come from gift-guide-data.js. Hidden or unconfirmed files never get a guide.
+  function renderDossierGifts(role){
+    const box=$("#dossierGifts"),guide=window.CAST_GIFT_GUIDE;
+    const gifts=!["real-junko","unconfirmed-student"].includes(role.specialRole)?guide?.games?.[role.gameId]?.[role.name]:null;
+    box.hidden=!gifts?.length;
+    if(!gifts?.length){box.innerHTML="";return;}
+    box.innerHTML=`<h4>LOVED GIFTS</h4><ul class="dossier-gift-list">${gifts.map(g=>`<li><small>#${String(g.n).padStart(3,"0")}</small>${esc(g.name)}</li>`).join("")}</ul><p class="dossier-gifts-source muted">Source: <a href="${esc(guide.source.url)}" target="_blank" rel="noopener noreferrer">${esc(guide.source.label)}</a></p>`;
+  }
+
   function openDossier(role){
     if(!role||!currentRoleVisible(role))return;
     const art=profileImageForRole(role);
@@ -3509,6 +3521,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#dossierDialogBio").textContent=biographyForRole(role);
     const measurement=role.gameId==="dr1"&&role.specialRole!=="unconfirmed-student"?(role.specialRole==="real-junko"?(role.revealed?90:null):window.CAST_ENDGAME_DATA.chest[role.name]):null;
     $("#dossierMeasurement").textContent=`MONOPAD / Chest: ${measurement?measurement+" cm":"Not recorded"}`;
+    renderDossierGifts(role);
     $("#editDossierBioBtn").dataset.roleId=role.id;
     attachImageFallback(wrap,role);
     $("#dossierDialog").showModal();
