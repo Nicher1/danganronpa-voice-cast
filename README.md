@@ -75,7 +75,7 @@ node tests\discord-reminder.integration.js
   chapter). The defaults are in `defaultFrontQuotes()` in `index.html`.
 - **Default theme for visitors:** host Admin Tools, "Default theme". Personal choices
   always win. Theme styling lives in `finale.css`.
-- **Discord card and reminder on or off:** host Admin Tools, "Schedule card and reminder".
+- **Discord controls:** host Admin Tools, "Schedule card and reminder". The prepared card-button update is documented in `DISCORD_SCHEDULING.md`.
 - **A character's Discord link (for pings):** open the voice actor profile as host.
 - **Colours and layout:** the CSS files above. Wide screens, tablets and phones (portrait
   and landscape) all need checking after a layout change.

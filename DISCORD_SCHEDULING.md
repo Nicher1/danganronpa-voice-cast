@@ -78,3 +78,35 @@ Run discord-reminder-migration.sql after the schedule and actor-links migrations
 - A rescheduled session can be handled again.
 - Only listed users can be pinged, never @everyone or roles.
 
+
+## Prepared update: one card and manual repost (6 November 2026)
+
+Local preview, not deployed. After owner approval, run
+`discord-card-repost-migration.sql` after `discord-reminder-migration.sql`, then
+publish the frontend. The new UI detects the migration and keeps its controls
+unavailable until it is installed.
+
+- Admin Tools replaces the card switch with **Move card to bottom now**. Each
+  completed click deletes the old card and posts a fresh one.
+- Card posting within 10 hours is independent of the reminder switch. The minute
+  job catches up when service resumes while the session is still in the future.
+- With the 30-minute reminder enabled, the same job deletes the card, posts its
+  replacement, then sends the separate ping immediately underneath. Only linked
+  yes-voters are pinged; unlinked yes-voters are named without a mention.
+- All card creation paths share a lock and delete known previous cards first.
+  Failed deletions block creation. A rejected POST can retry. A timeout, missing
+  message ID or server error pauses delivery, since Discord may have accepted it.
+- Attendance continues to update the current card in place. A manual post within
+  the 10-hour window fulfils the automatic post; a changed start time qualifies
+  again. Finished and already-started sessions do not trigger reminders.
+
+After an uncertain card POST, inspect Discord and reconcile `message_id` with the
+existing card (or null only after confirming there is no card). Then clear
+`card_uncertain`, `retry_after` and `last_payload` and enable the connection.
+The reminder switch deliberately cannot clear this safety stop. Do not re-run an
+older migration after this one, because it would restore the previous functions.
+
+Validation: `tests/discord-card-repost.integration.js` uses real PostgreSQL and a
+mock Discord transport that rejects duplicate live cards. No real messages are
+sent. `tests/discord-card-repost.browser.cjs` checks the host panel and its actions
+with a mock connection on wide, normal, portrait and landscape screens.

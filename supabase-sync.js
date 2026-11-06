@@ -149,10 +149,16 @@
       return data || {};
     }
 
-    async setDiscordSettings(card, reminder) {
+    async setDiscordSettings(reminder) {
       const { data, error } = await this.client.rpc("cast_set_discord_settings", {
-        p_slug: this.slug, p_card: !!card, p_reminder: !!reminder
+        p_slug: this.slug, p_card: true, p_reminder: !!reminder
       });
+      if (error) throw error;
+      return data || {};
+    }
+
+    async repostDiscordCard() {
+      const { data, error } = await this.client.rpc("cast_repost_discord_card", { p_slug: this.slug });
       if (error) throw error;
       return data || {};
     }
