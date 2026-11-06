@@ -68,23 +68,11 @@ Discord messages. Coverage includes timezone conversion, rebased arrivals,
 deleted actors, Markdown/mention handling, private-schema permissions,
 deduplication, PATCH updates, rate limits, and uncertain first-post failures.
 
-## Card repost and 30-minute reminder
+## One card and manual repost (6 November 2026)
 
-Run discord-reminder-migration.sql after the schedule and actor-links migrations. It runs inside Supabase every minute, so your PC can be off.
-
-- 10 hours before a session (or right away if the session is created later than that), a fresh schedule card is posted without pings and the old card is deleted, so the new card sits at the bottom. Webhooks cannot pin.
-- 30 minutes before, a separate short message pings linked players who voted yes. Unlinked yes-voters are named without a ping. The card is not touched.
-- Each step happens once per session. If Discord's answer is unknown it is not retried, to avoid a double post or ping.
-- A rescheduled session can be handled again.
-- Only listed users can be pinged, never @everyone or roles.
-
-
-## Prepared update: one card and manual repost (6 November 2026)
-
-Local preview, not deployed. After owner approval, run
-`discord-card-repost-migration.sql` after `discord-reminder-migration.sql`, then
-publish the frontend. The new UI detects the migration and keeps its controls
-unavailable until it is installed.
+Installed: `discord-card-repost-migration.sql`, after
+`discord-reminder-migration.sql`. It runs inside Supabase every minute, so your
+PC can be off. Admin Tools offers a manual card button and a separate ping switch.
 
 - Admin Tools replaces the card switch with **Move card to bottom now**. Each
   completed click deletes the old card and posts a fresh one.

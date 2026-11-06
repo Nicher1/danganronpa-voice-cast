@@ -35,8 +35,10 @@ Supabase
 - Project ref `srdyjehnvsmscmeuhcvh`. Database work goes through the Management API
   (`POST https://api.supabase.com/v1/projects/<ref>/database/query`) using the scoped token in the
   user environment variable `SUPABASE_ACCESS_TOKEN`. Never print, commit or paste it.
-- The Discord reminder (`discord-reminder-migration.sql`) is installed. It is off by default and
-  is switched on from Admin Tools on the host page. Only linked yes-voters are pinged.
+- The Discord card update (`discord-card-repost-migration.sql`) is installed after
+  `discord-reminder-migration.sql`. The card posts automatically within 10 hours;
+  Admin Tools can move it manually and toggle the 30-minute ping independently.
+  Only linked yes-voters are pinged. The card moves immediately before the ping.
 - Run the PGlite tests with `NODE_PATH` pointing at a folder that has `@electric-sql/pglite`.
 
 Known issues and parked work
