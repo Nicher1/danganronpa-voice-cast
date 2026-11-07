@@ -25,6 +25,8 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
       end$$;`);
   const sql=fs.readFileSync('discord-schedule-migration.sql','utf8').replace('create extension if not exists http with schema extensions;','');
   await db.exec(sql);await db.exec(sql);
+  const likelySql=fs.readFileSync('discord-likely-days-migration.sql','utf8');
+  await db.exec(likelySql);await db.exec(likelySql);
   const actors=[{id:'a',name:'Alice'},{id:'b',name:'Bob'},{id:'c',name:'@everyone **Carol** <@123>'}];
   const plan={sessions:[{startAt:'2030-10-30T18:00:00Z',endedAt:null}],times:{'2030-10-30':'19:15'},votes:{'2030-10-30':{a:{available:true,offset:-15},b:{available:true,offset:15},c:{available:false,offset:0},deleted:{available:true,offset:0}}}};
   await db.query('insert into cast_schedules values($1,$2)',['board',JSON.stringify(plan)]);
@@ -63,6 +65,37 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   await db.query('update cast_schedules set state=$1',[JSON.stringify(plan)]);
   p=await payload();assert.ok(p.embeds[0].fields.length>0);assert.ok(p.embeds[0].fields.length<=6);
   assert.equal(p.embeds[0].title,'Choose our next Danganronpa day');
+  // Match the website's likely-day selection while retaining Discord timestamps.
+  const P=require('../session-planner');
+  plan.sessions=[{startAt:'2030-10-21T18:00:00Z',endedAt:'2030-10-21T20:00:00Z'}];
+  plan.times={};plan.votes={};
+  const vote=(date,offsets)=>{plan.votes[date]=Object.fromEntries(offsets.map((offset,i)=>[actors[i].id,{available:true,offset}]));};
+  async function checkLikely(expected,at='2030-10-29T12:00Z'){
+    await db.query('update cast_schedules set state=$1',[JSON.stringify(plan)]);
+    const card=(await db.query("select cast_discord.payload('board','https://example.com/',$1::timestamptz) p",[at])).rows[0].p;
+    const marked=card.embeds[0].fields.filter(f=>/^\*\*<t:\d+:F>\*\*\n/.test(f.value));
+    assert.deepEqual(marked.map(f=>f.value.match(/scheduleDate=(\d{4}-\d{2}-\d{2})/)[1]),expected);
+    assert.deepEqual(P.likelySessions(plan,'2030-10-28',actors,Date.parse(at)).map(x=>x.date),expected);
+    assert.equal(card.embeds[0].description.includes('Bold dates are likely days, not confirmed sessions.'),expected.length>0);
+    assert.deepEqual(card.allowed_mentions,{parse:[]});
+    for(const field of card.embeds[0].fields)assert.match(field.value,/^\*{0,2}<t:\d+:F>\*{0,2}\n/);
+  }
+  vote('2030-10-30',[0,0]);plan.votes['2030-10-30'].deleted={available:true,offset:0};
+  plan.votes['2030-10-30'].c={available:false,offset:0};
+  await checkLikely([]); // Unavailable and removed actors cannot reach the threshold.
+  vote('2030-10-30',[0,0,30]);await checkLikely(['2030-10-30']);
+  vote('2030-10-31',[0,0,0]);await checkLikely(['2030-10-30','2030-10-31']);
+  vote('2030-11-01',[0,0,0]);await checkLikely(['2030-10-30','2030-10-31','2030-11-01']);
+  vote('2030-11-02',[0,0,0]);await checkLikely([]); // Do not choose three of four tied leaders.
+  plan.votes={'2030-10-30':plan.votes['2030-10-30']};
+  vote('2030-10-29',[0,0,0]);await checkLikely(['2030-10-30']); // Tuesday is unavailable.
+  await checkLikely(['2030-10-30'],'2030-10-30T18:15Z'); // Last arrival is still ahead.
+  await checkLikely([],'2030-10-30T18:30Z');
+  plan.sessions=[{startAt:'2030-10-30T18:00:00Z',endedAt:null}];
+  await db.query('update cast_schedules set state=$1',[JSON.stringify(plan)]);
+  p=await payload();assert.equal(p.embeds[0].title,'Next Danganronpa session');
+  assert.ok(!p.embeds[0].description.includes('Bold dates'));
+  assert.ok(!p.embeds[0].fields[0].value.includes('**<t:'));
   await db.close();
   console.log('Discord integration passed: DST, rebased arrivals, deleted actors, direct links, escaping, unchanged-message deduplication, PATCH updates, retries and private credentials.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

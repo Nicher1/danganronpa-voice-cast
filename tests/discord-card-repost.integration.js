@@ -40,6 +40,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
   const strip=sql=>sql.replace('create extension if not exists http with schema extensions;','').replace("notify pgrst,'reload schema';",'');
   for(const f of ['discord-schedule-migration.sql','discord-actor-links-migration.sql','discord-reminder-migration.sql','discord-card-repost-migration.sql'])await db.exec(strip(fs.readFileSync(f,'utf8')));
   await db.exec(strip(fs.readFileSync('discord-card-repost-migration.sql','utf8'))); // re-runnable
+  await db.exec(fs.readFileSync('discord-likely-days-migration.sql','utf8'));
 
   const actors=[{id:'a',name:'Alice'},{id:'b',name:'Bob'},{id:'c',name:'Carol'},{id:'d',name:'@everyone Dave'}];
   const plan={sessions:[{id:'s1',startAt:'2030-10-30T18:00:00Z',endedAt:null}],times:{'2030-10-30':'19:00'},

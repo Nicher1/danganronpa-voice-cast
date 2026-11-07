@@ -62,6 +62,14 @@ message in Discord for the automatically updated version.
 
 ## Validation
 
+Installed 7 November 2026: `discord-likely-days-migration.sql` replaces only the card
+formatter after `discord-card-repost-migration.sql`. It bolds the local Discord
+date timestamp for likely poll days and labels them as unconfirmed. Selection
+matches the website: at least three existing available actors, the highest daily
+count, a future latest arrival, and at most three tied leading days. Four-way ties
+and lower-vote days stay plain. Confirmed-session cards are unchanged. Once
+installed, the existing minute job updates the current card in place.
+
 Run `tests/discord-schedule.integration.js` with the existing PGlite installation
 on `NODE_PATH`. It uses real PostgreSQL with a mocked HTTP transport; it sends no
 Discord messages. Coverage includes timezone conversion, rebased arrivals,
