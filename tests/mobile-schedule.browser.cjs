@@ -30,14 +30,15 @@ const fixture={sessions:[{id:'old',startAt:P.instant('2030-10-21'),endedAt:P.ins
   await page.waitForSelector('#scheduleTab.active [data-drop-day="2030-10-30"]');
   assert.equal(await page.locator('.tab').nth(1).getAttribute('data-tab'),'schedule');
   assert.equal(await page.locator('#nextSessionBanner').getAttribute('data-session-state'),'likely');
-  assert.match(await page.locator('#nextSessionBanner').innerText(),/18:45/);
+  assert.match(await page.locator('#nextSessionBanner').innerText(),/19:00/);
+  assert.match(await page.locator('#nextSessionBanner').innerText(),/Earliest time everyone available can join/);
   assert.equal(await page.locator('#nextSessionBanner [data-countdown-at]').count(),1,'A unique leader may show an estimated countdown');
   assert.equal(await page.locator('#castingTab').isVisible(),false);
   assert.equal(await page.locator('.schedule-week').isVisible(),true,'Old collapsed preference cannot hide voting');
   assert.equal(await page.locator('dialog[open]').count(),0,'Discord landing should not be blocked by a picker');
   const samples=[];
-  for(const width of [360,412,700,1020,1440]){
-   await page.setViewportSize({width,height:915});
+  for(const [width,height] of [[360,915],[412,915],[915,412],[700,915],[1020,915],[1440,915]]){
+   await page.setViewportSize({width,height});
    for(const theme of ['original','reworked','finale']){
     await page.locator('.board-options>summary').click();
     await page.selectOption('#uiThemeSelect',theme);

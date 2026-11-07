@@ -35,14 +35,13 @@
   function voters(s,date,actors){const ids=new Set(actors.map(a=>a.id));return Object.entries(s.votes[date]||{}).filter(([id,v])=>ids.has(id)&&v.available).map(([actorId,v])=>({actorId,...v}));}
   function suggestion(s,date,actors){const vs=voters(s,date,actors);const average=vs.reduce((n,v)=>n+v.offset,0)/(vs.length+1);return Math.ceil(average/15)*15;}
   // A read-only forecast, separate from host confirmation and automatic booking.
-  // Count only actual available voters, and round the mean arrival down in local time.
+  // Use the earliest instant when every available voter can join.
   function likelySessions(s,week,actors,now=Date.now()){
     const candidates=Array.from({length:7},(_,i)=>addDays(week,i)).filter(date=>weekday(date)!==2&&date>=day(now)).map(date=>{
       const vs=voters(s,date,actors),base=Date.parse(instant(date,s.times[date]||'19:00'));
       if(vs.length<3)return null;
-      const mean=base+vs.reduce((sum,v)=>sum+(Number(v.offset)||0),0)/vs.length*MIN;
-      const p=parts(mean),rounded=mean-(Number(p.minute)%15)*MIN-new Date(mean).getUTCSeconds()*1000-new Date(mean).getUTCMilliseconds();
-      return {date,count:vs.length,startAt:new Date(rounded).toISOString()};
+      const startAt=base+Math.max(...vs.map(v=>Number(v.offset)||0))*MIN;
+      return {date,count:vs.length,startAt:new Date(startAt).toISOString()};
     }).filter(x=>x&&Date.parse(x.startAt)>now).sort((a,b)=>b.count-a.count||a.date.localeCompare(b.date));
     const leaders=candidates.filter(candidate=>candidate.count===candidates[0].count);
     return leaders.length<=3?leaders:[];

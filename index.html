@@ -1072,10 +1072,10 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 
 </style>
-<link rel="stylesheet" href="finale.css?v=20261107-2">
-<link rel="stylesheet" href="island-skin.css?v=20261107-2">
-<link rel="stylesheet" href="slayhem-and-layout.css?v=20261107-2">
-<link rel="stylesheet" href="session-planner.css?v=20261107-2">
+<link rel="stylesheet" href="finale.css?v=20261107-3">
+<link rel="stylesheet" href="island-skin.css?v=20261107-3">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261107-3">
+<link rel="stylesheet" href="session-planner.css?v=20261107-3">
 </head>
 <body>
   <header class="topbar">
@@ -1534,7 +1534,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">V1.5.8</span><span class="patch-release-title"><strong>Local session timestamps</strong><small>Current release · 7 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.9</span><span class="patch-release-title"><strong>Likely start times</strong><small>Current release · 7 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Start when everyone can join</h4><p>Likely session times use the latest arrival among players marked available, giving the earliest time everyone can join instead of averaging arrivals.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.8</span><span class="patch-release-title"><strong>Local session timestamps</strong><small>7 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Local times without timezone labels</h4><p>Session timestamps use your device's local date and time without a timezone suffix.</p></section>
           </div>
@@ -2092,23 +2098,23 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js?v=20261107-2"></script>
-  <script src="activity-history.js?v=20261107-2"></script>
-  <script src="dr2-monopad-art.js?v=20261107-2"></script>
-  <script src="admin-preview-safety.js?v=20261107-2"></script>
+  <script src="supabase-sync.js?v=20261107-3"></script>
+  <script src="activity-history.js?v=20261107-3"></script>
+  <script src="dr2-monopad-art.js?v=20261107-3"></script>
+  <script src="admin-preview-safety.js?v=20261107-3"></script>
   <script src="voice-clips-v4.js"></script>
-  <script src="monopad-data.js?v=20261107-2"></script>
-<script src="gift-guide-data.js?v=20261107-2"></script>
-  <script src="endgame-data.js?v=20261107-2"></script>
-  <script src="unconfirmed-student.js?v=20261107-2"></script>
-  <script src="session-planner.js?v=20261107-2"></script>
-  <script src="session-planner-store.js?v=20261107-2"></script>
-  <script src="session-planner-ui.js?v=20261107-2"></script>
+  <script src="monopad-data.js?v=20261107-3"></script>
+<script src="gift-guide-data.js?v=20261107-3"></script>
+  <script src="endgame-data.js?v=20261107-3"></script>
+  <script src="unconfirmed-student.js?v=20261107-3"></script>
+  <script src="session-planner.js?v=20261107-3"></script>
+  <script src="session-planner-store.js?v=20261107-3"></script>
+  <script src="session-planner-ui.js?v=20261107-3"></script>
   <script>
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.07.2";
+  const APP_BUILD = "2026.11.07.3";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";

@@ -54,6 +54,12 @@ disables automatic re-selection for that week; the host can still choose a date.
 Attendance offsets are rebased when the start time changes, preserving players'
 stated arrival times.
 
+The unconfirmed likely-session estimate is separate from automatic booking. It
+uses the latest arrival among the day's available players: the earliest instant
+everyone can join, without averaging or rounding earlier. Only existing actors
+marked available count. A day needs at least three votes; up to three tied leading
+days are shown with their own estimated start times.
+
 Weekly attendance records are shared, but **email delivery is deferred** at the
 host's request. “Email not connected” is intentional. No outgoing mail is sent.
 
