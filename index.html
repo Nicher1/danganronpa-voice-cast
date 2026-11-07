@@ -1535,8 +1535,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       </div>
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
+        <details class="patch-release" open>
+          <summary><span class="patch-version">V1.5.12</span><span class="patch-release-title"><strong>A clearer hidden sound</strong><small>Current release · 7 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note" data-reveal-game="dr1"><h4>Better audio quality</h4><p>The hidden voice-line Easter egg now plays a higher quality recording.</p></section>
+          </div>
+        </details>
         <details class="patch-release">
-          <summary><span class="patch-version">V1.5.11</span><span class="patch-release-title"><strong>A hidden sound</strong><small>Current release · 7 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.11</span><span class="patch-release-title"><strong>A hidden sound</strong><small>7 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note" data-reveal-game="dr1"><h4>A small discovery</h4><p>A subtle badge hides a voice-line Easter egg once the relevant story moment has been reached. Tap again to stop playback.</p></section>
           </div>
@@ -2128,7 +2134,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.07.5";
+  const APP_BUILD = "2026.11.07.6";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -4280,7 +4286,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   function bindSecretVoice(root,role){
     root.querySelector('[data-action="play-secret"]')?.addEventListener("click",event=>{
       event.stopPropagation();
-      if(canPlaySecretVoice(role))playUrlPool(["assets/audio/secret-student.mp3"],"secret-student",event.currentTarget);
+      if(canPlaySecretVoice(role))playUrlPool(["assets/audio/secret-student.mp3?v=2"],"secret-student",event.currentTarget);
     });
   }
 
