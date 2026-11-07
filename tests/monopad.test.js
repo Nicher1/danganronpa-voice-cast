@@ -32,7 +32,7 @@ for (const [name, asset] of Object.entries(data.profileOverrides.dr1)) {
   assert.ok(fs.existsSync(asset), `Missing supplied DR1 artwork for ${name}: ${asset}`);
 }
 
-assert.ok(html.includes('<script src="monopad-data.js?v=4"></script>'));
+assert.match(html,/<script src="monopad-data\.js\?v=[^"]+"><\/script>/);
 assert.ok(html.includes('data-tab="monopad"'));
 assert.ok(html.includes('id="monopadTab"'));
 assert.ok(html.includes('id="dossierDialog"'));

@@ -531,6 +531,8 @@ body.mobile-dragging{user-select:none}
   width:29px;height:29px;padding:0;border-radius:999px;font-size:.69rem;line-height:1;
 }
 .voice-play-btn:hover{color:white;transform:none}
+.secret-voice-badge{min-width:44px;min-height:44px;color:var(--muted);font-size:.75rem;letter-spacing:.06em;border-style:dashed;background:transparent}
+.secret-voice-badge:hover,.secret-voice-badge:focus-visible{color:var(--pink);border-color:var(--pink)}
 .official-voice-btn{color:#d9edff;border-color:rgba(112,184,255,.4);background:rgba(112,184,255,.12)}
 .official-voice-btn:hover,.official-voice-btn.playing{border-color:var(--blue);background:var(--blue);color:#101116}
 .personal-voice-btn,.practice-record-btn{color:#ffd9dc;border-color:rgba(255,77,87,.48);background:rgba(255,77,87,.13)}
@@ -1072,10 +1074,10 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 
 </style>
-<link rel="stylesheet" href="finale.css?v=20261107-4">
-<link rel="stylesheet" href="island-skin.css?v=20261107-4">
-<link rel="stylesheet" href="slayhem-and-layout.css?v=20261107-4">
-<link rel="stylesheet" href="session-planner.css?v=20261107-4">
+<link rel="stylesheet" href="finale.css?v=20261107-5">
+<link rel="stylesheet" href="island-skin.css?v=20261107-5">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261107-5">
+<link rel="stylesheet" href="session-planner.css?v=20261107-5">
 </head>
 <body>
   <header class="topbar">
@@ -1534,7 +1536,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release">
-          <summary><span class="patch-version">V1.5.10</span><span class="patch-release-title"><strong>Likely days in Discord</strong><small>Current release · 7 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.11</span><span class="patch-release-title"><strong>A hidden sound</strong><small>Current release · 7 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note" data-reveal-game="dr1"><h4>A small discovery</h4><p>A subtle badge hides a voice-line Easter egg once the relevant story moment has been reached. Tap again to stop playback.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.10</span><span class="patch-release-title"><strong>Likely days in Discord</strong><small>7 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Spot the leading days</h4><p>The Discord schedule card highlights likely dates in bold, including up to three tied leading days with at least three available players. These dates remain unconfirmed.</p></section>
           </div>
@@ -2104,23 +2112,23 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js?v=20261107-4"></script>
-  <script src="activity-history.js?v=20261107-4"></script>
-  <script src="dr2-monopad-art.js?v=20261107-4"></script>
-  <script src="admin-preview-safety.js?v=20261107-4"></script>
+  <script src="supabase-sync.js?v=20261107-5"></script>
+  <script src="activity-history.js?v=20261107-5"></script>
+  <script src="dr2-monopad-art.js?v=20261107-5"></script>
+  <script src="admin-preview-safety.js?v=20261107-5"></script>
   <script src="voice-clips-v4.js"></script>
-  <script src="monopad-data.js?v=20261107-4"></script>
-<script src="gift-guide-data.js?v=20261107-4"></script>
-  <script src="endgame-data.js?v=20261107-4"></script>
-  <script src="unconfirmed-student.js?v=20261107-4"></script>
-  <script src="session-planner.js?v=20261107-4"></script>
-  <script src="session-planner-store.js?v=20261107-4"></script>
-  <script src="session-planner-ui.js?v=20261107-4"></script>
+  <script src="monopad-data.js?v=20261107-5"></script>
+<script src="gift-guide-data.js?v=20261107-5"></script>
+  <script src="endgame-data.js?v=20261107-5"></script>
+  <script src="unconfirmed-student.js?v=20261107-5"></script>
+  <script src="session-planner.js?v=20261107-5"></script>
+  <script src="session-planner-store.js?v=20261107-5"></script>
+  <script src="session-planner-ui.js?v=20261107-5"></script>
   <script>
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.07.4";
+  const APP_BUILD = "2026.11.07.5";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -3639,7 +3647,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     wrap.innerHTML=art?`<img class="dossier-dialog-art" data-profile-art src="${esc(art)}" alt="Full character artwork of ${esc(role.name)}" referrerpolicy="no-referrer">`:`<div class="dossier-dialog-art dossier-dialog-placeholder">${esc(role.name.slice(0,1).toUpperCase())}</div>`;
     $("#dossierDialogArtCredit").innerHTML=profileArtCreditForRole(role);
     $("#dossierDialogName").textContent=role.name;
-    $("#dossierDialogTalent").textContent=role.title||"Profile";
+    $("#dossierDialogTalent").innerHTML=secretVoiceBadgeMarkup(role)||esc(role.title||"Profile");
+    bindSecretVoice($("#dossierDialogTalent"),role);
     $("#dossierDialogBio").textContent=biographyForRole(role);
     const measurement=role.gameId==="dr1"&&role.specialRole!=="unconfirmed-student"?(role.specialRole==="real-junko"?(role.revealed?90:null):window.CAST_ENDGAME_DATA.chest[role.name]):null;
     $("#dossierMeasurement").textContent=`MONOPAD / Chest: ${measurement?measurement+" cm":"Not recorded"}`;
@@ -3657,8 +3666,9 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     roles.forEach(role=>{
       const art=profileImageForRole(role);
       const card=document.createElement("article");card.className="dossier-card";
-      card.innerHTML=`${art?`<img data-profile-art src="${esc(art)}" alt="" referrerpolicy="no-referrer">`:`<div class="dossier-placeholder">${esc(role.name.slice(0,1).toUpperCase())}</div>`}<div class="dossier-card-copy"><h3>${esc(role.name)}</h3><p>${esc(role.title||"Profile")}</p>${profileArtCreditForRole(role)}<button type="button" class="ghost">Read description</button></div>`;
-      card.querySelector("button").onclick=()=>openDossier(role);
+      card.innerHTML=`${art?`<img data-profile-art src="${esc(art)}" alt="" referrerpolicy="no-referrer">`:`<div class="dossier-placeholder">${esc(role.name.slice(0,1).toUpperCase())}</div>`}<div class="dossier-card-copy"><h3>${esc(role.name)}</h3><p>${secretVoiceBadgeMarkup(role)||esc(role.title||"Profile")}</p>${profileArtCreditForRole(role)}<button type="button" class="ghost" data-read-description>Read description</button></div>`;
+      card.querySelector("[data-read-description]").onclick=()=>openDossier(role);
+      bindSecretVoice(card,role);
       attachImageFallback(card,role);
       grid.appendChild(card);
     });
@@ -3916,6 +3926,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   }
 
   function render(){
+    if(activeAudio&&activeVoiceButton?.matches('[data-action="play-secret"]')){activeAudio.pause();resetActiveAudio()}
+    if(!canPlaySecretVoice(roleById($("#editDossierBioBtn").dataset.roleId)))$("#dossierDialogTalent [data-action='play-secret']")?.remove();
     sessionPlanner?.render();
     if (mode === "player" && activeActorId && !actorById(activeActorId)) {
       activeActorId = null;
@@ -4255,12 +4267,34 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     return markup;
   }
 
+  function canPlaySecretVoice(role){
+    const progress=state.settings.games.dr1;
+    return activeGameId==="dr1"&&role?.gameId==="dr1"&&role.specialRole==="unconfirmed-student"
+      &&(!role.hiddenSpoiler||role.revealed)&&(Number(progress.voiceChapter)>=5||!!progress.completedUnits?.[4]);
+  }
+
+  function secretVoiceBadgeMarkup(role){
+    return canPlaySecretVoice(role)?'<button type="button" class="voice-play-btn secret-voice-badge" data-action="play-secret" aria-label="Play hidden voice line" aria-pressed="false" title="Something sounds familiar…">???</button>':"";
+  }
+
+  function bindSecretVoice(root,role){
+    root.querySelector('[data-action="play-secret"]')?.addEventListener("click",event=>{
+      event.stopPropagation();
+      if(canPlaySecretVoice(role))playUrlPool(["assets/audio/secret-student.mp3"],"secret-student",event.currentTarget);
+    });
+  }
+
+  $("#dossierDialog").addEventListener("close",()=>{
+    if(activeAudio&&$("#dossierDialog").contains(activeVoiceButton)){activeAudio.pause();resetActiveAudio()}
+  });
+
   function resetActiveAudio(){
     if(activeVoiceButton){
       activeVoiceButton.classList.remove("playing","error");
       activeVoiceButton.textContent=activeVoiceButton.dataset.idleLabel||"▶";
       activeVoiceButton.title=activeVoiceButton.dataset.idleTitle||"Play voice sample";
       activeVoiceButton.setAttribute("aria-label",activeVoiceButton.dataset.idleAria||"Play voice sample");
+      if(activeVoiceButton.hasAttribute("aria-pressed"))activeVoiceButton.setAttribute("aria-pressed","false");
     }
     activeAudio=null;activeVoiceButton=null;
   }
@@ -4288,6 +4322,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     button.classList.add("playing");button.textContent="■";
     button.title="Stop this voice sample";
     button.setAttribute("aria-label","Stop this voice sample");
+    if(button.hasAttribute("aria-pressed"))button.setAttribute("aria-pressed","true");
     const finish=()=>{if(activeAudio===audio)resetActiveAudio()};
     audio.addEventListener("ended",finish,{once:true});
     audio.addEventListener("error",()=>{
@@ -4697,6 +4732,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         </div>
         <div class="role-badges">
           ${voiceButtonMarkup(r,{assigned})}
+          ${secretVoiceBadgeMarkup(r)}
           ${locked?`<span class="lock-badge" title="Locked character">🔒</span>`:""}
           ${hostAssignedActions}
           ${canExpand?`<span class="role-chevron">${isExpanded?"▲":"▼"}</span>`:""}
@@ -4745,6 +4781,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     el.querySelector('[data-action="play-voice"]')?.addEventListener("click",e=>{
       e.stopPropagation();playVoiceSample(r,e.currentTarget);
     });
+    bindSecretVoice(el,r);
     el.querySelector('[data-action="play-personal"]')?.addEventListener("click",e=>{
       e.stopPropagation();playPersonalSample(r,e.currentTarget);
     });
