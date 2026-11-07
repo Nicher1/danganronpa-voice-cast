@@ -49,7 +49,7 @@ const root=path.resolve(__dirname,'..');
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal overflow');
     }
     await badge.click();assert.equal(await badge.getAttribute('aria-pressed'),'true');
-    assert.equal(await page.evaluate(()=>audioInstances.at(-1).src),'assets/audio/secret-student.mp3');
+    assert.equal(await page.evaluate(()=>audioInstances.at(-1).src),'assets/audio/secret-student.mp3?v=2');
     assert.equal(await page.locator('#dossierDialog').isVisible(),false,'Badge does not open the profile');
     await badge.click();assert.equal(await badge.innerText(),'???');
     assert.equal(await page.evaluate(()=>audioInstances.at(-1).paused),true);
