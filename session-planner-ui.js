@@ -11,7 +11,7 @@
     const isHost=()=>options.mode()==='host';
     const canUse=()=>options.local()||!!options.store?.ready;
     const dateLabel=d=>new Intl.DateTimeFormat(undefined,{weekday:'short',day:'numeric',month:'short',timeZone:P.ZONE}).format(new Date(d+'T12:00Z'));
-    const localDate=t=>new Intl.DateTimeFormat(undefined,{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit',timeZoneName:'short'}).format(new Date(t));
+    const localDate=t=>new Intl.DateTimeFormat(undefined,{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}).format(new Date(t));
     const localTime=t=>`<time datetime="${t}">${new Intl.DateTimeFormat(undefined,{hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date(t))}</time>`;
     const timeLabel=n=>{
       const minutes=Math.max(0,Math.floor(n/P.MIN)),hours=Math.floor(minutes/60),days=Math.floor(hours/24);
