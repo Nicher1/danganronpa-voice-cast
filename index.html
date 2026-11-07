@@ -1072,10 +1072,10 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 
 </style>
-<link rel="stylesheet" href="finale.css?v=20261106-1">
-<link rel="stylesheet" href="island-skin.css?v=20261106-1">
-<link rel="stylesheet" href="slayhem-and-layout.css?v=20261106-1">
-<link rel="stylesheet" href="session-planner.css?v=20261106-1">
+<link rel="stylesheet" href="finale.css?v=20261107-1">
+<link rel="stylesheet" href="island-skin.css?v=20261107-1">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261107-1">
+<link rel="stylesheet" href="session-planner.css?v=20261107-1">
 </head>
 <body>
   <header class="topbar">
@@ -1533,8 +1533,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       </div>
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.7</span><span class="patch-release-title"><strong>Schedule wording</strong><small>Current release · 7 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>English separator for tied days</h4><p>Tied session dates use “or” between the options. Dates and times still follow your local settings.</p></section>
+          </div>
+        </details>
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.5.6</span><span class="patch-release-title"><strong>One Discord card, always easy to find</strong><small>Current release · 6 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.6</span><span class="patch-release-title"><strong>One Discord card, always easy to find</strong><small>6 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Move the card whenever you need</h4><p>The schedule-card switch becomes a Move card to bottom now button. Automatic posting within 10 hours works independently of the reminder switch, including catch-up after downtime. When the 30-minute reminder is on, the card moves first and the ping appears underneath. Each move deletes the previous card before posting its replacement.</p></section>
           </div>
@@ -2080,23 +2086,23 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js?v=20261106-1"></script>
-  <script src="activity-history.js?v=20261106-1"></script>
-  <script src="dr2-monopad-art.js?v=20261106-1"></script>
-  <script src="admin-preview-safety.js?v=20261106-1"></script>
+  <script src="supabase-sync.js?v=20261107-1"></script>
+  <script src="activity-history.js?v=20261107-1"></script>
+  <script src="dr2-monopad-art.js?v=20261107-1"></script>
+  <script src="admin-preview-safety.js?v=20261107-1"></script>
   <script src="voice-clips-v4.js"></script>
-  <script src="monopad-data.js?v=20261106-1"></script>
-<script src="gift-guide-data.js?v=20261106-1"></script>
-  <script src="endgame-data.js?v=20261106-1"></script>
-  <script src="unconfirmed-student.js?v=20261106-1"></script>
-  <script src="session-planner.js?v=20261106-1"></script>
-  <script src="session-planner-store.js?v=20261106-1"></script>
-  <script src="session-planner-ui.js?v=20261106-1"></script>
+  <script src="monopad-data.js?v=20261107-1"></script>
+<script src="gift-guide-data.js?v=20261107-1"></script>
+  <script src="endgame-data.js?v=20261107-1"></script>
+  <script src="unconfirmed-student.js?v=20261107-1"></script>
+  <script src="session-planner.js?v=20261107-1"></script>
+  <script src="session-planner-store.js?v=20261107-1"></script>
+  <script src="session-planner-ui.js?v=20261107-1"></script>
   <script>
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.06.1";
+  const APP_BUILD = "2026.11.07.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
