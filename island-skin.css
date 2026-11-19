@@ -13,7 +13,7 @@ html[data-ui-theme] body[data-world="island"] .brand-kicker,html[data-ui-theme] 
 html[data-ui-theme] body[data-world="island"] .topbar::after{display:none}
 html[data-ui-theme] body[data-world="island"] .panel,html[data-ui-theme] body[data-world="island"] .actor-card,
 html[data-ui-theme] body[data-world="island"] .dossier-card,html[data-ui-theme] body[data-world="island"] .session-planner,
-html[data-ui-theme] body[data-world="island"] .modal-card,html[data-ui-theme] body[data-world="island"] dialog{
+html[data-ui-theme] body[data-world="island"] .modal-card,html[data-ui-theme] body[data-world="island"] dialog:not(.modal){
   background:#0b3448;color:#fff9e8;border-color:#497887;box-shadow:4px 4px 0 #082330;
 }
 html[data-ui-theme] body[data-world="island"] .actor-header,html[data-ui-theme] body[data-world="island"] .panel-header,
