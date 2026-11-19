@@ -166,6 +166,12 @@
       return data || {};
     }
 
+    async pingDiscordGroup() {
+      const { data, error } = await this.client.rpc("cast_ping_discord_group", { p_slug: this.slug });
+      if (error) throw error;
+      return data || {};
+    }
+
     async getPresenceActivity(days = 7) {
       const { data, error } = await this.client.rpc("cast_presence_activity", {
         p_slug: this.slug,
