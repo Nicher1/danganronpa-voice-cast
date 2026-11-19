@@ -65,6 +65,15 @@ create table if not exists public.cast_presence_sessions (
 create index if not exists cast_presence_sessions_recent_idx
 on public.cast_presence_sessions (board_slug, started_at desc);
 
+create table if not exists public.cast_login_failures (
+  board_slug text not null,
+  target text not null,
+  user_id uuid not null,
+  failed_at timestamptz not null default now()
+);
+create index if not exists cast_login_failures_recent
+  on public.cast_login_failures (board_slug, target, failed_at);
+
 insert into public.cast_boards (slug)
 values ('danganronpa-main')
 on conflict (slug) do nothing;
@@ -84,6 +93,7 @@ alter table public.cast_host_sessions enable row level security;
 alter table public.cast_actor_passwords enable row level security;
 alter table public.cast_actor_sessions enable row level security;
 alter table public.cast_presence_sessions enable row level security;
+alter table public.cast_login_failures enable row level security;
 
 drop policy if exists "cast public boards are readable" on public.cast_public_boards;
 create policy "cast public boards are readable"
@@ -98,6 +108,7 @@ revoke all on public.cast_host_sessions from anon, authenticated;
 revoke all on public.cast_actor_passwords from anon, authenticated;
 revoke all on public.cast_actor_sessions from anon, authenticated;
 revoke all on public.cast_presence_sessions from anon, authenticated;
+revoke all on public.cast_login_failures from anon, authenticated;
 
 create or replace function public.cast_state_with_password_flags(p_slug text, p_state jsonb)
 returns jsonb
@@ -367,7 +378,7 @@ begin
 
   update public.cast_board_secrets
   set setup_code_hash = null,
-      host_password_hash = extensions.crypt(p_host_password, extensions.gen_salt('bf'))
+      host_password_hash = extensions.crypt(p_host_password, extensions.gen_salt('bf', 10))
   where board_slug = p_slug;
 
   insert into public.cast_host_sessions (board_slug, user_id)
@@ -375,6 +386,34 @@ begin
   on conflict do nothing;
 
   return jsonb_build_object('state', board_row.state, 'revision', board_row.revision);
+end;
+$$;
+
+create or replace function public.cast_check_login_lockout(p_slug text, p_target text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if (select count(*) from public.cast_login_failures
+      where board_slug = p_slug and target = p_target
+        and failed_at > now() - interval '15 minutes') >= 10 then
+    raise exception 'Too many failed attempts. Try again in 15 minutes.';
+  end if;
+end;
+$$;
+
+create or replace function public.cast_record_login_failure(p_slug text, p_target text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  delete from public.cast_login_failures where failed_at < now() - interval '1 day';
+  insert into public.cast_login_failures (board_slug, target, user_id)
+  values (p_slug, p_target, auth.uid());
 end;
 $$;
 
@@ -388,10 +427,12 @@ declare
   stored_hash text;
 begin
   if auth.uid() is null then raise exception 'Authentication required'; end if;
+  perform public.cast_check_login_lockout(p_slug, 'host');
   select host_password_hash into stored_hash
   from public.cast_board_secrets where board_slug = p_slug;
   if stored_hash is null or extensions.crypt(coalesce(p_password, ''), stored_hash) <> stored_hash then
-    raise exception 'Incorrect host password';
+    perform public.cast_record_login_failure(p_slug, 'host');
+    return false;
   end if;
   insert into public.cast_host_sessions (board_slug, user_id)
   values (p_slug, auth.uid()) on conflict do nothing;
@@ -424,11 +465,20 @@ begin
   where board_slug = p_slug and actor_id = p_actor_id;
 
   if stored_hash is not null then
+    perform public.cast_check_login_lockout(p_slug, 'actor:' || p_actor_id);
     password_ok := case stored_scheme
       when 'sha256' then encode(extensions.digest(coalesce(p_password, ''), 'sha256'), 'hex') = stored_hash
       else extensions.crypt(coalesce(p_password, ''), stored_hash) = stored_hash
     end;
-    if not password_ok then raise exception 'Incorrect actor password'; end if;
+    if not password_ok then
+      perform public.cast_record_login_failure(p_slug, 'actor:' || p_actor_id);
+      return false;
+    end if;
+    if stored_scheme = 'sha256' then
+      update public.cast_actor_passwords
+      set password_hash = extensions.crypt(p_password, extensions.gen_salt('bf', 10)), scheme = 'bcrypt'
+      where board_slug = p_slug and actor_id = p_actor_id;
+    end if;
   end if;
 
   insert into public.cast_actor_sessions (board_slug, actor_id, user_id)
@@ -449,12 +499,24 @@ begin
   if not exists (select 1 from public.cast_boards where slug = p_slug and initialized) then
     raise exception 'Shared board is not initialized';
   end if;
+  -- Only brand-new ids may be registered. Existing actors must log in with cast_claim_actor.
+  if exists (
+       select 1
+       from public.cast_boards b
+       cross join lateral jsonb_array_elements(coalesce(b.state -> 'actors', '[]'::jsonb)) as item(actor)
+       where b.slug = p_slug and item.actor ->> 'id' = p_actor_id
+     )
+     or exists (select 1 from public.cast_actor_passwords
+                where board_slug = p_slug and actor_id = p_actor_id)
+     or exists (select 1 from public.cast_actor_sessions
+                where board_slug = p_slug and actor_id = p_actor_id and user_id <> auth.uid())
+  then
+    raise exception 'Actor already exists';
+  end if;
 
   if coalesce(p_password, '') <> '' then
     insert into public.cast_actor_passwords (board_slug, actor_id, password_hash, scheme)
-    values (p_slug, p_actor_id, extensions.crypt(p_password, extensions.gen_salt('bf')), 'bcrypt')
-    on conflict (board_slug, actor_id) do update
-      set password_hash = excluded.password_hash, scheme = excluded.scheme;
+    values (p_slug, p_actor_id, extensions.crypt(p_password, extensions.gen_salt('bf', 10)), 'bcrypt');
   end if;
 
   insert into public.cast_actor_sessions (board_slug, actor_id, user_id)
@@ -487,7 +549,7 @@ begin
     delete from public.cast_actor_passwords where board_slug = p_slug and actor_id = p_actor_id;
   else
     insert into public.cast_actor_passwords (board_slug, actor_id, password_hash, scheme)
-    values (p_slug, p_actor_id, extensions.crypt(p_password, extensions.gen_salt('bf')), 'bcrypt')
+    values (p_slug, p_actor_id, extensions.crypt(p_password, extensions.gen_salt('bf', 10)), 'bcrypt')
     on conflict (board_slug, actor_id) do update
       set password_hash = excluded.password_hash, scheme = excluded.scheme;
   end if;
@@ -719,6 +781,8 @@ revoke all on function public.cast_presence_touch(text, text, text, boolean) fro
 revoke all on function public.cast_presence_activity(text, integer) from public, anon, authenticated;
 revoke all on function public.cast_initialize_board(text, text, text, jsonb) from public, anon, authenticated;
 revoke all on function public.cast_login_host(text, text) from public, anon, authenticated;
+revoke all on function public.cast_check_login_lockout(text, text) from public, anon, authenticated;
+revoke all on function public.cast_record_login_failure(text, text) from public, anon, authenticated;
 revoke all on function public.cast_claim_actor(text, text, text) from public, anon, authenticated;
 revoke all on function public.cast_register_actor(text, text, text) from public, anon, authenticated;
 revoke all on function public.cast_set_actor_password(text, text, text) from public, anon, authenticated;
