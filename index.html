@@ -872,7 +872,7 @@ body.mobile-dragging{user-select:none}
 .activity-session-list{display:grid;gap:4px;margin-top:8px}.activity-session{display:grid;grid-template-columns:minmax(90px,.8fr) minmax(135px,1.2fr) auto;gap:8px;align-items:center;padding:6px 7px;border-radius:8px;background:#0e1118;color:var(--muted);font-size:.61rem}.activity-session strong{min-width:0;color:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.activity-session strong::before{content:"";display:inline-block;width:7px;height:7px;margin-right:6px;border-radius:50%;background:hsl(var(--activity-hue) 82% 61%);box-shadow:0 0 7px hsl(var(--activity-hue) 82% 61% / .4)}.activity-session-range{font-variant-numeric:tabular-nums;line-height:1.6}.activity-session-duration{white-space:nowrap;color:white}.activity-session .active{color:#bfffdc;font-weight:900}.activity-empty{padding:12px;border:1px dashed var(--line);border-radius:9px;color:var(--muted);font-size:.69rem;line-height:1.5}
 .game-state-badge{padding:.28rem .48rem;border-radius:999px;font-size:.58rem;font-weight:950;letter-spacing:.09em;background:rgba(255,255,255,.06);color:var(--muted)}
 .game-state-badge.open{background:rgba(112,184,255,.13);color:#bfe0ff}.game-state-badge.complete{background:rgba(104,220,151,.13);color:#aaf1c6}
-.game-picker-card{width:min(94vw,720px)}
+#gamePickerDialog{width:min(94vw,720px);max-width:94vw;overflow-x:hidden}.game-picker-card{width:100%}
 .game-picker-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:11px;margin-top:13px}
 .game-choice{position:relative;text-align:left;min-height:138px;padding:16px;border-radius:14px;background:linear-gradient(140deg,rgba(245,64,148,.09),rgba(112,184,255,.055)),var(--panel-raised)}
 .game-choice strong{display:block;margin:5px 0;font-size:1rem}.game-choice small{display:block;color:var(--muted);line-height:1.42}
@@ -1074,10 +1074,10 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 
 </style>
-<link rel="stylesheet" href="finale.css?v=20261120-2">
-<link rel="stylesheet" href="island-skin.css?v=20261120-2">
-<link rel="stylesheet" href="slayhem-and-layout.css?v=20261120-2">
-<link rel="stylesheet" href="session-planner.css?v=20261120-2">
+<link rel="stylesheet" href="finale.css?v=20261120-3">
+<link rel="stylesheet" href="island-skin.css?v=20261120-3">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261120-3">
+<link rel="stylesheet" href="session-planner.css?v=20261120-3">
 </head>
 <body>
   <header class="topbar">
@@ -1537,7 +1537,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.5.14</span><span class="patch-release-title"><strong>Calendar link and manual ping</strong><small>Current release · 20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.15</span><span class="patch-release-title"><strong>Game picker fix</strong><small>Current release · 20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Choose a game window</h4><p>The game list is no longer cut off or scrolled sideways on wide and medium screens.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.14</span><span class="patch-release-title"><strong>Calendar link and manual ping</strong><small>20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Add to Google Calendar</h4><p>The Discord card for a confirmed session now has an Add to Google Calendar link.</p></section>
             <section class="patch-note"><h4>Ping the group by hand</h4><p>The host has a new Ping the group now button in Admin Tools. It moves the card down and pings everyone who said yes. The automatic 30-minute reminder works as before.</p></section>
@@ -2135,23 +2141,23 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="sha384-uteMfOloLDGt042uDz+xHGF3ym63/WQ6rFq7murQRG8Ih7QrXGEGNtWd8688sb4O" crossorigin="anonymous"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js?v=20261120-2"></script>
-  <script src="activity-history.js?v=20261120-2"></script>
-  <script src="dr2-monopad-art.js?v=20261120-2"></script>
-  <script src="admin-preview-safety.js?v=20261120-2"></script>
+  <script src="supabase-sync.js?v=20261120-3"></script>
+  <script src="activity-history.js?v=20261120-3"></script>
+  <script src="dr2-monopad-art.js?v=20261120-3"></script>
+  <script src="admin-preview-safety.js?v=20261120-3"></script>
   <script src="voice-clips-v4.js"></script>
-  <script src="monopad-data.js?v=20261120-2"></script>
-<script src="gift-guide-data.js?v=20261120-2"></script>
-  <script src="endgame-data.js?v=20261120-2"></script>
-  <script src="unconfirmed-student.js?v=20261120-2"></script>
-  <script src="session-planner.js?v=20261120-2"></script>
-  <script src="session-planner-store.js?v=20261120-2"></script>
-  <script src="session-planner-ui.js?v=20261120-2"></script>
+  <script src="monopad-data.js?v=20261120-3"></script>
+<script src="gift-guide-data.js?v=20261120-3"></script>
+  <script src="endgame-data.js?v=20261120-3"></script>
+  <script src="unconfirmed-student.js?v=20261120-3"></script>
+  <script src="session-planner.js?v=20261120-3"></script>
+  <script src="session-planner-store.js?v=20261120-3"></script>
+  <script src="session-planner-ui.js?v=20261120-3"></script>
   <script>
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.20.2";
+  const APP_BUILD = "2026.11.20.3";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
