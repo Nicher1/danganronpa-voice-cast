@@ -3672,7 +3672,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     roles.forEach(role=>{
       const art=profileImageForRole(role);
       const card=document.createElement("article");card.className="dossier-card";
-      card.innerHTML=`${art?`<img data-profile-art src="${esc(art)}" alt="" referrerpolicy="no-referrer">`:`<div class="dossier-placeholder">${esc(role.name.slice(0,1).toUpperCase())}</div>`}<div class="dossier-card-copy"><h3>${esc(role.name)}</h3><p>${secretVoiceBadgeMarkup(role)||esc(role.title||"Profile")}</p>${profileArtCreditForRole(role)}<button type="button" class="ghost" data-read-description>Read description</button></div>`;
+      card.innerHTML=`${art?`<img data-profile-art src="${esc(art)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">`:`<div class="dossier-placeholder">${esc(role.name.slice(0,1).toUpperCase())}</div>`}<div class="dossier-card-copy"><h3>${esc(role.name)}</h3><p>${secretVoiceBadgeMarkup(role)||esc(role.title||"Profile")}</p>${profileArtCreditForRole(role)}<button type="button" class="ghost" data-read-description>Read description</button></div>`;
       card.querySelector("[data-read-description]").onclick=()=>openDossier(role);
       bindSecretVoice(card,role);
       attachImageFallback(card,role);
@@ -4747,7 +4747,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       ${predictionMarkers(r)}
       ${canExpand?`
         <div class="role-expanded">
-          ${profileArt?`<img class="role-image" data-profile-art src="${esc(profileArt)}" alt="Full character artwork of ${esc(r.name)}" referrerpolicy="no-referrer">`:`<div class="role-image placeholder">No image yet</div>`}
+          ${profileArt?`<img class="role-image" data-profile-art src="${esc(profileArt)}" alt="Full character artwork of ${esc(r.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer">`:`<div class="role-image placeholder">No image yet</div>`}
           ${profileArtCreditForRole(r)}
           <p class="role-biography"><strong>Monopad profile</strong>${esc(biographyForRole(r))}</p>
           ${mode==="host"&&r.modifier?`<div class="role-detail"><strong>Modifier:</strong> ${esc(r.modifier)}</div>`:""}
