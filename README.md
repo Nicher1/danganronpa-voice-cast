@@ -52,7 +52,18 @@ snapshot (`live-public-board.json`, not committed) so you can test without the d
 
 ## Tests
 
-Most tests run with plain Node:
+Run everything at once (needs Node 22 or newer):
+
+```powershell
+npm install
+npx playwright install chromium
+npm test
+```
+
+`npm install` puts PGlite and Playwright in `node_modules` (not committed), so `NODE_PATH` is
+not needed after that. GitHub runs the same tests on every push (`.github/workflows/tests.yml`).
+
+Most tests also run on their own with plain Node:
 
 ```powershell
 node tests\series-progression.test.js
