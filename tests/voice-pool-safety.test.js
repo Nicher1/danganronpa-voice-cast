@@ -114,9 +114,12 @@ assert.ok(poolSource.includes("voicePackForChapter(profile,target)"), "Normal pl
 assert.ok(poolSource.includes('customVoiceFor(r,target,"trial")'), "Host-uploaded Trial clips should use the same earlier-safe fallback");
 
 const versions = [...html.matchAll(/class="patch-version">([vV][0-9.]+)/g)].map(match => match[1]);
-assert.deepEqual(versions, ["V1.0.0", "v0.21", "v0.20", "v0.19", "v0.18", "v0.17", "v0.16", "v0.15", "v0.14", "v0.13", "v0.12", "v0.11", "v0.10", "v0.9", "v0.8.1", "v0.8", "v0.7", "v0.6", "v0.5"]);
-assert.equal((html.match(/<details class="patch-release"/g) || []).length, 19);
-assert.equal((html.match(/<details class="patch-release" open>/g) || []).length, 0);
+// Release history: newest first, no duplicates, and the old notes are never dropped.
+const versionParts = version => version.slice(1).split(".").map(Number);
+const isNewer = (a, b) => { const x = versionParts(a), y = versionParts(b); for (let i = 0; i < Math.max(x.length, y.length); i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); return false; };
+versions.slice(1).forEach((version, index) => assert.ok(isNewer(versions[index], version), `Patch notes must be newest first: ${versions[index]} is listed before ${version}`));
+assert.deepEqual(versions.slice(-19), ["V1.0.0", "v0.21", "v0.20", "v0.19", "v0.18", "v0.17", "v0.16", "v0.15", "v0.14", "v0.13", "v0.12", "v0.11", "v0.10", "v0.9", "v0.8.1", "v0.8", "v0.7", "v0.6", "v0.5"], "Older release notes must be kept");
+assert.match(html.slice(html.indexOf('<details class="patch-release"')), /^<details class="patch-release" open>\s*<summary><span class="patch-version">/, "The current release is listed first and open");
 assert.ok(html.includes("Point calculation for anime guessing"));
 const patchNotes = html.slice(html.indexOf('<dialog id="patchNotesDialog"'), html.indexOf('<dialog id="hostAuthDialog"'));
 const dossierStart = patchNotes.indexOf('<span class="patch-version">v0.18</span>');

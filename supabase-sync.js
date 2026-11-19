@@ -87,7 +87,9 @@
         p_password: password
       });
       if (error) throw error;
-      return data === true;
+      // The server returns false for a wrong password so it can count failed attempts.
+      if (data !== true) throw new Error("Incorrect host password");
+      return true;
     }
 
     async claimActor(actorId, password = "") {
@@ -97,7 +99,8 @@
         p_password: password
       });
       if (error) throw error;
-      return data === true;
+      if (data !== true) throw new Error("Incorrect actor password");
+      return true;
     }
 
     async registerActor(actorId, password = "") {

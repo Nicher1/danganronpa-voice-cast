@@ -29,7 +29,7 @@ html[data-ui-theme="finale"] .finale-stage h2{font-style:italic;letter-spacing:-
 html[data-ui-theme="finale"] .finale-stage h2 em{color:#ff3297;text-shadow:none;font-size:.8em}
 html[data-ui-theme="finale"] .finale-copy{color:#b9c3ce;font:700 .78rem monospace;letter-spacing:.09em}
 html[data-ui-theme="finale"] .finale-aside blockquote{color:#f6f0dd;font:800 1rem/1.5 Arial,sans-serif}
-html[data-ui-theme="finale"] .panel,html[data-ui-theme="finale"] .actor-card,html[data-ui-theme="finale"] .dossier-card,html[data-ui-theme="finale"] .role-card,html[data-ui-theme="finale"] .modal-card,html[data-ui-theme="finale"] dialog,html[data-ui-theme="finale"] .session-planner{background:#17151c;color:#f6f0dd;border-color:#514653;box-shadow:3px 3px 0 #07060a}
+html[data-ui-theme="finale"] .panel,html[data-ui-theme="finale"] .actor-card,html[data-ui-theme="finale"] .dossier-card,html[data-ui-theme="finale"] .role-card,html[data-ui-theme="finale"] .modal-card,html[data-ui-theme="finale"] dialog:not(.modal),html[data-ui-theme="finale"] .session-planner{background:#17151c;color:#f6f0dd;border-color:#514653;box-shadow:3px 3px 0 #07060a}
 html[data-ui-theme="finale"] button,html[data-ui-theme="finale"] input,html[data-ui-theme="finale"] select,html[data-ui-theme="finale"] textarea{color:#f6f0dd;background:#26222e;border-color:#625668;color-scheme:dark}
 html[data-ui-theme="finale"] .tab.active,html[data-ui-theme="finale"] button.primary{background:#ff248b;color:#180711;border-color:#ff248b}
 html[data-ui-theme="finale"] .actor-header,html[data-ui-theme="finale"] .role-compact,html[data-ui-theme="finale"] .panel-header,html[data-ui-theme="finale"] .control-strip,html[data-ui-theme="finale"] .schedule-day{background:#1c1922;color:#f6f0dd}

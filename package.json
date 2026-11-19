@@ -1,0 +1,15 @@
+{
+  "name": "danganronpa-voice-cast",
+  "private": true,
+  "description": "Test tools only. The site itself has no build step.",
+  "scripts": {
+    "test": "node --test --test-concurrency=1 \"tests/*.test.js\" \"tests/*.test.mjs\" \"tests/*.integration.js\" \"tests/*.browser.cjs\""
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.16",
+    "playwright": "1.65.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

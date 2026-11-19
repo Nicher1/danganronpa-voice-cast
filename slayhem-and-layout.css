@@ -30,7 +30,7 @@ html[data-ui-theme] body[data-world="island"][data-scenario="slayhem"]{
   --line:#4b414e;--blue:#c4cad9;--pink:#ff3699;--pink-hot:#ff3699;
   background:radial-gradient(ellipse at 75% 0,#61224250,transparent 65%),#1e1f22;color:#f2f3f5;
 }
-html[data-ui-theme] body[data-scenario="slayhem"] :is(.topbar,.panel,.actor-card,.dossier-card,.session-planner,.modal-card,dialog,.casting-controls){background:#2b2d31;color:#f2f3f5;border-color:#4a414d;box-shadow:3px 3px 0 #151519}
+html[data-ui-theme] body[data-scenario="slayhem"] :is(.topbar,.panel,.actor-card,.dossier-card,.session-planner,.modal-card,dialog:not(.modal),.casting-controls){background:#2b2d31;color:#f2f3f5;border-color:#4a414d;box-shadow:3px 3px 0 #151519}
 html[data-ui-theme] body[data-scenario="slayhem"] :is(.actor-header,.panel-header,.role-compact,.control-strip,.schedule-day,.rule-banner){background:#313338;color:#e3e5e8;border-color:#4a414d}
 html[data-ui-theme] body[data-scenario="slayhem"] :is(button,input,textarea,select,.theme-picker){background:#383a40;color:#f2f3f5;border-color:#625267}
 html[data-ui-theme] body[data-scenario="slayhem"] :is(button.primary,.tab.active){background:#f52c91;color:#1b0b17;border-color:#ff89c1;box-shadow:3px 3px 0 #66213f}

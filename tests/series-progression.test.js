@@ -67,7 +67,7 @@ assert.ok(html.includes("Only unlocked boards appear"));
 assert.ok(html.includes("function renderPredictionChart"));
 assert.ok(html.includes('data-reveal-game="dr3anime"'));
 assert.ok(html.includes('sharedStateVersion<17'));
-assert.ok(sql.includes("'dr1', 'dr2', 'dr3anime', 'v3'"));
+assert.ok(sql.includes("if board_row.state #> array['settings', 'games', current_game] is null then current_game := 'dr1'; end if;"), "Player predictions are accepted for every game on the board, including DR 2x2 and Slayhem");
 assert.ok(html.includes("version:17"));
 assert.ok(html.includes(`const APP_BUILD = "${build.build}"`));
 assert.ok(hostRedirect.includes(`build=${build.build}`));

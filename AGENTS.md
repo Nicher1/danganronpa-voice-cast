@@ -35,14 +35,21 @@ Supabase
 - Project ref `srdyjehnvsmscmeuhcvh`. Database work goes through the Management API
   (`POST https://api.supabase.com/v1/projects/<ref>/database/query`) using the scoped token in the
   user environment variable `SUPABASE_ACCESS_TOKEN`. Never print, commit or paste it.
+- Player (non-host) saves are merged on the server by `cast_merge_player_save`. Only the
+  player's own actor, their claims and releases, practice recordings and predictions are
+  copied from what they send. A new field that players may edit must be added there too,
+  or the server silently drops it.
 - The Discord card update (`discord-card-repost-migration.sql`) is installed after
   `discord-reminder-migration.sql`. The card posts automatically within 10 hours;
   Admin Tools can move it manually and toggle the 30-minute ping independently.
   Only linked yes-voters are pinged. The card moves immediately before the ping.
+- Login hardening (`login-hardening-migration.sql`) needs the matching `supabase-sync.js`
+  published first, because wrong passwords now return false instead of raising. Logins lock
+  for 15 minutes after 10 failed attempts. Unlock early with
+  `delete from public.cast_login_failures where target = 'host';` (or `'actor:<id>'`).
 - Run the PGlite tests with `NODE_PATH` pointing at a folder that has `@electric-sql/pglite`.
 
 Known issues and parked work
-- `tests\voice-pool-safety.test.js` fails on a stale version list, unrelated to recent work.
 - Parked: Class Trial theme (`feature/class-trial-theme`, owner prefers the current theme),
   actor badges, Usami pet, DR2 gift guide (needs a spoiler review), anime tracker.
 - The gift guide covers the first game only. Data comes from the Danganronpa Wiki (CC BY-SA).
