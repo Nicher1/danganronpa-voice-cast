@@ -67,8 +67,6 @@ $env:NODE_PATH = 'C:\path\to\node_modules'
 node tests\discord-reminder.integration.js
 ```
 
-`voice-pool-safety.test.js` is known to fail on a stale version list.
-
 ## Common changes
 
 - **Front-page quotes:** host Admin Tools, "Edit front-page quotes" (saved per game and

@@ -50,7 +50,6 @@ Supabase
 - Run the PGlite tests with `NODE_PATH` pointing at a folder that has `@electric-sql/pglite`.
 
 Known issues and parked work
-- `tests\voice-pool-safety.test.js` fails on a stale version list, unrelated to recent work.
 - Parked: Class Trial theme (`feature/class-trial-theme`, owner prefers the current theme),
   actor badges, Usami pet, DR2 gift guide (needs a spoiler review), anime tracker.
 - The gift guide covers the first game only. Data comes from the Danganronpa Wiki (CC BY-SA).
