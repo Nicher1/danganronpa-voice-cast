@@ -35,6 +35,10 @@ Supabase
 - Project ref `srdyjehnvsmscmeuhcvh`. Database work goes through the Management API
   (`POST https://api.supabase.com/v1/projects/<ref>/database/query`) using the scoped token in the
   user environment variable `SUPABASE_ACCESS_TOKEN`. Never print, commit or paste it.
+- Player (non-host) saves are merged on the server by `cast_merge_player_save`. Only the
+  player's own actor, their claims and releases, practice recordings and predictions are
+  copied from what they send. A new field that players may edit must be added there too,
+  or the server silently drops it.
 - The Discord card update (`discord-card-repost-migration.sql`) is installed after
   `discord-reminder-migration.sql`. The card posts automatically within 10 hours;
   Admin Tools can move it manually and toggle the 30-minute ping independently.
