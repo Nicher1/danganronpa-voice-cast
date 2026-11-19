@@ -1,17 +1,17 @@
 {
-  "description": "Existing official character illustrations and credited fan artwork. Original downloaded files, without AI generation or editing. Reload illustrations were visually compared with publisher character cards; newer illustrations have their source listed individually.",
+  "description": "Existing official character illustrations and credited fan artwork. Downloaded official files, without AI generation. The light outline baked into some cut-out art was removed (Hinata, Komaeda, Soda, Kuzuryu, Saionji) so it no longer glows on dark cards. Reload illustrations were visually compared with publisher character cards; newer illustrations have their source listed individually.",
   "copyright": "Danganronpa characters © Spike Chunsoft. Mikan fan illustration credited to Bitikara; remaining artwork from official releases and collaborations.",
   "verified": "2026-10-27",
   "images": [
     {
       "name": "Hajime Hinata",
-      "file": "assets/monopad/dr2/hinata.gif",
+      "file": "assets/monopad/dr2/hinata.png",
       "source": "https://neoapo.com/images/character/7199/1593243cec04a527f694a5d212e295ed.gif",
       "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_01.png"
     },
     {
       "name": "Nagito Komaeda",
-      "file": "assets/monopad/dr2/komaeda.gif",
+      "file": "assets/monopad/dr2/komaeda.png",
       "source": "https://neoapo.com/images/character/7200/5bd870aad18c5b87ff497cc8abf5091e.gif",
       "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_02.png"
     },
