@@ -1074,10 +1074,10 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 
 </style>
-<link rel="stylesheet" href="finale.css?v=20261120-1">
-<link rel="stylesheet" href="island-skin.css?v=20261120-1">
-<link rel="stylesheet" href="slayhem-and-layout.css?v=20261120-1">
-<link rel="stylesheet" href="session-planner.css?v=20261120-1">
+<link rel="stylesheet" href="finale.css?v=20261120-2">
+<link rel="stylesheet" href="island-skin.css?v=20261120-2">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261120-2">
+<link rel="stylesheet" href="session-planner.css?v=20261120-2">
 </head>
 <body>
   <header class="topbar">
@@ -1427,6 +1427,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <h3>Schedule card and reminder</h3>
           <p>The card automatically moves to the bottom 10 hours before a session, or when the system catches up before the start. Move it again whenever you need. The optional 30-minute reminder moves the card first, then pings the players who voted yes underneath it.</p>
           <button id="discordCardRepostBtn" type="button" class="ghost" disabled>Move card to bottom now</button>
+          <button id="discordPingBtn" type="button" class="ghost" disabled>Ping the group now</button>
           <label class="discord-switch"><input id="discordReminderToggle" type="checkbox" disabled> 30-minute reminder</label>
           <div id="discordSettingsResult" class="database-check-result" role="status">Not loaded yet.</div>
         </section>
@@ -1536,7 +1537,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.5.13</span><span class="patch-release-title"><strong>Safer logins and saves</strong><small>Current release · 20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.14</span><span class="patch-release-title"><strong>Calendar link and manual ping</strong><small>Current release · 20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Add to Google Calendar</h4><p>The Discord card for a confirmed session now has an Add to Google Calendar link.</p></section>
+            <section class="patch-note"><h4>Ping the group by hand</h4><p>The host has a new Ping the group now button in Admin Tools. It moves the card down and pings everyone who said yes. The automatic 30-minute reminder works as before.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.13</span><span class="patch-release-title"><strong>Safer logins and saves</strong><small>20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Safer logins</h4><p>After 10 wrong passwords in 15 minutes, that login pauses for 15 minutes. An existing actor can no longer be taken over by registering the same actor again.</p></section>
             <section class="patch-note"><h4>Safer saves</h4><p>The server now checks player saves and keeps only what players are allowed to change. Predictions now save in every game on the board.</p></section>
@@ -2127,23 +2135,23 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="sha384-uteMfOloLDGt042uDz+xHGF3ym63/WQ6rFq7murQRG8Ih7QrXGEGNtWd8688sb4O" crossorigin="anonymous"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js?v=20261120-1"></script>
-  <script src="activity-history.js?v=20261120-1"></script>
-  <script src="dr2-monopad-art.js?v=20261120-1"></script>
-  <script src="admin-preview-safety.js?v=20261120-1"></script>
+  <script src="supabase-sync.js?v=20261120-2"></script>
+  <script src="activity-history.js?v=20261120-2"></script>
+  <script src="dr2-monopad-art.js?v=20261120-2"></script>
+  <script src="admin-preview-safety.js?v=20261120-2"></script>
   <script src="voice-clips-v4.js"></script>
-  <script src="monopad-data.js?v=20261120-1"></script>
-<script src="gift-guide-data.js?v=20261120-1"></script>
-  <script src="endgame-data.js?v=20261120-1"></script>
-  <script src="unconfirmed-student.js?v=20261120-1"></script>
-  <script src="session-planner.js?v=20261120-1"></script>
-  <script src="session-planner-store.js?v=20261120-1"></script>
-  <script src="session-planner-ui.js?v=20261120-1"></script>
+  <script src="monopad-data.js?v=20261120-2"></script>
+<script src="gift-guide-data.js?v=20261120-2"></script>
+  <script src="endgame-data.js?v=20261120-2"></script>
+  <script src="unconfirmed-student.js?v=20261120-2"></script>
+  <script src="session-planner.js?v=20261120-2"></script>
+  <script src="session-planner-store.js?v=20261120-2"></script>
+  <script src="session-planner-ui.js?v=20261120-2"></script>
   <script>
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.20.1";
+  const APP_BUILD = "2026.11.20.2";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -6035,6 +6043,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       const s=await remoteSync.getDiscordSettings();
       reminder.checked=!!s.reminder;
       card.disabled=discordSettingsBusy||!s.configured||!s.card||!s.repost_supported;
+      $("#discordPingBtn").disabled=card.disabled||!remoteSync.pingDiscordGroup;
       reminder.disabled=discordSettingsBusy||!s.configured||!s.repost_supported;
       result.className="database-check-result"+(s.card&&s.repost_supported?" live":"");
       result.textContent=!s.configured?"Discord is not connected yet.":!s.repost_supported?"The card update is awaiting database installation.":!s.card?"Card delivery is paused. "+(s.status||"Check the Discord connection."):"Automatic card posting is on. 30-minute reminder is "+(s.reminder?"on.":"off.");
@@ -6070,6 +6079,24 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     }
   }
   $("#discordCardRepostBtn").onclick=()=>runDiscordAction(true);
+  $("#discordPingBtn").onclick=async()=>{
+    if(discordSettingsBusy)return;
+    if(!confirm("Move the card to the bottom and ping everyone who said yes?"))return;
+    discordSettingsBusy=true;
+    const btn=$("#discordPingBtn"),result=$("#discordSettingsResult");
+    btn.disabled=true;btn.textContent="Pinging…";
+    let failure="";
+    try{
+      const response=await remoteSync.pingDiscordGroup();
+      if(!response.ok)failure=response.status||"The ping could not be sent.";
+      else toast(response.status);
+    }catch(error){failure=window.CastSupabaseSync?.errorMessage(error)||String(error);}
+    finally{
+      discordSettingsBusy=false;btn.textContent="Ping the group now";
+      await loadDiscordSettings();
+      if(failure){result.className="database-check-result error";result.textContent=failure;}
+    }
+  };
   $("#discordReminderToggle").onchange=()=>runDiscordAction(false);
 
   function activateTab(tabName){
