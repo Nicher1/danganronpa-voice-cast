@@ -1074,11 +1074,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 
 </style>
-<link rel="stylesheet" href="finale.css?v=20261120-7">
-<link rel="stylesheet" href="island-skin.css?v=20261120-7">
-<link rel="stylesheet" href="slayhem-and-layout.css?v=20261120-7">
-<link rel="stylesheet" href="session-planner.css?v=20261120-7">
-<link rel="stylesheet" href="pet-minigame.css?v=20261120-7">
+<link rel="stylesheet" href="finale.css?v=20261120-8">
+<link rel="stylesheet" href="island-skin.css?v=20261120-8">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261120-8">
+<link rel="stylesheet" href="session-planner.css?v=20261120-8">
+<link rel="stylesheet" href="pet-minigame.css?v=20261120-8">
 </head>
 <body>
   <header class="topbar">
@@ -1320,7 +1320,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <p class="muted">Everyone can see revealed characters who have died, including who last voiced them.</p>
         </div>
       </div>
-      <div id="graveyard" class="graveyard-grid"></div>
+      <div id="graveyard" class="graveyard-grid"></div><section id="petGraveyard" class="pet-graveyard panel" hidden></section>
     </section>
 
     <section id="statisticsTab" class="tab-panel">
@@ -1541,7 +1541,16 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.5.19</span><span class="patch-release-title"><strong>Transparent character art</strong><small>Current release · 20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.20</span><span class="patch-release-title"><strong>The pet grows up</strong><small>Current release · 20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note" data-reveal-game="dr2x2"><h4>The pet can now die</h4><p>If nobody looks after the island pet for several days, its health drops and it passes away. A warning shows when it is struggling, so a quick feed, wash, cuddle or nap saves it. A new egg can be hatched at any time, and the host can pause the pet between sessions.</p></section>
+            <section class="patch-note" data-reveal-game="dr2x2"><h4>It grows up differently</h4><p>The pet starts as a baby and grows over a few days. A well loved pet stays a sweet Monomi, a lonely or hungry one turns into a Monokuma, and one that is rarely washed becomes a Monoshit.</p></section>
+            <section class="patch-note" data-reveal-game="dr2x2"><h4>Pet graveyard</h4><p>Every pet that did not make it gets a grave in the Memorial tab, grouped by the chapter it happened in.</p></section>
+            <section class="patch-note"><h4>Host preview</h4><p>The host preview can fast forward time by hours or days to see every stage, and the pause and bring-back buttons are in the host panel.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.19</span><span class="patch-release-title"><strong>Transparent character art</strong><small>20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>No more white boxes</h4><p>Six Monopad portraits (Tanaka, Hanamura, Nidai, Pekoyama, Tsumiki and Monokuma) had a solid white or beige background. It is now removed, so they sit on the profile card like the other portraits.</p></section>
           </div>
@@ -2171,26 +2180,26 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="sha384-uteMfOloLDGt042uDz+xHGF3ym63/WQ6rFq7murQRG8Ih7QrXGEGNtWd8688sb4O" crossorigin="anonymous"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js?v=20261120-7"></script>
-  <script src="activity-history.js?v=20261120-7"></script>
-  <script src="dr2-monopad-art.js?v=20261120-7"></script>
-  <script src="admin-preview-safety.js?v=20261120-7"></script>
+  <script src="supabase-sync.js?v=20261120-8"></script>
+  <script src="activity-history.js?v=20261120-8"></script>
+  <script src="dr2-monopad-art.js?v=20261120-8"></script>
+  <script src="admin-preview-safety.js?v=20261120-8"></script>
   <script src="voice-clips-v4.js"></script>
-  <script src="monopad-data.js?v=20261120-7"></script>
-<script src="gift-guide-data.js?v=20261120-7"></script>
-  <script src="endgame-data.js?v=20261120-7"></script>
-  <script src="unconfirmed-student.js?v=20261120-7"></script>
-  <script src="session-planner.js?v=20261120-7"></script>
-  <script src="session-planner-store.js?v=20261120-7"></script>
-  <script src="session-planner-ui.js?v=20261120-7"></script>
-  <script src="pet-minigame.js?v=20261120-7"></script>
-  <script src="pet-games.js?v=20261120-7"></script>
-  <script src="pet-ui.js?v=20261120-7"></script>
+  <script src="monopad-data.js?v=20261120-8"></script>
+<script src="gift-guide-data.js?v=20261120-8"></script>
+  <script src="endgame-data.js?v=20261120-8"></script>
+  <script src="unconfirmed-student.js?v=20261120-8"></script>
+  <script src="session-planner.js?v=20261120-8"></script>
+  <script src="session-planner-store.js?v=20261120-8"></script>
+  <script src="session-planner-ui.js?v=20261120-8"></script>
+  <script src="pet-minigame.js?v=20261120-8"></script>
+  <script src="pet-games.js?v=20261120-8"></script>
+  <script src="pet-ui.js?v=20261120-8"></script>
   <script>
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.20.7";
+  const APP_BUILD = "2026.11.20.8";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2609,7 +2618,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   const $$ = sel => [...document.querySelectorAll(sel)];
   const isLocalPreview = ["127.0.0.1","localhost"].includes(location.hostname) && new URLSearchParams(location.search).get("shared")!=="1";
   let sessionPlanner = null;
-  let petUi = null;
+  let petUi = null, petStoreRef = null;
   const isGameUnlocked = (gameId,includePreview=true) => {
     if(typeof isAdminPreview!=="undefined"&&isAdminPreview&&includePreview)return MAIN_GAME_IDS.includes(gameId);
     if(typeof isLocalPreview!=="undefined"&&isLocalPreview&&includePreview && ["dr2x2","dr2slayhem"].includes(gameId))return true;
@@ -4051,7 +4060,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     renderPool(free);
     renderSpoilers(spoilers);
     renderActors();
-    renderGraveyard(dead);
+    renderGraveyard(dead); refreshPetGraveyard();
     renderStatistics();
     renderMonopad();
     renderAdminTools();
@@ -5088,6 +5097,12 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
       grid.appendChild(card);
     });
+  }
+
+  function refreshPetGraveyard(){
+    const box=$("#petGraveyard"); if(!box||!window.CastPetUI) return;
+    if(!petStoreRef||!["dr2x2","dr2slayhem"].includes(activeGameId)){box.hidden=true;return}
+    window.CastPetUI.renderPetGraveyard(box,petStoreRef.state,currentSettings().voiceChapter||1,{revealed:mode==="host"});
   }
 
   function renderGraveyard(deadRoles){
@@ -6295,7 +6310,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       root:$("#petTab"),store:petStore,actors:()=>state.actors,mode:()=>mode,actorId:()=>activeActorId,
       chapter:()=>currentSettings().voiceChapter||1,toast,login:()=>beginLogin()
     });
-    petStore.load().then(()=>petUi.render()).catch(error=>console.warn("Island Pet could not load",error));
+    petStoreRef=petStore; petStore.subscribe(refreshPetGraveyard);
+    petStore.load().then(()=>{petUi.render();refreshPetGraveyard()}).catch(error=>console.warn("Island Pet could not load",error));
   }
 
   render();

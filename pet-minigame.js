@@ -41,17 +41,58 @@
   const clamp=(n,lo,hi)=>Math.max(lo,Math.min(hi,n));
   const find=(id,kinds)=>CATALOG.find(item=>item.id===id&&kinds.includes(item.kind));
 
-  function defaultState(nowMs){
-    return {v:1,name:null,revealed:false,xp:0,stats:{hunger:70,joy:70,energy:80,clean:80},at:new Date(nowMs).toISOString(),owned:{},worn:{},people:{},log:[]};
+  const HP_MAX=300,HOUR=3600000,MAX_TICKS=240;
+  const LIFE_DEFAULTS={hp:HP_MAX,age:0,dirty:0,sad:0,hungry:0,cares:0,form:null,dead:false,died:null,cause:null,gen:1,paused:false,graves:[]};
+  function freshLife(nowMs,gen=1){
+    const iso=new Date(nowMs).toISOString();
+    return {...LIFE_DEFAULTS,graves:[],gen,lt:iso,born:iso};
   }
-  // Stats drift down while nobody is around, never below 10 and never for more than 16 hours.
-  function decay(state,nowMs){
-    const hours=clamp((nowMs-Date.parse(state.at))/3600000,0,16),stats={};
-    for(const key of STAT_KEYS){
-      const old=state.stats[key];
-      stats[key]=Math.round(Math.max(Math.min(old,10),old-RATE[key]*hours));
+  function defaultState(nowMs){
+    return {v:1,name:null,revealed:false,xp:0,stats:{hunger:70,joy:70,energy:80,clean:80},at:new Date(nowMs).toISOString(),owned:{},worn:{},people:{},log:[],...freshLife(nowMs)};
+  }
+  // Stats drift down while nobody is around and never go below 10.
+  function statsAt(old,atMs,tMs){
+    const hours=clamp((tMs-atMs)/HOUR,0,48),stats={};
+    for(const key of STAT_KEYS)stats[key]=Math.round(Math.max(Math.min(old[key],10),old[key]-RATE[key]*hours));
+    return stats;
+  }
+  const stageOf=age=>age<24?'baby':age<72?'child':'adult';
+  function formFor({dirty,sad,hungry,cares}){
+    if(dirty>=12&&dirty>=sad&&dirty>=hungry)return 'monoshit';
+    if(sad+hungry>=12)return 'monokuma';
+    if(cares>=30&&dirty+sad+hungry<=4)return 'usami';
+    return 'monomi';
+  }
+  const defaultName=s=>s.form==='monokuma'?'Monokuma':s.form==='monoshit'?'Monoshit':s.revealed?'Usami':'Monomi';
+  const critical=stats=>({hunger:stats.hunger<=20,joy:stats.joy<=15,energy:stats.energy<=15,clean:stats.clean<=15});
+  // One step per hour: age, care habits, health, growing up and, if nobody helps, death.
+  function decay(state,nowMs,chapter=1){
+    const at=Date.parse(state.at);
+    const s={...LIFE_DEFAULTS,graves:[],lt:state.at,born:state.at,...state};
+    const iso=new Date(nowMs).toISOString();
+    if(s.dead||s.paused)return {...s,at:iso,lt:iso};
+    const lt=Date.parse(s.lt),elapsed=Math.max(0,Math.floor((nowMs-lt)/HOUR)),n=Math.min(elapsed,MAX_TICKS);
+    let {hp,age,dirty,sad,hungry,form}=s,dead=false,died=null,cause=null;
+    for(let i=1;i<=n;i++){
+      const t=lt+i*HOUR,st=statsAt(state.stats,at,t);
+      age++;
+      if(st.clean<=20)dirty++;
+      if(st.hunger<=25)hungry++;
+      if(st.joy<=25)sad++;
+      const crit=Object.values(critical(st)).filter(Boolean).length;
+      if(crit)hp=Math.max(0,hp-crit);
+      else if(Math.min(st.hunger,st.joy,st.energy,st.clean)>=40)hp=Math.min(HP_MAX,hp+3);
+      if(!form&&age>=72)form=formFor({dirty,sad,hungry,cares:s.cares});
+      if(hp===0){
+        dead=true;died=new Date(t).toISOString();
+        const low=['hunger','joy','energy','clean'].reduce((a,b)=>st[b]<st[a]?b:a);
+        cause={hunger:'hunger',joy:'lonely',energy:'exhausted',clean:'mess'}[low];
+        break;
+      }
     }
-    return {...state,stats,at:new Date(nowMs).toISOString()};
+    const next={...s,stats:statsAt(state.stats,at,nowMs),at:iso,lt:elapsed>MAX_TICKS?iso:new Date(lt+n*HOUR).toISOString(),hp,age,dirty,sad,hungry,form,dead,died,cause};
+    if(dead)next.graves=[{name:s.name||defaultName(next),form,stage:stageOf(age),died,cause,ch:clamp(Math.floor(chapter)||1,1,6),age},...s.graves].slice(0,40);
+    return next;
   }
   function emptyPerson(){return {coins:0,care:0,day:'',dayCare:0,dayGame:0,cd:{}};}
   function level(xp){return 1+Math.floor(Math.sqrt(Math.max(0,xp)/12));}
@@ -65,10 +106,18 @@
   }
   function fail(error){return {ok:false,error};}
 
+  const DEAD_TEXT='The pet has passed away. Hatch a new egg to start again.';
   // Returns {ok:true,state} or {ok:false,error}. `now` is milliseconds.
   function apply(previous,{actor,actorName='Someone',action,arg=null,score=0,chapter=1,now}){
-    let s=decay(previous,now);
+    let s=decay(previous,now,chapter);
     const ch=clamp(Math.floor(chapter)||1,1,6),stats={...s.stats},today=dayKey(now);
+    if(s.dead&&action!=='hatch')return {ok:false,error:DEAD_TEXT,state:s};
+    if(action==='hatch'){
+      if(!s.dead)return fail('Your pet is alive and well.');
+      s={...s,...freshLife(now,s.gen+1),graves:s.graves,stats:{hunger:70,joy:70,energy:80,clean:80},at:new Date(now).toISOString()};
+      s.log=[{t:new Date(now).toISOString(),who:String(actorName).slice(0,40),text:'hatched a new pet'},...s.log].slice(0,12);
+      return {ok:true,state:s};
+    }
     let person={...emptyPerson(),...(s.people[actor]||{}),cd:{...(s.people[actor]?.cd||{})}};
     if(person.day!==today){person.day=today;person.dayCare=0;person.dayGame=0;}
     let item=null,game=null,cls=null,cd=0,line='',care=false,xpGain=0;
@@ -127,22 +176,28 @@
     if(care&&person.dayCare<20){person.coins+=1;person.dayCare+=1;}
     if(care)person.care+=1;
     s.stats=stats;s.xp+=xpGain;s.people[actor]=person;
+    if(care)s.cares+=1;
     s.log=[{t:new Date(now).toISOString(),who:String(actorName).slice(0,40),text:line},...s.log].slice(0,12);
     return {ok:true,state:s};
   }
-  function applyHost(previous,{action,arg=null,now}){
-    let s=decay(previous,now);
+  function applyHost(previous,{action,arg=null,now,chapter=1}){
+    let s=decay(previous,now,chapter);
     if(action==='reveal')s={...s,revealed:arg==='true'};
     else if(action==='rename'){
       const name=String(arg??'').trim()||null;
       if(name&&!/^[A-Za-z0-9 .'-]{1,20}$/.test(name))return fail('Use up to 20 letters, numbers, spaces, dots, dashes or apostrophes.');
       s={...s,name};
-    }else if(action==='reset')s={...defaultState(now),revealed:s.revealed,name:s.name};
+    }else if(action==='reset')s={...defaultState(now),revealed:s.revealed,name:s.name,graves:s.graves};
+    else if(action==='pause')s={...s,paused:arg==='true'};
+    else if(action==='revive'){
+      if(!s.dead)return fail('The pet is alive.');
+      s={...s,dead:false,died:null,cause:null,hp:HP_MAX/2,stats:{hunger:60,joy:60,energy:60,clean:60},lt:new Date(now).toISOString(),graves:s.graves.slice(1)};
+    }
     else return fail('Unknown host action.');
     return {ok:true,state:s};
   }
 
-  const api={CATALOG,GAMES,COOLDOWN,defaultState,decay,apply,applyHost,level,mood,dayKey,find};
+  const api={CATALOG,GAMES,COOLDOWN,defaultState,decay,apply,applyHost,level,mood,dayKey,find,stageOf,critical,defaultName,HP_MAX,DEAD_TEXT};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.CastPet=api;
 })(typeof window!=='undefined'?window:globalThis);

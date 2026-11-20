@@ -47,20 +47,92 @@ create or replace function public.cast_pet_default_state(p_now timestamptz)
 returns jsonb language sql immutable set search_path = pg_catalog as $$
 select jsonb_build_object('v',1,'name',null,'revealed',false,'xp',0,
   'stats',jsonb_build_object('hunger',70,'joy',70,'energy',80,'clean',80),
-  'at',p_now,'owned','{}'::jsonb,'worn','{}'::jsonb,'people','{}'::jsonb,'log','[]'::jsonb) $$;
+  'at',p_now,'owned','{}'::jsonb,'worn','{}'::jsonb,'people','{}'::jsonb,'log','[]'::jsonb,
+  'hp',300,'lt',p_now,'born',p_now,'age',0,'dirty',0,'sad',0,'hungry',0,'cares',0,'form',null,
+  'dead',false,'died',null,'cause',null,'gen',1,'paused',false,'graves','[]'::jsonb) $$;
 
--- Stats drift down while nobody is around, but never below 10 and never for more than 16 hours.
-create or replace function public.cast_pet_decay(p_state jsonb, p_now timestamptz)
+-- Stats drift down while nobody is around and never go below 10.
+create or replace function public.cast_pet_stats_at(p_old jsonb, p_at timestamptz, p_t timestamptz)
 returns jsonb language plpgsql immutable set search_path = pg_catalog as $$
-declare hours double precision; stats jsonb := p_state->'stats'; key text; rate double precision; old double precision;
+declare hours double precision; stats jsonb := p_old; key text; rate double precision; old double precision;
 begin
-  hours := least(16, greatest(0, extract(epoch from (p_now - (p_state->>'at')::timestamptz)) / 3600.0));
+  hours := least(48, greatest(0, extract(epoch from (p_t - p_at)) / 3600.0));
   foreach key in array array['hunger','joy','energy','clean'] loop
     rate := case key when 'hunger' then 2.5 when 'joy' then 2 when 'energy' then 1.5 else 1.5 end;
-    old := (stats->>key)::double precision;
+    old := (p_old->>key)::double precision;
     stats := jsonb_set(stats, array[key], to_jsonb(round(greatest(least(old, 10), old - rate * hours))::integer));
   end loop;
-  return jsonb_set(jsonb_set(p_state, '{stats}', stats), '{at}', to_jsonb(p_now));
+  return stats;
+end $$;
+
+-- One step per hour: age, care habits, health, growing up and, if nobody helps, death.
+-- Paused or dead pets stand still. Keep in step with decay() in pet-minigame.js.
+drop function if exists public.cast_pet_decay(jsonb, timestamptz);
+create or replace function public.cast_pet_decay(p_state jsonb, p_now timestamptz, p_chapter integer default 1)
+returns jsonb language plpgsql immutable set search_path = pg_catalog, public as $$
+declare
+  at0 timestamptz := (p_state->>'at')::timestamptz;
+  lt0 timestamptz := coalesce((p_state->>'lt')::timestamptz, (p_state->>'at')::timestamptz);
+  hp integer := coalesce((p_state->>'hp')::integer, 300);
+  age integer := coalesce((p_state->>'age')::integer, 0);
+  dirty integer := coalesce((p_state->>'dirty')::integer, 0);
+  sad integer := coalesce((p_state->>'sad')::integer, 0);
+  hungry integer := coalesce((p_state->>'hungry')::integer, 0);
+  cares integer := coalesce((p_state->>'cares')::integer, 0);
+  form text := p_state->>'form';
+  frozen boolean := coalesce((p_state->>'dead')::boolean, false) or coalesce((p_state->>'paused')::boolean, false);
+  dead boolean := coalesce((p_state->>'dead')::boolean, false);
+  died timestamptz := (p_state->>'died')::timestamptz;
+  cause text := p_state->>'cause';
+  elapsed integer; n integer := 0; i integer; t timestamptz; st jsonb; crit integer; low text; new_lt timestamptz;
+  graves jsonb := coalesce(p_state->'graves', '[]'::jsonb); out_stats jsonb := p_state->'stats';
+begin
+  new_lt := p_now;
+  if not frozen then
+    elapsed := greatest(0, floor(extract(epoch from (p_now - lt0)) / 3600.0))::integer;
+    n := least(elapsed, 240);
+    if elapsed <= 240 then new_lt := lt0 + n * interval '1 hour'; end if;
+    for i in 1..n loop
+      t := lt0 + i * interval '1 hour';
+      st := public.cast_pet_stats_at(p_state->'stats', at0, t);
+      age := age + 1;
+      if (st->>'clean')::integer <= 20 then dirty := dirty + 1; end if;
+      if (st->>'hunger')::integer <= 25 then hungry := hungry + 1; end if;
+      if (st->>'joy')::integer <= 25 then sad := sad + 1; end if;
+      crit := (case when (st->>'hunger')::integer <= 20 then 1 else 0 end) + (case when (st->>'joy')::integer <= 15 then 1 else 0 end)
+            + (case when (st->>'energy')::integer <= 15 then 1 else 0 end) + (case when (st->>'clean')::integer <= 15 then 1 else 0 end);
+      if crit > 0 then hp := greatest(0, hp - crit);
+      elsif least((st->>'hunger')::integer, (st->>'joy')::integer, (st->>'energy')::integer, (st->>'clean')::integer) >= 40 then hp := least(300, hp + 3);
+      end if;
+      if form is null and age >= 72 then
+        form := case
+          when dirty >= 12 and dirty >= sad and dirty >= hungry then 'monoshit'
+          when sad + hungry >= 12 then 'monokuma'
+          when cares >= 30 and dirty + sad + hungry <= 4 then 'usami'
+          else 'monomi' end;
+      end if;
+      if hp = 0 then
+        dead := true; died := t; low := 'hunger';
+        if (st->>'joy')::integer < (st->>low)::integer then low := 'joy'; end if;
+        if (st->>'energy')::integer < (st->>low)::integer then low := 'energy'; end if;
+        if (st->>'clean')::integer < (st->>low)::integer then low := 'clean'; end if;
+        cause := case low when 'hunger' then 'hunger' when 'joy' then 'lonely' when 'energy' then 'exhausted' else 'mess' end;
+        graves := (select coalesce(jsonb_agg(g order by ord), '[]'::jsonb) from (
+          select g, ord from jsonb_array_elements(jsonb_build_array(jsonb_build_object(
+            'name', coalesce(nullif(p_state->>'name', ''), case when form = 'monokuma' then 'Monokuma' when form = 'monoshit' then 'Monoshit'
+              when coalesce((p_state->>'revealed')::boolean, false) then 'Usami' else 'Monomi' end),
+            'form', form, 'stage', case when age < 24 then 'baby' when age < 72 then 'child' else 'adult' end,
+            'died', died, 'cause', cause, 'ch', greatest(1, least(6, coalesce(p_chapter, 1))), 'age', age)) || graves)
+            with ordinality as x(g, ord) order by ord limit 40) y);
+        exit;
+      end if;
+    end loop;
+    out_stats := public.cast_pet_stats_at(p_state->'stats', at0, p_now);
+  end if;
+  return p_state || jsonb_build_object('stats', out_stats, 'at', p_now, 'lt', new_lt, 'hp', hp, 'age', age, 'dirty', dirty, 'sad', sad,
+    'hungry', hungry, 'cares', cares, 'form', form, 'dead', dead, 'died', died, 'cause', cause,
+    'gen', coalesce((p_state->>'gen')::integer, 1), 'paused', coalesce((p_state->>'paused')::boolean, false),
+    'born', coalesce((p_state->>'born')::timestamptz, at0), 'graves', graves);
 end $$;
 
 create or replace function public.cast_pet_apply(
@@ -74,7 +146,24 @@ declare
 begin
   insert into public.cast_pets(slug, state) values (p_slug, public.cast_pet_default_state(p_now)) on conflict do nothing;
   select state into s from public.cast_pets where slug = p_slug for update;
-  s := public.cast_pet_decay(s, p_now);
+  s := public.cast_pet_decay(s, p_now, ch);
+  if coalesce((s->>'dead')::boolean, false) and p_action <> 'hatch' then
+    update public.cast_pets set state = s, updated_at = p_now where slug = p_slug;
+    return jsonb_build_object('ok',false,'error','The pet has passed away. Hatch a new egg to start again.','state',s);
+  end if;
+  if p_action = 'hatch' then
+    if not coalesce((s->>'dead')::boolean, false) then return jsonb_build_object('ok',false,'error','Your pet is alive and well.'); end if;
+    s := s || jsonb_build_object('hp',300,'lt',p_now,'born',p_now,'age',0,'dirty',0,'sad',0,'hungry',0,'cares',0,'form',null,
+      'dead',false,'died',null,'cause',null,'gen',coalesce((s->>'gen')::integer,1) + 1,'paused',false,'at',p_now,
+      'stats',jsonb_build_object('hunger',70,'joy',70,'energy',80,'clean',80));
+    s := jsonb_set(s, '{log}', (
+      select coalesce(jsonb_agg(entry order by ord), '[]'::jsonb) from (
+        select entry, ord from jsonb_array_elements(
+          jsonb_build_array(jsonb_build_object('t', p_now, 'who', left(p_actor_name, 40), 'text', 'hatched a new pet')) || (s->'log')
+        ) with ordinality as t(entry, ord) order by ord limit 12) z));
+    update public.cast_pets set state = s, updated_at = p_now where slug = p_slug;
+    return jsonb_build_object('ok', true, 'state', s);
+  end if;
   stats := s->'stats';
   today := to_char(p_now at time zone 'Europe/Copenhagen', 'YYYY-MM-DD');
   person := coalesce(s->'people'->p_actor, jsonb_build_object('coins',0,'care',0,'day','','dayCare',0,'dayGame',0,'cd','{}'::jsonb));
@@ -175,6 +264,7 @@ begin
     person := jsonb_set(person, '{dayCare}', to_jsonb((person->>'dayCare')::integer + 1));
   end if;
   if care then person := jsonb_set(person, '{care}', to_jsonb((person->>'care')::integer + 1)); end if;
+  if care then s := jsonb_set(s, '{cares}', to_jsonb(coalesce((s->>'cares')::integer, 0) + 1)); end if;
   s := jsonb_set(s, '{xp}', to_jsonb((s->>'xp')::integer + xp_gain));
   s := jsonb_set(s, array['people', p_actor], person, true);
   s := jsonb_set(s, '{log}', (
@@ -206,14 +296,22 @@ end $$;
 
 create or replace function public.cast_pet_host(p_slug text, p_action text, p_arg text default null)
 returns jsonb language plpgsql security definer set search_path = public as $$
-declare s jsonb; now_ts timestamptz := statement_timestamp(); clean_name text;
+declare s jsonb; now_ts timestamptz := statement_timestamp(); clean_name text; chapter integer;
 begin
   if not public.cast_is_host(p_slug) then raise exception 'Host access required.'; end if;
   insert into public.cast_pets(slug, state) values (p_slug, public.cast_pet_default_state(now_ts)) on conflict do nothing;
   select state into s from public.cast_pets where slug = p_slug for update;
-  s := public.cast_pet_decay(s, now_ts);
+  select coalesce((b.state->'settings'->'games'->'dr2x2'->>'voiceChapter')::integer, 1) into chapter
+    from public.cast_public_boards b where b.slug = p_slug;
+  s := public.cast_pet_decay(s, now_ts, coalesce(chapter, 1));
   if p_action = 'reveal' then
     s := jsonb_set(s, '{revealed}', to_jsonb(p_arg = 'true'));
+  elsif p_action = 'pause' then
+    s := jsonb_set(s, '{paused}', to_jsonb(p_arg = 'true'));
+  elsif p_action = 'revive' then
+    if not coalesce((s->>'dead')::boolean, false) then raise exception 'The pet is alive.'; end if;
+    s := s || jsonb_build_object('dead',false,'died',null,'cause',null,'hp',150,'lt',now_ts,
+      'stats',jsonb_build_object('hunger',60,'joy',60,'energy',60,'clean',60),'graves',(s->'graves') - 0);
   elsif p_action = 'rename' then
     clean_name := nullif(btrim(coalesce(p_arg, '')), '');
     if clean_name is not null and clean_name !~ '^[A-Za-z0-9 .''-]{1,20}$' then
@@ -221,7 +319,7 @@ begin
     end if;
     s := jsonb_set(s, '{name}', coalesce(to_jsonb(clean_name), 'null'::jsonb));
   elsif p_action = 'reset' then
-    s := public.cast_pet_default_state(now_ts) || jsonb_build_object('revealed', s->'revealed', 'name', s->'name');
+    s := public.cast_pet_default_state(now_ts) || jsonb_build_object('revealed', s->'revealed', 'name', s->'name', 'graves', coalesce(s->'graves', '[]'::jsonb));
   else
     raise exception 'Unknown host action.';
   end if;
@@ -230,7 +328,8 @@ begin
 end $$;
 
 revoke all on function public.cast_pet_catalog(), public.cast_pet_default_state(timestamptz),
-  public.cast_pet_decay(jsonb, timestamptz),
+  public.cast_pet_stats_at(jsonb, timestamptz, timestamptz),
+  public.cast_pet_decay(jsonb, timestamptz, integer),
   public.cast_pet_apply(text,text,text,text,text,integer,integer,timestamptz),
   public.cast_pet_action(text,text,text,text,integer), public.cast_pet_host(text,text,text)
   from public, anon, authenticated;
