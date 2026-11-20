@@ -50,7 +50,7 @@ Supabase
 - Island Pet (island-pet-migration.sql, tab only in the 2x2 routes) is one shared pet per board.
   Players change it only through cast_pet_action; the server owns cooldowns, daily coin caps,
   prices and chapter unlocks. pet-minigame.js mirrors those rules for the preview sandbox, and
-  	ests/island-pet.integration.js checks the two agree. The host's secret switch only renames the pet to Usami and adds a glow; there is no Usami art.
+  	ests/island-pet.integration.js checks the two agree. pet-games.js holds the four themed minigames (Snack Catch, Island Memory, Hope Bubbles, Jabberwock Dash; chapters 1, 1, 3, 5). The game id is the cast_pet_action argument for the game action. In host preview the sandbox store lets the host pick a chapter 1-5. The host's secret switch only renames the pet to Usami and adds a glow; there is no Usami art.
 - Run the PGlite tests with `NODE_PATH` pointing at a folder that has `@electric-sql/pglite`.
 
 Known issues and parked work

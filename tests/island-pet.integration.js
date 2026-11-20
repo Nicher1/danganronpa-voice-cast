@@ -84,7 +84,7 @@ const Pet=require('../pet-minigame.js');
   for(let i=0;i<500;i++){
     now+=rnd()<.04?20*3600e3:Math.floor(rnd()*400)*1000;
     const [actor,actorName]=pick(people),action=pick(actions),chapter=1+Math.floor(rnd()*5);
-    const arg=action==='unwear'?pick(['hat','neck','bg']):action==='wash'||action==='pet'||action==='rest'||action==='game'?null:pick(items);
+    const arg=action==='unwear'?pick(['hat','neck','bg']):action==='game'?pick([null,'snack','memory','bubble','run','nope']):action==='wash'||action==='pet'||action==='rest'?null:pick(items);
     const score=action==='game'?Math.floor(rnd()*60)-5:null;
     if(i%25===0)await db.query("update public.cast_pets set state=jsonb_set(state,'{people}',(select coalesce(jsonb_object_agg(k,jsonb_set(v,'{coins}','40')),'{}') from jsonb_each(state->'people') e(k,v)))");
     if(i%25===0)for(const [id] of people)if(js.people[id])js.people[id]={...js.people[id],coins:40};

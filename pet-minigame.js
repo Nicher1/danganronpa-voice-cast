@@ -27,6 +27,12 @@
     {id:'night_sky',kind:'bg',name:'Night sky',price:50,ch:4}
   ];
   const COOLDOWN={feed:25,play:25,wash:45,pet:15,rest:90,game:60};
+  const GAMES=[
+    {id:'snack',name:'Snack Catch',ch:1},
+    {id:'memory',name:'Island Memory',ch:1},
+    {id:'bubble',name:'Hope Bubbles',ch:3},
+    {id:'run',name:'Jabberwock Dash',ch:5}
+  ];
   const RATE={hunger:2.5,joy:2,energy:1.5,clean:1.5};
   const STAT_KEYS=['hunger','joy','energy','clean'];
   const ZONE='Europe/Copenhagen';
@@ -65,7 +71,7 @@
     const ch=clamp(Math.floor(chapter)||1,1,6),stats={...s.stats},today=dayKey(now);
     let person={...emptyPerson(),...(s.people[actor]||{}),cd:{...(s.people[actor]?.cd||{})}};
     if(person.day!==today){person.day=today;person.dayCare=0;person.dayGame=0;}
-    let item=null,cls=null,cd=0,line='',care=false,xpGain=0;
+    let item=null,game=null,cls=null,cd=0,line='',care=false,xpGain=0;
     s={...s,owned:{...s.owned},worn:{...s.worn},people:{...s.people}};
     if(action==='feed'||action==='play'){
       item=find(arg,[action==='feed'?'food':'toy']);
@@ -75,7 +81,13 @@
       if(action==='feed'&&stats.hunger>=95)return fail('Not hungry right now.');
       if(action==='play'&&stats.energy<15)return fail('Too sleepy to play. Let it rest first.');
       cls=action;cd=COOLDOWN[action];
-    }else if(action==='wash'||action==='pet'||action==='rest'||action==='game'){cls=action;cd=COOLDOWN[action];}
+    }else if(action==='wash'||action==='pet'||action==='rest'){cls=action;cd=COOLDOWN[action];}
+    else if(action==='game'){
+      game=GAMES.find(g=>g.id===(arg||'snack'));
+      if(!game)return fail('Pick a game from the list.');
+      if(game.ch>ch)return fail('That game is not unlocked yet.');
+      cls='game';cd=COOLDOWN.game;
+    }
     else if(action==='buy'){
       item=find(arg,['hat','neck','bg']);
       if(!item)return fail('Pick something from the shop.');
@@ -109,7 +121,7 @@
         person.coins+=gain;person.dayGame+=gain;
         stats.joy=Math.min(100,stats.joy+Math.min(15,Math.floor(points/3)));
         stats.energy=Math.max(0,stats.energy-5);xpGain=Math.floor(points/5);
-        line='scored '+points+' in Snack Catch';
+        line='scored '+points+' in '+game.name;
       }
     }
     if(care&&person.dayCare<20){person.coins+=1;person.dayCare+=1;}
@@ -130,7 +142,7 @@
     return {ok:true,state:s};
   }
 
-  const api={CATALOG,COOLDOWN,defaultState,decay,apply,applyHost,level,mood,dayKey,find};
+  const api={CATALOG,GAMES,COOLDOWN,defaultState,decay,apply,applyHost,level,mood,dayKey,find};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
   root.CastPet=api;
 })(typeof window!=='undefined'?window:globalThis);

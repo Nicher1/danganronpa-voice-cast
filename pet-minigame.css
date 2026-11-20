@@ -78,3 +78,8 @@
   #petTab .pet-hero{grid-template-columns:1fr}
   .pet-stage{max-width:320px;margin:0 auto}
 }
+
+.pet-game-tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin:8px 0}
+.pet-game-tabs .pet-item{align-items:center;text-align:center}
+.pet-game-bar button[hidden]{display:none}
+.pet-game-bar button{min-width:64px}
