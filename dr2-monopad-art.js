@@ -7,16 +7,16 @@ window.CAST_DR2_MONOPAD_ART = {
   "Sonia Nevermind": "assets/monopad/dr2/sonia.png",
   "Hiyoko Saionji": "assets/monopad/dr2/saionji.png",
   "Ibuki Mioda": "assets/monopad/dr2/mioda.png",
-  "Gundham Tanaka": "assets/monopad/dr2/tanaka.jpg",
-  "Teruteru Hanamura": "assets/monopad/dr2/hanamura.jpg",
+  "Gundham Tanaka": "assets/monopad/dr2/tanaka.png",
+  "Teruteru Hanamura": "assets/monopad/dr2/hanamura.png",
   "Nekomaru Nidai": "assets/monopad/dr2/nidai.png",
-  "Peko Pekoyama": "assets/monopad/dr2/pekoyama.jpg",
+  "Peko Pekoyama": "assets/monopad/dr2/pekoyama.png",
   "Kazuichi Soda": "assets/monopad/dr2/souda.png",
   "Akane Owari": "assets/monopad/dr2/owari.png",
   "Chiaki Nanami": "assets/monopad/dr2/nanami.png",
   "Mahiru Koizumi": "assets/monopad/dr2/koizumi.png",
-  "Mikan Tsumiki": "assets/monopad/dr2/tsumiki.jpg",
-  "Monokuma": "assets/monopad/dr2/monokuma.jpg",
+  "Mikan Tsumiki": "assets/monopad/dr2/tsumiki.png",
+  "Monokuma": "assets/monopad/dr2/monokuma.png",
   "Monomi": "assets/monopad/dr2/monomi.png"
 };
 window.CAST_DR2_MONOPAD_CREDITS = {

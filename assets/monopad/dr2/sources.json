@@ -47,13 +47,13 @@
     },
     {
       "name": "Gundham Tanaka",
-      "file": "assets/monopad/dr2/tanaka.jpg",
+      "file": "assets/monopad/dr2/tanaka.png",
       "source": "https://ami.animecharactersdatabase.com/uploads/chars/8148-1183987002.jpg",
       "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_03.png"
     },
     {
       "name": "Teruteru Hanamura",
-      "file": "assets/monopad/dr2/hanamura.jpg",
+      "file": "assets/monopad/dr2/hanamura.png",
       "source": "https://ami.animecharactersdatabase.com/uploads/chars/8148-480295921.jpg",
       "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_06.png"
     },
@@ -65,7 +65,7 @@
     },
     {
       "name": "Peko Pekoyama",
-      "file": "assets/monopad/dr2/pekoyama.jpg",
+      "file": "assets/monopad/dr2/pekoyama.png",
       "source": "https://ami.animecharactersdatabase.com/uploads/chars/8148-1796382694.jpg",
       "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_16.png"
     },
@@ -96,7 +96,7 @@
     },
     {
       "name": "Mikan Tsumiki",
-      "file": "assets/monopad/dr2/tsumiki.jpg",
+      "file": "assets/monopad/dr2/tsumiki.png",
       "source": "https://static.zerochan.net/Tsumiki.Mikan.full.1402867.jpg",
       "verifiedAgainst": "https://www.zerochan.net/1402867",
       "artist": "Bitikara",
@@ -105,7 +105,7 @@
     },
     {
       "name": "Monokuma",
-      "file": "assets/monopad/dr2/monokuma.jpg",
+      "file": "assets/monopad/dr2/monokuma.png",
       "source": "https://www.4gamer.net/games/138/G013812/20120611061/SS/004.jpg",
       "verifiedAgainst": "https://titleimg.spike-chunsoft.co.jp/www.danganronpa.com/reload/images/character/02/img_chara02_17.png"
     },
