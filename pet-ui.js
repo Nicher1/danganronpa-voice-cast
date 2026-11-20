@@ -46,80 +46,34 @@
       }
     };
   }
-  function makeSandboxStore({persist=false,chapter=()=>1}={}){
+  function makeSandboxStore({persist=false,chapter=()=>1,previewChapter=null,startCoins=0,actor='preview'}={}){
     const KEY='danganronpa-island-pet-sandbox-v1';let state=null;const listeners=new Set();
     try{if(persist)state=JSON.parse(localStorage.getItem(KEY));}catch(_){}
-    if(!state?.stats)state=Pet.defaultState(Date.now());
+    if(!state?.stats){
+      state=Pet.defaultState(Date.now());
+      if(startCoins)state.people[actor]={coins:startCoins,care:0,day:'',dayCare:0,dayGame:0,cd:{}};
+    }
+    let override=previewChapter;
     const commit=result=>{
       if(result.ok){state=result.state;try{if(persist)localStorage.setItem(KEY,JSON.stringify(state));}catch(_){}listeners.forEach(fn=>fn());}
       return result;
     };
     return {
       sandbox:true,
+      get canPickChapter(){return previewChapter!==null;},
+      get chapterOverride(){return override;},
+      set chapterOverride(value){override=value;listeners.forEach(fn=>fn());},
       get state(){return state;},
       async load(){},
-      async act(action,arg,score,actor){return commit(Pet.apply(state,{actor,actorName:'You (preview)',action,arg,score,chapter:chapter(),now:Date.now()}));},
+      async act(action,arg,score,actor){return commit(Pet.apply(state,{actor,actorName:'You (preview)',action,arg,score,chapter:override||chapter(),now:Date.now()}));},
       async host(action,arg){return commit(Pet.applyHost(state,{action,arg,now:Date.now()}));},
       subscribe(fn){listeners.add(fn);return ()=>listeners.delete(fn);}
     };
   }
 
-  // Snack Catch: 30 seconds, catch snacks, dodge the rotten ones. The server caps what it pays.
-  function createGame(canvas,{onTick,onEnd}){
-    const W=360,H=420,DURATION=30,ctx=canvas.getContext('2d');
-    canvas.width=W;canvas.height=H;
-    let running=false,t=0,score=0,items=[],basket=W/2,spawn=0,last=0,raf=0,dir=0;
-    const keys={};
-    const SNACKS=['#ff9ec7','#ffd45e','#8be0f5','#b7f0a6'];
-    function draw(){
-      ctx.clearRect(0,0,W,H);
-      const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#1c5870');sky.addColorStop(1,'#0c3446');
-      ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
-      for(const item of items){
-        ctx.beginPath();ctx.arc(item.x,item.y,13,0,7);
-        ctx.fillStyle=item.bad?'#2b2d31':item.color;ctx.fill();
-        ctx.lineWidth=3;ctx.strokeStyle=item.bad?'#8b3a4a':'#fff';ctx.stroke();
-        if(item.bad){ctx.strokeStyle='#ff6b81';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(item.x-5,item.y-5);ctx.lineTo(item.x+5,item.y+5);ctx.moveTo(item.x+5,item.y-5);ctx.lineTo(item.x-5,item.y+5);ctx.stroke();}
-      }
-      const y=H-34;ctx.fillStyle='#ffe0ee';ctx.strokeStyle='#ff67ac';ctx.lineWidth=4;
-      ctx.beginPath();ctx.roundRect(basket-36,y,72,24,8);ctx.fill();ctx.stroke();
-    }
-    function frame(now){
-      if(!running)return;
-      const dt=Math.min(.05,(now-last)/1000);last=now;t+=dt;
-      const move=(keys.ArrowLeft||keys.a||dir<0?-1:0)+(keys.ArrowRight||keys.d||dir>0?1:0);
-      basket=Math.max(36,Math.min(W-36,basket+move*300*dt));
-      spawn-=dt;
-      if(spawn<=0){
-        spawn=.5+Math.random()*.25;
-        items.push({x:20+Math.random()*(W-40),y:-14,v:120+t*3+Math.random()*30,bad:Math.random()<.26,color:SNACKS[Math.floor(Math.random()*SNACKS.length)]});
-      }
-      for(const item of items)item.y+=item.v*dt;
-      const by=H-34;
-      items=items.filter(item=>{
-        if(item.y>=by-8&&item.y<=by+20&&Math.abs(item.x-basket)<=44){score=item.bad?Math.max(0,score-2):score+1;onTick(score,Math.max(0,DURATION-t));return false;}
-        return item.y<H+20;
-      });
-      draw();onTick(score,Math.max(0,DURATION-t));
-      if(t>=DURATION){running=false;onEnd(score);return;}
-      raf=requestAnimationFrame(frame);
-    }
-    const toX=event=>{const rect=canvas.getBoundingClientRect();basket=Math.max(36,Math.min(W-36,(event.clientX-rect.left)/rect.width*W));};
-    canvas.addEventListener('pointermove',event=>{if(running)toX(event);});
-    canvas.addEventListener('pointerdown',event=>{if(running)toX(event);});
-    root.addEventListener('keydown',event=>{if(running&&['ArrowLeft','ArrowRight','a','d'].includes(event.key)){keys[event.key]=true;event.preventDefault();}});
-    root.addEventListener('keyup',event=>{delete keys[event.key];});
-    draw();
-    return {
-      start(){t=0;score=0;items=[];spawn=.3;basket=W/2;running=true;last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(frame);onTick(0,DURATION);},
-      stop(){running=false;cancelAnimationFrame(raf);},
-      steer(value){dir=value;},
-      get running(){return running;}
-    };
-  }
-
-  function mountIslandPet({root:host,store,actors,mode,actorId,chapter,toast,login,sandboxActor='preview'}){
+  function mountIslandPet({root:host,store,actors,mode,actorId,chapter:siteChapter,toast,login,sandboxActor='preview'}){
     const q=sel=>host.querySelector(sel);
+    const chapter=()=>store.sandbox&&store.chapterOverride?store.chapterOverride:siteChapter();
     host.innerHTML=`
       <section class="pet-hero panel">
         <div class="pet-stage" id="petStage" aria-hidden="true"><div class="pet-sprite" id="petSprite"><img id="petImg" src="${ART}" alt="" draggable="false"><span class="pet-wear pet-hat" id="petHat"></span><span class="pet-wear pet-neck" id="petNeck"></span><span class="pet-zzz">z z</span></div></div>
@@ -138,18 +92,20 @@
         <div id="petAsRow" class="pet-as" hidden></div>
         <p id="petNotice" class="pet-notice muted small" role="status"></p>
       </section>
-      <section class="pet-game panel" aria-label="Snack Catch">
-        <div class="section-kicker">MINIGAME</div><h3>Snack Catch</h3>
-        <p class="muted small">Catch the snacks, dodge the rotten ones. Move with the mouse, your finger, the arrow keys or the buttons. Coins are capped each day.</p>
-        <canvas id="petCanvas" aria-label="Snack Catch play area"></canvas>
-        <div class="pet-game-bar"><button type="button" class="ghost" id="petLeft" aria-label="Move left">◀</button><button type="button" id="petStart">Start (30 s)</button><button type="button" class="ghost" id="petRight" aria-label="Move right">▶</button></div>
+      <section class="pet-game panel" aria-label="Minigames">
+        <div class="section-kicker">MINIGAMES</div><h3 id="petGameTitle">Snack Catch</h3>
+        <div id="petGameTabs" class="pet-game-tabs" role="group" aria-label="Choose a minigame"></div>
+        <p id="petGameBlurb" class="muted small"></p>
+        <canvas id="petCanvas" aria-label="Minigame play area"></canvas>
+        <div class="pet-game-bar"><button type="button" class="ghost" id="petLeft" aria-label="Move left">◀</button><button type="button" class="ghost" id="petJump" aria-label="Jump">⤒ Jump</button><button type="button" id="petStart">Start</button><button type="button" class="ghost" id="petRight" aria-label="Move right">▶</button></div>
         <p id="petGameInfo" class="muted small" role="status" aria-live="polite">Ready when you are.</p>
+        <p class="muted small">Coins from minigames are capped each day, so a few rounds are plenty.</p>
       </section>
       <section class="pet-shop panel"><div class="section-kicker">WARDROBE</div><h3>Shop and looks</h3><div id="petShop" class="pet-shop-grid"></div></section>
       <section class="pet-board panel"><div class="section-kicker">TOGETHER</div><h3>Caretakers</h3><ol id="petBoard" class="pet-leader"></ol><h3>Recently</h3><ul id="petLog" class="pet-log"></ul></section>
       <section class="pet-host panel" id="petHost" hidden></section>`;
 
-    let picker=null,busy=false,gameRunning=false,gameBusy=false;
+    let picker=null,busy=false,gameRunning=false,gameBusy=false,gameId='snack',game=null;
     const nameOf=id=>actors().find(a=>a.id===id)?.name||'Someone';
     const HOST_KEY='danganronpa-pet-host-actor';
     const hostActor=()=>{const saved=localStorage.getItem(HOST_KEY);return actors().some(a=>a.id===saved)?saved:actors()[0]?.id||null;};
@@ -184,10 +140,39 @@
           asRow.dataset.sig=sig;
           asRow.innerHTML=`<label>Caring as <select id="petAs">${actors().map(a=>`<option value="${esc(a.id)}" ${a.id===current?'selected':''}>${esc(a.name)}</option>`).join('')}</select></label>`;
         }
+      }else if(store.sandbox&&store.canPickChapter){
+        asRow.hidden=false;
+        const sig='preview-'+store.chapterOverride;
+        if(asRow.dataset.sig!==sig){
+          asRow.dataset.sig=sig;
+          asRow.innerHTML=`<label>Preview as chapter <select id="petPreviewChapter">${[1,2,3,4,5].map(n=>`<option value="${n}" ${n===store.chapterOverride?'selected':''}>${n}</option>`).join('')}</select></label> <span class="muted small">Host preview: unlocks games and items up to that chapter. You start with 100 coins.</span>`;
+        }
       }else asRow.hidden=true;
       const start=q('#petStart'),w=wait('game');
-      start.disabled=!can||gameRunning||gameBusy||w>0;start.textContent=w?`Ready in ${w}s`:gameRunning?'Playing…':'Start (30 s)';
-      q('#petLeft').disabled=q('#petRight').disabled=!gameRunning;
+      start.disabled=!can||gameRunning||gameBusy||w>0;start.textContent=w?`Ready in ${w}s`:gameRunning?'Playing…':`Start (${game.seconds} s)`;
+      const controls=game.controls;
+      q('#petLeft').hidden=q('#petRight').hidden=controls!=='lr';q('#petJump').hidden=controls!=='jump';
+      q('#petLeft').disabled=q('#petRight').disabled=q('#petJump').disabled=!gameRunning;
+      renderGameTabs();
+    }
+    function renderGameTabs(){
+      const ch=chapter(),box=q('#petGameTabs');
+      if(Pet.GAMES.find(g=>g.id===gameId).ch>ch)selectGame('snack');
+      const sig=JSON.stringify([gameId,ch,gameRunning||gameBusy]);
+      if(box.dataset.sig!==sig){
+        box.dataset.sig=sig;
+        box.innerHTML=Pet.GAMES.map(g=>g.ch>ch
+          ?`<button type="button" class="pet-item locked" disabled><strong>???</strong><small>Unlocks in chapter ${g.ch}</small></button>`
+          :`<button type="button" class="pet-item" data-game="${g.id}" aria-pressed="${g.id===gameId}" ${gameRunning||gameBusy?'disabled':''}><strong>${esc(g.name)}</strong><small>${root.CastPetGames.INFO[g.id].seconds} s</small></button>`).join('');
+      }
+    }
+    function selectGame(id){
+      if(gameRunning||gameBusy||!Pet.GAMES.some(g=>g.id===id))return;
+      game?.destroy();gameId=id;
+      game=root.CastPetGames.create(id,q('#petCanvas'),{chapter,art:ART,onTick,onEnd:onGameEnd});
+      q('#petGameTitle').textContent=Pet.GAMES.find(g=>g.id===id).name;
+      q('#petGameBlurb').textContent=root.CastPetGames.INFO[id].blurb;
+      q('#petGameInfo').textContent='Ready when you are.';
     }
     function renderPicker(){
       const box=q('#petPicker');
@@ -266,6 +251,7 @@
     });
     host.addEventListener('change',async event=>{
       if(event.target.id==='petAs'){localStorage.setItem(HOST_KEY,event.target.value);render();return;}
+      if(event.target.id==='petPreviewChapter'){store.chapterOverride=Number(event.target.value);return;}
       if(event.target.id!=='petReveal')return;
       const box=event.target;box.disabled=true;
       try{const result=await store.host('reveal',box.checked?'true':'false');if(!result.ok)toast?.(result.error);}
@@ -273,19 +259,25 @@
       finally{box.disabled=false;render();}
     });
 
-    const game=createGame(q('#petCanvas'),{
-      onTick:(score,left)=>{q('#petGameInfo').textContent=`Score ${score} · ${Math.ceil(left)} s left`;},
-      onEnd:async score=>{
-        gameRunning=false;gameBusy=true;renderButtons();
-        q('#petGameInfo').textContent=`Time! You scored ${score}. Saving…`;
-        const before=person().coins||0;
-        const result=await run('game',null,score);
-        gameBusy=false;
-        q('#petGameInfo').textContent=result?.ok?`You scored ${score} and earned ${(person().coins||0)-before} coins.`:`You scored ${score}. ${result?.error||'It could not be saved.'}`;
-        render();
-      }
+    function onTick(score,left){q('#petGameInfo').textContent=`Score ${score} · ${Math.ceil(left)} s left`;}
+    async function onGameEnd(score){
+      gameRunning=false;gameBusy=true;renderButtons();
+      q('#petGameInfo').textContent=`Time! You scored ${score}. Saving…`;
+      const before=person().coins||0;
+      const result=await run('game',gameId,score);
+      gameBusy=false;
+      q('#petGameInfo').textContent=result?.ok?`You scored ${score} and earned ${(person().coins||0)-before} coins.`:`You scored ${score}. ${result?.error||'It could not be saved.'}`;
+      render();
+    }
+    host.addEventListener('click',event=>{
+      const tab=event.target.closest('[data-game]');
+      if(tab&&!tab.disabled&&host.contains(tab)){selectGame(tab.dataset.game);renderButtons();}
     });
     q('#petStart').onclick=()=>{if(!canAct()){login?.();return;}gameRunning=true;renderButtons();game.start();};
+    q('#petJump').addEventListener('pointerdown',event=>{game.act();event.preventDefault();});
+    q('#petJump').addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){game.act();event.preventDefault();}});
+    selectGame('snack');
+
     for(const [id,dir] of [['#petLeft',-1],['#petRight',1]]){
       const button=q(id);
       button.addEventListener('pointerdown',()=>game.steer(dir));
@@ -303,7 +295,7 @@
       signature=next;renderStage(s);renderButtons();
     },1000);
     render();
-    return {render,stop(){clearInterval(timer);game.stop();}};
+    return {render,stop(){clearInterval(timer);game?.destroy();}};
   }
 
   root.CastPetUI={mountIslandPet,makeRemoteStore,makeSandboxStore,WEAR_SVG};

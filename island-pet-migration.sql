@@ -70,7 +70,7 @@ returns jsonb language plpgsql set search_path = public as $$
 declare
   s jsonb; person jsonb; item jsonb; fx record; stats jsonb; today text; cls text; cd integer; last_at timestamptz;
   coins integer; price integer; gain integer; cap integer; wait integer; text_line text; xp_gain integer := 0;
-  care boolean := false; score integer; kind text; ch integer := greatest(1, least(6, coalesce(p_chapter, 1)));
+  care boolean := false; score integer; kind text; game_id text; game_name text; game_ch integer; ch integer := greatest(1, least(6, coalesce(p_chapter, 1)));
 begin
   insert into public.cast_pets(slug, state) values (p_slug, public.cast_pet_default_state(p_now)) on conflict do nothing;
   select state into s from public.cast_pets where slug = p_slug for update;
@@ -97,7 +97,15 @@ begin
   elsif p_action = 'wash' then cls := 'wash'; cd := 45;
   elsif p_action = 'pet' then cls := 'pet'; cd := 15;
   elsif p_action = 'rest' then cls := 'rest'; cd := 90;
-  elsif p_action = 'game' then cls := 'game'; cd := 60;
+  elsif p_action = 'game' then
+    game_id := coalesce(nullif(p_arg, ''), 'snack');
+    game_name := case game_id when 'snack' then 'Snack Catch' when 'memory' then 'Island Memory' when 'bubble' then 'Hope Bubbles' when 'run' then 'Jabberwock Dash' end;
+    if game_name is null then return jsonb_build_object('ok',false,'error','Pick a game from the list.'); end if;
+    game_ch := case game_id when 'bubble' then 3 when 'run' then 5 else 1 end;
+    if game_ch > ch then
+      return jsonb_build_object('ok',false,'error','That game is not unlocked yet.');
+    end if;
+    cls := 'game'; cd := 60;
   elsif p_action = 'buy' then
     select x into item from jsonb_array_elements(public.cast_pet_catalog()) x where x->>'id' = p_arg and x->>'kind' in ('hat','neck','bg');
     if item is null then return jsonb_build_object('ok',false,'error','Pick something from the shop.'); end if;
@@ -157,7 +165,7 @@ begin
       stats := jsonb_set(stats, '{joy}', to_jsonb(least(100, (stats->>'joy')::integer + least(15, score / 3))));
       stats := jsonb_set(stats, '{energy}', to_jsonb(greatest(0, (stats->>'energy')::integer - 5)));
       xp_gain := score / 5;
-      text_line := 'scored ' || score || ' in Snack Catch';
+      text_line := 'scored ' || score || ' in ' || game_name;
     end if;
     s := jsonb_set(s, '{stats}', stats);
   end if;
