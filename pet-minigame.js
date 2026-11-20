@@ -24,7 +24,9 @@
     {id:'bandana',kind:'neck',name:'Bandana',price:18,ch:2},
     {id:'sunset',kind:'bg',name:'Sunset beach',price:30,ch:2},
     {id:'garden',kind:'bg',name:'Garden',price:40,ch:3},
-    {id:'night_sky',kind:'bg',name:'Night sky',price:50,ch:4}
+    {id:'night_sky',kind:'bg',name:'Night sky',price:50,ch:4},
+    {id:'chibimi',kind:'skin',name:'Chibimi',price:40,ch:2},
+    {id:'monokuma_skin',kind:'skin',name:'Monokuma',price:60,ch:2}
   ];
   const COOLDOWN={feed:25,play:25,wash:45,pet:15,rest:90,game:60};
   const GAMES=[
@@ -138,7 +140,7 @@
       cls='game';cd=COOLDOWN.game;
     }
     else if(action==='buy'){
-      item=find(arg,['hat','neck','bg']);
+      item=find(arg,['hat','neck','bg','skin']);
       if(!item)return fail('Pick something from the shop.');
       if(item.ch>ch)return fail('That is not unlocked yet.');
       if(s.owned[arg])return fail('Already owned.');
@@ -146,11 +148,11 @@
       person.coins-=item.price;s.owned[arg]=true;s.worn[item.kind]=arg;
       line='bought and dressed the pet in: '+arg;
     }else if(action==='wear'){
-      item=find(arg,['hat','neck','bg']);
+      item=find(arg,['hat','neck','bg','skin']);
       if(!item||!s.owned[arg])return fail('You can only wear things the pet owns.');
       s.worn[item.kind]=arg;line='changed the look: '+arg;
     }else if(action==='unwear'){
-      if(!['hat','neck','bg'].includes(arg))return fail('Choose hat, neck or background.');
+      if(!['hat','neck','bg','skin'].includes(arg))return fail('Choose hat, neck, background or skin.');
       delete s.worn[arg];line='took off the '+arg;
     }else return fail('Unknown pet action.');
 

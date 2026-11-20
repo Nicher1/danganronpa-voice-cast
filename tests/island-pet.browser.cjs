@@ -43,6 +43,18 @@ const root=path.resolve(__dirname,'..');
     assert.ok(hasButtons>=5,'care buttons render');
     assert.ok(before>0);
 
+    // Skins unlock in chapter 2 and replace the picture; the secret switch only changes the name.
+    assert.equal(await page.locator('#petShop [data-arg="chibimi"]').count(),1,'chibimi skin in the shop');
+    await page.locator('#petShop [data-arg="chibimi"]').click();
+    await page.waitForSelector('#petStage[data-skin="chibimi"]');
+    await page.locator('#petReveal').check();
+    await page.waitForFunction(()=>document.querySelector('#petName').textContent==='Usami');
+    assert.equal(await page.locator('#petStage').getAttribute('data-skin'),'chibimi','the skin stays when the switch is on');
+    await page.locator('#petShop [data-act="unwear"][data-arg="skin"]').click();
+    await page.waitForSelector('#petStage[data-skin=""]');
+    await page.locator('#petReveal').uncheck();
+    await page.waitForFunction(()=>document.querySelector('#petName').textContent==='Monomi');
+
     // Life cycle in the host preview: neglect kills the pet, the grave reaches the Memorial, a new egg hatches.
     assert.equal(await page.locator('#petHost').isVisible(),true,'host controls in the preview');
     assert.match(await page.locator('#petGrowth').textContent(),/Baby/);

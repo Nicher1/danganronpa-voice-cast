@@ -85,7 +85,7 @@ const Pet=require('../pet-minigame.js');
     now+=rnd()<.02?(60+Math.floor(rnd()*120))*3600e3:rnd()<.04?20*3600e3:Math.floor(rnd()*400)*1000;
     if(i===0)js=Pet.defaultState(now); // the server creates the pet on first use
     const [actor,actorName]=pick(people),action=pick(actions),chapter=1+Math.floor(rnd()*5);
-    const arg=action==='unwear'?pick(['hat','neck','bg']):action==='game'?pick([null,'snack','memory','bubble','run','nope']):action==='wash'||action==='pet'||action==='rest'||action==='hatch'?null:pick(items);
+    const arg=action==='unwear'?pick(['hat','neck','bg','skin']):action==='game'?pick([null,'snack','memory','bubble','run','nope']):action==='wash'||action==='pet'||action==='rest'||action==='hatch'?null:pick(items);
     const score=action==='game'?Math.floor(rnd()*60)-5:null;
     if(i%25===0)await db.query("update public.cast_pets set state=jsonb_set(state,'{people}',(select coalesce(jsonb_object_agg(k,jsonb_set(v,'{coins}','40')),'{}') from jsonb_each(state->'people') e(k,v)))");
     if(i%25===0)for(const [id] of people)if(js.people[id])js.people[id]={...js.people[id],coins:40};
@@ -150,6 +150,13 @@ const Pet=require('../pet-minigame.js');
   }
   const grown=await apply(careAt,'a','pet');
   assert.deepEqual([grown.state.dead,grown.state.age>=72,['monomi','usami'].includes(grown.state.form),grown.state.hp],[false,true,true,300],'a cared-for pet grows up healthy');
+  // Skins: unlock in chapter 2, are bought and worn like other items
+  await db.exec("update public.cast_pets set state=jsonb_set(state,'{people}',(select coalesce(jsonb_object_agg(k,jsonb_set(v,'{coins}','200')),'{}') from jsonb_each(state->'people') e(k,v)))");
+  assert.match((await apply(careAt+3600e3,'a','buy','chibimi',1)).error||'',/./,'chibimi is locked before chapter 2');
+  const skinBuy=await apply(careAt+2*3600e3,'a','buy','chibimi',2);
+  assert.equal(skinBuy.ok,true);
+  assert.equal((await apply(careAt+3*3600e3,'a','wear','chibimi',2)).state.worn.skin,'chibimi');
+  assert.equal((await apply(careAt+4*3600e3,'a','unwear','skin',2)).state.worn.skin,undefined);
   await host('rename','Hope');
   await db.exec("update public.cast_pets set state=state||'{\"dead\":true}'::jsonb");
   await as(bob,true);
