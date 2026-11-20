@@ -79,6 +79,9 @@ const fixture={sessions:[{id:'old',startAt:P.instant('2030-10-21'),endedAt:P.ins
   await page.screenshot({path:path.resolve(root,'../output/mobile-tied-sessions.png')});
   const confirmed={...tied,sessions:[{id:'next',source:'host',startAt:P.instant('2030-10-31','20:00'),endedAt:null,breaks:[]}]};await update(confirmed);assert.equal(await page.locator('#nextSessionBanner').getAttribute('data-session-state'),'confirmed');
   assert.equal(await page.locator('#nextSessionBanner [data-countdown-at]').count(),1,'A host-confirmed date overrides tied votes');
+  const calendar=page.locator('#sessionPlanner [data-add-calendar]');
+  assert.equal(await calendar.count(),1,'A confirmed session offers Add to Google Calendar');
+  assert.match(await calendar.getAttribute('href'),/^https:\/\/calendar\.google\.com\/calendar\/render\?action=TEMPLATE&text=Danganronpa\+session&dates=20301031T190000Z\/20301031T220000Z&details=/);
   const automatic=structuredClone(confirmed);automatic.sessions[0].source='poll';await update(automatic);
   assert.equal(await page.locator('#nextSessionBanner [data-countdown-at]').count(),0,'An automatic booking cannot bypass a vote tie');
   assert.equal(await page.locator('#sessionPlanner .schedule-heading h2').innerText(),'Next planned session');

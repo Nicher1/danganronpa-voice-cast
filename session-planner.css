@@ -27,3 +27,4 @@ html[data-ui-theme] #castingTab .finale-stage{width:calc(100% - 8px);margin:0 8p
   .week-navigation strong{min-width:0;text-align:center}
 }
 @media(max-width:380px){.schedule-week{grid-template-columns:1fr}}
+.schedule-actions .button{display:inline-flex;align-items:center;min-height:36px;padding:0 12px;font-size:.75rem;text-decoration:none}
