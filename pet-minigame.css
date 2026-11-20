@@ -26,8 +26,8 @@
 .pet-stage[data-mood="hungry"] .pet-sprite{animation:pet-wobble 1.8s ease-in-out infinite}
 .pet-stage[data-mood="grumpy"] .pet-sprite img{filter:saturate(.7) drop-shadow(0 6px 8px rgba(0,0,0,.28))}
 .pet-stage[data-mood="messy"] .pet-sprite img{filter:sepia(.35) saturate(.85) drop-shadow(0 6px 8px rgba(0,0,0,.28))}
-.pet-stage[data-revealed="1"]{box-shadow:inset 0 0 40px rgba(255,103,172,.35)}
-.pet-stage[data-revealed="1"] .pet-sprite img{filter:drop-shadow(0 0 10px rgba(255,103,172,.8)) drop-shadow(0 6px 8px rgba(0,0,0,.28))}
+
+
 @keyframes pet-idle{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-2.5%)}}
 @keyframes pet-happy{0%,100%{transform:translateX(-50%) translateY(0) scale(1)}50%{transform:translateX(-50%) translateY(-7%) scale(1.03)}}
 @keyframes pet-sleepy{0%,100%{transform:translateX(-50%) scaleY(1)}50%{transform:translateX(-50%) scaleY(.97)}}
@@ -85,14 +85,16 @@
 .pet-game-bar button{min-width:64px}
 
 /* Life cycle: growth stage, forms, death and the pet graveyard */
-.pet-sprite{width:calc(62% * var(--pet-scale,1))}
-.pet-stage[data-stage="baby"]{--pet-scale:.62}
-.pet-stage[data-stage="child"]{--pet-scale:.82}
+.pet-sprite{width:calc(62% * var(--pet-scale,1) * var(--stage-scale,1))}
+.pet-stage[data-stage="baby"]{--stage-scale:.62}
+.pet-stage[data-stage="child"]{--stage-scale:.82}
+.pet-stage[data-skin="chibimi"]{--pet-scale:.75}
+.pet-stage[data-skin="monokuma_skin"]{--pet-scale:.8}
 .pet-stage[data-form="monoshit"]{--pet-scale:.78}
 .pet-stage[data-form="monokuma"]{--pet-scale:.8}
 .pet-stage[data-form="monoshit"] .pet-neck{top:50%}
 .pet-stage[data-form="monokuma"] .pet-sprite img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}
-.pet-stage[data-revealed="1"][data-form="monokuma"] .pet-sprite img,.pet-stage[data-revealed="1"][data-form="monoshit"] .pet-sprite img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}
+
 .pet-tomb{display:none;position:absolute;left:50%;bottom:4%;width:44%;transform:translateX(-50%)}
 .pet-tomb svg{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}
 .pet-stage[data-dead="1"]{filter:grayscale(.85) brightness(.85)}

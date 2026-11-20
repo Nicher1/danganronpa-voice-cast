@@ -40,7 +40,9 @@ select $json$[
  {"id":"bandana","kind":"neck","price":18,"ch":2},
  {"id":"sunset","kind":"bg","price":30,"ch":2},
  {"id":"garden","kind":"bg","price":40,"ch":3},
- {"id":"night_sky","kind":"bg","price":50,"ch":4}
+ {"id":"night_sky","kind":"bg","price":50,"ch":4},
+ {"id":"chibimi","kind":"skin","price":40,"ch":2},
+ {"id":"monokuma_skin","kind":"skin","price":60,"ch":2}
 ]$json$::jsonb $$;
 
 create or replace function public.cast_pet_default_state(p_now timestamptz)
@@ -196,7 +198,7 @@ begin
     end if;
     cls := 'game'; cd := 60;
   elsif p_action = 'buy' then
-    select x into item from jsonb_array_elements(public.cast_pet_catalog()) x where x->>'id' = p_arg and x->>'kind' in ('hat','neck','bg');
+    select x into item from jsonb_array_elements(public.cast_pet_catalog()) x where x->>'id' = p_arg and x->>'kind' in ('hat','neck','bg','skin');
     if item is null then return jsonb_build_object('ok',false,'error','Pick something from the shop.'); end if;
     if (item->>'ch')::integer > ch then return jsonb_build_object('ok',false,'error','That is not unlocked yet.'); end if;
     if s->'owned' ? p_arg then return jsonb_build_object('ok',false,'error','Already owned.'); end if;
@@ -207,12 +209,12 @@ begin
     s := jsonb_set(s, array['worn', item->>'kind'], to_jsonb(p_arg), true);
     text_line := 'bought and dressed the pet in: ' || p_arg;
   elsif p_action = 'wear' then
-    select x into item from jsonb_array_elements(public.cast_pet_catalog()) x where x->>'id' = p_arg and x->>'kind' in ('hat','neck','bg');
+    select x into item from jsonb_array_elements(public.cast_pet_catalog()) x where x->>'id' = p_arg and x->>'kind' in ('hat','neck','bg','skin');
     if item is null or not (s->'owned' ? p_arg) then return jsonb_build_object('ok',false,'error','You can only wear things the pet owns.'); end if;
     s := jsonb_set(s, array['worn', item->>'kind'], to_jsonb(p_arg), true);
     text_line := 'changed the look: ' || p_arg;
   elsif p_action = 'unwear' then
-    if p_arg not in ('hat','neck','bg') then return jsonb_build_object('ok',false,'error','Choose hat, neck or background.'); end if;
+    if p_arg not in ('hat','neck','bg','skin') then return jsonb_build_object('ok',false,'error','Choose hat, neck, background or skin.'); end if;
     s := jsonb_set(s, '{worn}', (s->'worn') - p_arg);
     text_line := 'took off the ' || p_arg;
   else

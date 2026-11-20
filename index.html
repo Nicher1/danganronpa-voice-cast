@@ -1074,11 +1074,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 
 </style>
-<link rel="stylesheet" href="finale.css?v=20261120-9">
-<link rel="stylesheet" href="island-skin.css?v=20261120-9">
-<link rel="stylesheet" href="slayhem-and-layout.css?v=20261120-9">
-<link rel="stylesheet" href="session-planner.css?v=20261120-9">
-<link rel="stylesheet" href="pet-minigame.css?v=20261120-9">
+<link rel="stylesheet" href="finale.css?v=20261120-10">
+<link rel="stylesheet" href="island-skin.css?v=20261120-10">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261120-10">
+<link rel="stylesheet" href="session-planner.css?v=20261120-10">
+<link rel="stylesheet" href="pet-minigame.css?v=20261120-10">
 </head>
 <body>
   <header class="topbar">
@@ -1541,7 +1541,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.5.21</span><span class="patch-release-title"><strong>Calendar button</strong><small>Current release · 20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.22</span><span class="patch-release-title"><strong>Pet skins</strong><small>Current release · 20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note" data-reveal-game="dr2x2"><h4>Skins for the pet</h4><p>From chapter 2 the pet shop sells skins. Chibimi is a tiny, cute version of Monomi and Monokuma turns the pet into the bear himself. Skins are bought with coins and worn or taken off like hats.</p></section>
+            <section class="patch-note" data-reveal-game="dr2x2"><h4>Cleaner secret switch</h4><p>The host switch no longer tints the pet. It only changes the name, and the pet is Monomi until the host flips it.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.21</span><span class="patch-release-title"><strong>Calendar button</strong><small>20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Add to Google Calendar on the site</h4><p>Once a session is confirmed, the Schedule tab has an Add to Google Calendar button next to Plan ahead. It opens Google Calendar with the date and time filled in, so you only press Save. The Discord card has the same link.</p></section>
           </div>
@@ -2186,26 +2193,26 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="sha384-uteMfOloLDGt042uDz+xHGF3ym63/WQ6rFq7murQRG8Ih7QrXGEGNtWd8688sb4O" crossorigin="anonymous"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js?v=20261120-9"></script>
-  <script src="activity-history.js?v=20261120-9"></script>
-  <script src="dr2-monopad-art.js?v=20261120-9"></script>
-  <script src="admin-preview-safety.js?v=20261120-9"></script>
+  <script src="supabase-sync.js?v=20261120-10"></script>
+  <script src="activity-history.js?v=20261120-10"></script>
+  <script src="dr2-monopad-art.js?v=20261120-10"></script>
+  <script src="admin-preview-safety.js?v=20261120-10"></script>
   <script src="voice-clips-v4.js"></script>
-  <script src="monopad-data.js?v=20261120-9"></script>
-<script src="gift-guide-data.js?v=20261120-9"></script>
-  <script src="endgame-data.js?v=20261120-9"></script>
-  <script src="unconfirmed-student.js?v=20261120-9"></script>
-  <script src="session-planner.js?v=20261120-9"></script>
-  <script src="session-planner-store.js?v=20261120-9"></script>
-  <script src="session-planner-ui.js?v=20261120-9"></script>
-  <script src="pet-minigame.js?v=20261120-9"></script>
-  <script src="pet-games.js?v=20261120-9"></script>
-  <script src="pet-ui.js?v=20261120-9"></script>
+  <script src="monopad-data.js?v=20261120-10"></script>
+<script src="gift-guide-data.js?v=20261120-10"></script>
+  <script src="endgame-data.js?v=20261120-10"></script>
+  <script src="unconfirmed-student.js?v=20261120-10"></script>
+  <script src="session-planner.js?v=20261120-10"></script>
+  <script src="session-planner-store.js?v=20261120-10"></script>
+  <script src="session-planner-ui.js?v=20261120-10"></script>
+  <script src="pet-minigame.js?v=20261120-10"></script>
+  <script src="pet-games.js?v=20261120-10"></script>
+  <script src="pet-ui.js?v=20261120-10"></script>
   <script>
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.20.9";
+  const APP_BUILD = "2026.11.20.10";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";

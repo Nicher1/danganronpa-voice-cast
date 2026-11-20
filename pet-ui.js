@@ -23,7 +23,12 @@
 
   const svgUrl=svg=>'data:image/svg+xml,'+encodeURIComponent(svg);
   const SHIT_ART=svgUrl('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><g fill="#8a5429" stroke="#3d2410" stroke-width="5" stroke-linejoin="round"><ellipse cx="100" cy="152" rx="82" ry="32"/><ellipse cx="100" cy="112" rx="60" ry="28"/><ellipse cx="100" cy="76" rx="38" ry="24"/><path d="M84 62Q96 14 124 58Z"/></g><path d="M52 150Q100 170 148 150" fill="none" stroke="#b8793f" stroke-width="5" stroke-linecap="round"/><circle cx="82" cy="110" r="10" fill="#fff" stroke="#3d2410" stroke-width="3"/><circle cx="118" cy="110" r="10" fill="#fff" stroke="#3d2410" stroke-width="3"/><circle cx="84" cy="112" r="4.5" fill="#3d2410"/><circle cx="116" cy="112" r="4.5" fill="#3d2410"/><path d="M84 128Q100 140 116 128" fill="none" stroke="#3d2410" stroke-width="4" stroke-linecap="round"/></svg>');
+  // Original chibi-style drawing of Monomi, used for the Chibimi skin.
+  const CHIBI_ART=svgUrl('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 230"><defs><clipPath id="h"><circle cx="100" cy="124" r="62"/></clipPath><clipPath id="b"><ellipse cx="100" cy="204" rx="38" ry="24"/></clipPath></defs><g stroke="#3a2a3a" stroke-width="4" stroke-linejoin="round"><ellipse cx="68" cy="50" rx="17" ry="44" transform="rotate(-10 68 50)" fill="#fff"/><ellipse cx="132" cy="50" rx="17" ry="44" transform="rotate(10 132 50)" fill="#f7a8c8"/><ellipse cx="100" cy="204" rx="38" ry="24" fill="#fff"/><rect x="100" y="176" width="44" height="56" fill="#f7a8c8" stroke="none" clip-path="url(#b)"/><ellipse cx="100" cy="204" rx="38" ry="24" fill="none"/><circle cx="100" cy="124" r="62" fill="#fff"/><rect x="100" y="60" width="66" height="132" fill="#f7a8c8" stroke="none" clip-path="url(#h)"/><circle cx="100" cy="124" r="62" fill="none"/></g><ellipse cx="68" cy="52" rx="8" ry="30" transform="rotate(-10 68 52)" fill="#ffd6e6"/><ellipse cx="132" cy="52" rx="8" ry="30" transform="rotate(10 132 52)" fill="#f48db5"/><circle cx="76" cy="128" r="8" fill="#3a2a3a"/><circle cx="124" cy="128" r="9" fill="#e0314f" stroke="#3a2a3a" stroke-width="2.5"/><circle cx="127" cy="125" r="3" fill="#fff"/><circle cx="66" cy="148" r="9" fill="#ffb3cf" opacity=".8"/><circle cx="134" cy="148" r="9" fill="#ff8fb8" opacity=".8"/><ellipse cx="100" cy="142" rx="6" ry="4.5" fill="#f48db5" stroke="#3a2a3a" stroke-width="2.5"/><path d="M92 154Q100 164 108 154" fill="none" stroke="#3a2a3a" stroke-width="3" stroke-linecap="round"/><g fill="#f3e0bd" stroke="#3a2a3a" stroke-width="3" stroke-linejoin="round"><path d="M70 84L48 72L50 98Z"/><path d="M70 84L92 72L90 98Z"/><circle cx="70" cy="85" r="6"/></g></svg>');
   const FORM_ART={monokuma:'assets/pet/monokuma.png',monoshit:SHIT_ART};
+  const SKIN_ART={chibimi:CHIBI_ART,monokuma_skin:'assets/pet/monokuma.png'};
+  // The host's secret switch makes the pet Usami. There is no Usami artwork yet, so it keeps the Monomi picture; point this at a new image to change it.
+  const USAMI_ART=ART;
   const TOMB_SVG='<svg viewBox="0 0 120 140"><path d="M20 130V50Q20 12 60 12T100 50V130Z" fill="#b9bdc6" stroke="#4a4f5c" stroke-width="5" stroke-linejoin="round"/><path d="M44 52H76M60 38V82" stroke="#4a4f5c" stroke-width="7" stroke-linecap="round"/><path d="M8 130H112" stroke="#3f7d3a" stroke-width="8" stroke-linecap="round"/></svg>';
   const FORM_LABEL={monomi:'Monomi',usami:'Usami',monokuma:'Monokuma',monoshit:'Monoshit'};
   const FORM_TEXT={
@@ -152,7 +157,7 @@
       const stage=q('#petStage'),moodName=Pet.mood(s.stats),stageName=Pet.stageOf(s.age);
       stage.dataset.mood=moodName;stage.dataset.bg=s.worn.bg||'beach';stage.dataset.revealed=store.state.revealed?'1':'0';
       stage.dataset.stage=stageName;stage.dataset.form=s.form||'monomi';stage.dataset.dead=s.dead?'1':'0';
-      const art=FORM_ART[s.form]||ART,img=q('#petImg');
+      const skin=s.worn.skin,art=SKIN_ART[skin]||(store.state.revealed&&!FORM_ART[s.form]?USAMI_ART:FORM_ART[s.form])||ART,img=q('#petImg');stage.dataset.skin=SKIN_ART[skin]?skin:'';
       if(img.dataset.art!==art){img.dataset.art=art;img.src=art;}
       q('#petHat').innerHTML=WEAR_SVG[s.worn.hat]||'';q('#petNeck').innerHTML=WEAR_SVG[s.worn.neck]||'';
       q('#petName').textContent=petName(s);
@@ -228,7 +233,7 @@
     }
     function renderShop(){
       const s=store.state,ch=chapter(),p=person(),can=canAct();
-      const groups=[['hat','Hats'],['neck','Neckwear'],['bg','Backgrounds']];
+      const groups=[['skin','Skins'],['hat','Hats'],['neck','Neckwear'],['bg','Backgrounds']];
       q('#petShop').innerHTML=groups.map(([kind,label])=>`<div class="pet-shop-group"><h4>${label}</h4>${Pet.CATALOG.filter(item=>item.kind===kind).map(item=>{
         const owned=!!s.owned[item.id],worn=s.worn[kind]===item.id,locked=item.ch>ch;
         if(locked)return `<div class="pet-item locked"><strong>???</strong><small>Unlocks in chapter ${item.ch}</small></div>`;
@@ -248,8 +253,8 @@
       if(box.dataset.built!=='1'){
         box.hidden=false;box.dataset.built='1';
         box.innerHTML=`<div class="section-kicker">HOST ONLY</div><h3>Pet settings</h3>
-          <label class="discord-switch"><input type="checkbox" id="petReveal"> Secret switch</label>
-          <p class="muted small">Only you can see this. It changes the pet for everyone.</p>
+          <label class="discord-switch"><input type="checkbox" id="petReveal"> Secret switch: the pet is Usami</label>
+          <p class="muted small">Only you can see this. It renames the pet to Usami for everyone, so leave it off until the story has revealed her.</p>
           <div class="pet-rename"><input id="petRename" maxlength="20" placeholder="Rename the pet (optional)" aria-label="Pet name"><button type="button" class="ghost" data-act="rename">Rename</button></div>
           <div class="pet-rename"><button type="button" class="ghost" data-act="pause" id="petPause"></button><button type="button" class="ghost" data-act="revive" id="petRevive">Bring the pet back</button></div>
           <p class="muted small">Pausing stops hunger, ageing and death, for example between seasons. Bringing it back removes its latest grave.</p>
