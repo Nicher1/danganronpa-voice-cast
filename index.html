@@ -1074,10 +1074,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 
 </style>
-<link rel="stylesheet" href="finale.css?v=20261120-4">
-<link rel="stylesheet" href="island-skin.css?v=20261120-4">
-<link rel="stylesheet" href="slayhem-and-layout.css?v=20261120-4">
-<link rel="stylesheet" href="session-planner.css?v=20261120-4">
+<link rel="stylesheet" href="finale.css?v=20261120-5">
+<link rel="stylesheet" href="island-skin.css?v=20261120-5">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261120-5">
+<link rel="stylesheet" href="session-planner.css?v=20261120-5">
+<link rel="stylesheet" href="pet-minigame.css?v=20261120-5">
 </head>
 <body>
   <header class="topbar">
@@ -1168,6 +1169,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <button class="tab" data-tab="memorial"><span class="tab-icon">☠</span> Memorial <span id="deadCount" class="counter">0</span></button>
       <button class="tab" data-tab="statistics"><span class="tab-icon">▥</span> Statistics</button>
       <button class="tab" data-tab="monopad"><span class="tab-icon">◈</span> Monopad</button>
+      <button class="tab hidden" id="petTabBtn" data-tab="pet"><span class="tab-icon">♥</span> Island Pet</button>
       <button class="tab host-only" data-tab="admin"><span class="tab-icon">⚙</span> Admin Tools</button>
     </nav>
 
@@ -1385,6 +1387,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       </div>
     </section>
 
+    <section id="petTab" class="tab-panel"></section>
+
     <section id="adminTab" class="tab-panel host-only">
       <div class="admin-hero panel">
         <div><div class="section-kicker">SERIES CONTROL</div><h2>Admin Tools</h2><p class="muted small">Mark games complete to unlock the next board. Turning a completion off locks later games again without deleting their saved cast data.</p></div>
@@ -1537,7 +1541,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.5.16</span><span class="patch-release-title"><strong>Cleaner character art</strong><small>Current release · 20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.17</span><span class="patch-release-title"><strong>Island Pet</strong><small>Current release · 20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note" data-reveal-game="dr2x2"><h4>A shared pet for the island</h4><p>The second game has a new Island Pet tab. Everyone in the group looks after the same pet: feed it, play, wash, cuddle and tuck it in. Care earns coins and bond levels, and the pet gets sleepy or hungry if nobody visits for a while. It never gets sick or dies.</p></section>
+            <section class="patch-note" data-reveal-game="dr2x2"><h4>Snack Catch and the wardrobe</h4><p>Play the 30-second Snack Catch minigame with the mouse, your finger or the arrow keys to earn coins. Spend them on hats, neckwear, backgrounds and better snacks. New items unlock as the group reaches later chapters, so nothing is spoiled early.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.16</span><span class="patch-release-title"><strong>Cleaner character art</strong><small>20 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note" data-reveal-game="dr2x2"><h4>No more white outlines</h4><p>Several second-game Monopad illustrations had a pale outline around them that showed up as a glow on dark cards. It has been removed and the edges are smoother.</p></section>
           </div>
@@ -1600,7 +1611,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
             <section class="patch-note"><h4>English separator for tied days</h4><p>Tied session dates use “or” between the options. Dates and times still follow your local settings.</p></section>
           </div>
         </details>
-        <details class="patch-release" open>
+        <details class="patch-release">
           <summary><span class="patch-version">V1.5.6</span><span class="patch-release-title"><strong>One Discord card, always easy to find</strong><small>6 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Move the card whenever you need</h4><p>The schedule-card switch becomes a Move card to bottom now button. Automatic posting within 10 hours works independently of the reminder switch, including catch-up after downtime. When the 30-minute reminder is on, the card moves first and the ping appears underneath. Each move deletes the previous card before posting its replacement.</p></section>
@@ -1656,7 +1667,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
             <section class="patch-note"><h4>A fresh card after each session</h4><p>Prepared for bot activation: after a session ends, a new schedule card will appear at the bottom of the channel with the saved attendance and linked data. The old bot card will then be removed. These changes are not live yet.</p></section>
           </div>
         </details>
-        <details class="patch-release" open>
+        <details class="patch-release">
           <summary><span class="patch-version">V1.4.4</span><span class="patch-release-title"><strong>Clearer activity sessions</strong><small>Previous release · 29 October 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Dates, durations and separate visits</h4><p>Private admin activity now shows dated start and end times, each visit's duration, and one row per visit across midnight. Overlapping connections for the same actor count once. Updated browsers end visits when the tab is hidden, and start a new visit when it returns or reconnects after a gap of 90 seconds. Older records cannot reveal pauses that were never saved.</p></section>
@@ -2147,23 +2158,25 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="sha384-uteMfOloLDGt042uDz+xHGF3ym63/WQ6rFq7murQRG8Ih7QrXGEGNtWd8688sb4O" crossorigin="anonymous"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js?v=20261120-4"></script>
-  <script src="activity-history.js?v=20261120-4"></script>
-  <script src="dr2-monopad-art.js?v=20261120-4"></script>
-  <script src="admin-preview-safety.js?v=20261120-4"></script>
+  <script src="supabase-sync.js?v=20261120-5"></script>
+  <script src="activity-history.js?v=20261120-5"></script>
+  <script src="dr2-monopad-art.js?v=20261120-5"></script>
+  <script src="admin-preview-safety.js?v=20261120-5"></script>
   <script src="voice-clips-v4.js"></script>
-  <script src="monopad-data.js?v=20261120-4"></script>
-<script src="gift-guide-data.js?v=20261120-4"></script>
-  <script src="endgame-data.js?v=20261120-4"></script>
-  <script src="unconfirmed-student.js?v=20261120-4"></script>
-  <script src="session-planner.js?v=20261120-4"></script>
-  <script src="session-planner-store.js?v=20261120-4"></script>
-  <script src="session-planner-ui.js?v=20261120-4"></script>
+  <script src="monopad-data.js?v=20261120-5"></script>
+<script src="gift-guide-data.js?v=20261120-5"></script>
+  <script src="endgame-data.js?v=20261120-5"></script>
+  <script src="unconfirmed-student.js?v=20261120-5"></script>
+  <script src="session-planner.js?v=20261120-5"></script>
+  <script src="session-planner-store.js?v=20261120-5"></script>
+  <script src="session-planner-ui.js?v=20261120-5"></script>
+  <script src="pet-minigame.js?v=20261120-5"></script>
+  <script src="pet-ui.js?v=20261120-5"></script>
   <script>
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.20.4";
+  const APP_BUILD = "2026.11.20.5";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2582,6 +2595,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   const $$ = sel => [...document.querySelectorAll(sel)];
   const isLocalPreview = ["127.0.0.1","localhost"].includes(location.hostname) && new URLSearchParams(location.search).get("shared")!=="1";
   let sessionPlanner = null;
+  let petUi = null;
   const isGameUnlocked = (gameId,includePreview=true) => {
     if(typeof isAdminPreview!=="undefined"&&isAdminPreview&&includePreview)return MAIN_GAME_IDS.includes(gameId);
     if(typeof isLocalPreview!=="undefined"&&isLocalPreview&&includePreview && ["dr2x2","dr2slayhem"].includes(gameId))return true;
@@ -2672,6 +2686,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     const slayhem=activeGameId==="dr2slayhem";
     const island=["dr2","dr2x2","dr2slayhem"].includes(activeGameId);
     document.body.dataset.world=island?"island":"school";
+    $("#petTabBtn").classList.toggle("hidden",!["dr2x2","dr2slayhem"].includes(activeGameId));
+    if(!["dr2x2","dr2slayhem"].includes(activeGameId)&&$("#petTab").classList.contains("active"))activateTab("casting");
     document.body.dataset.scenario=slayhem?"slayhem":"original";
     document.body.classList.toggle("panic-active",!!settings.panic);
     $$('[data-edition]').forEach(button=>button.disabled=!isGameUnlocked(button.dataset.edition));
@@ -6114,7 +6130,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   function activateTab(tabName){
     $$(".tab").forEach(button=>{button.classList.toggle("active",button.dataset.tab===tabName);if(button.dataset.tab===tabName)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current");});
     $$(".tab-panel").forEach(panel=>panel.classList.toggle("active",panel.id===`${tabName}Tab`));
-    if(tabName==="admin")loadDiscordSettings();
+    if(tabName==="admin")loadDiscordSettings(); if(tabName==="pet")petUi?.render();
     if(tabName==="admin"&&remoteReady&&!presenceActivityLoading&&Date.now()-presenceActivityLoadedAt>60000){
       loadPresenceActivity({quiet:true});
     }
@@ -6256,6 +6272,16 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       save:value=>{if(!isAdminPreview)localStorage.setItem("danganronpa-session-planner-v1",JSON.stringify(value))},
       store:scheduleStore,actors:()=>state.actors,mode:()=>isAdminPreview||!isLocalPreview&&!remoteReady?"viewer":mode,actorId:()=>activeActorId,local:()=>isLocalPreview||isAdminPreview,toast,login:()=>beginLogin(),copyVotingLink,openSchedule:()=>activateTab("schedule")
     });
+  }
+
+  {
+    const previewPet=isAdminPreview||isLocalPreview||!remoteSync;
+    const petStore=previewPet?window.CastPetUI.makeSandboxStore({persist:isLocalPreview,chapter:()=>currentSettings().voiceChapter||1}):window.CastPetUI.makeRemoteStore(remoteSync);
+    petUi=window.CastPetUI.mountIslandPet({
+      root:$("#petTab"),store:petStore,actors:()=>state.actors,mode:()=>mode,actorId:()=>activeActorId,
+      chapter:()=>currentSettings().voiceChapter||1,toast,login:()=>beginLogin()
+    });
+    petStore.load().then(()=>petUi.render()).catch(error=>console.warn("Island Pet could not load",error));
   }
 
   render();
