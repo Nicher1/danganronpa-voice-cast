@@ -43,7 +43,23 @@ const root=path.resolve(__dirname,'..');
     assert.ok(hasButtons>=5,'care buttons render');
     assert.ok(before>0);
 
+    // Life cycle in the host preview: neglect kills the pet, the grave reaches the Memorial, a new egg hatches.
+    assert.equal(await page.locator('#petHost').isVisible(),true,'host controls in the preview');
+    assert.match(await page.locator('#petGrowth').textContent(),/Baby/);
+    for(let i=0;i<3;i++)await page.locator('[data-act="skip"][data-arg="120"]').click();
+    await page.waitForSelector('#petStage[data-dead="1"]');
+    assert.match(await page.locator('#petGrowth').textContent(),/Passed away/);
+    assert.equal(await page.locator('#petTab [data-act="feed"],#petTab [data-act="open-feed"]').first().isDisabled(),true,'cannot feed a dead pet');
+    assert.equal(await page.locator('#petRevive').isVisible(),true);
+    await page.locator('#memorialTabBtn,[data-tab="memorial"]').first().click();
+    await page.waitForSelector('#petGraveyard:not([hidden]) .pet-grave-card');
+    await page.locator('#petTabBtn').click();
+    await page.locator('[data-act="hatch"]').click();
+    await page.waitForSelector('#petStage[data-dead="0"]');
+    assert.equal(await page.locator('#petWarn').isHidden(),true);
+
     for(const [w,h] of [[1920,1080],[1280,900],[390,844]]){
+
       await page.setViewportSize({width:w,height:h});
       await page.waitForTimeout(150);
       const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);

@@ -83,3 +83,30 @@
 .pet-game-tabs .pet-item{align-items:center;text-align:center}
 .pet-game-bar button[hidden]{display:none}
 .pet-game-bar button{min-width:64px}
+
+/* Life cycle: growth stage, forms, death and the pet graveyard */
+.pet-sprite{width:calc(62% * var(--pet-scale,1))}
+.pet-stage[data-stage="baby"]{--pet-scale:.62}
+.pet-stage[data-stage="child"]{--pet-scale:.82}
+.pet-stage[data-form="monoshit"]{--pet-scale:.78}
+.pet-stage[data-form="monokuma"]{--pet-scale:.8}
+.pet-stage[data-form="monoshit"] .pet-neck{top:50%}
+.pet-stage[data-form="monokuma"] .pet-sprite img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}
+.pet-stage[data-revealed="1"][data-form="monokuma"] .pet-sprite img,.pet-stage[data-revealed="1"][data-form="monoshit"] .pet-sprite img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}
+.pet-tomb{display:none;position:absolute;left:50%;bottom:4%;width:44%;transform:translateX(-50%)}
+.pet-tomb svg{display:block;width:100%;height:auto;filter:drop-shadow(0 6px 8px rgba(0,0,0,.35))}
+.pet-stage[data-dead="1"]{filter:grayscale(.85) brightness(.85)}
+.pet-stage[data-dead="1"] .pet-sprite{display:none}
+.pet-stage[data-dead="1"] .pet-tomb{display:block}
+.pet-growth{margin:0 0 6px}
+.pet-warn{margin:6px 0;padding:8px 12px;border-radius:10px;border:1px solid #e0527a;background:rgba(224,82,122,.14);font-weight:700;font-size:.88rem}
+.pet-warn[hidden]{display:none}
+.pet-graveyard{margin-top:14px;padding:16px}
+.pet-graveyard[hidden]{display:none}
+.pet-graveyard h3,.pet-graveyard h4{margin:4px 0 8px}
+.pet-graveyard h4{font-size:.82rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:14px}
+.pet-grave-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:10px}
+.pet-grave-card{display:flex;gap:10px;align-items:center;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--panel-raised)}
+.pet-grave-card img{width:52px;height:52px;object-fit:contain;filter:grayscale(1) opacity(.8);flex:none}
+.pet-grave-card div{display:grid;gap:1px;min-width:0}
+.pet-grave-card small{color:var(--muted)}

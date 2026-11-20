@@ -51,7 +51,7 @@ const Pet=require('../pet-minigame.js');
   // Table rows are not writable by players
   assert.equal((await db.query("select has_table_privilege('authenticated','public.cast_pets','insert') w")).rows[0].w,false);
   assert.equal((await db.query("select has_table_privilege('anon','public.cast_pets','select') w")).rows[0].w,true);
-  for(const fn of ['cast_pet_apply(text,text,text,text,text,integer,integer,timestamptz)','cast_pet_decay(jsonb,timestamptz)']){
+  for(const fn of ['cast_pet_apply(text,text,text,text,text,integer,integer,timestamptz)','cast_pet_decay(jsonb,timestamptz,integer)']){
     for(const role of ['anon','authenticated'])
       assert.equal((await db.query(`select has_function_privilege('${role}','public.${fn}','execute') x`)).rows[0].x,false,`${role} cannot run ${fn}`);
   }
@@ -76,15 +76,16 @@ const Pet=require('../pet-minigame.js');
   let seed=20261120;const rnd=()=>(seed=(seed*1664525+1013904223)%4294967296)/4294967296;
   const pick=list=>list[Math.floor(rnd()*list.length)];
   const items=Pet.CATALOG.map(item=>item.id);
-  const actions=['feed','play','wash','pet','rest','game','buy','wear','unwear'];
-  let now=Date.parse('2030-06-01T10:00:00Z'),js=Pet.defaultState(now),okCount=0;
+  const actions=['feed','play','wash','pet','rest','game','buy','wear','unwear','hatch'];
+  let now=Date.parse('2030-06-01T10:00:00Z'),js=Pet.defaultState(now),okCount=0,sawDeadBlock=false,sawHatch=false,sawGrave=false;
   const people=[['a','Alice'],['b','Bob']];
   const clean=state=>JSON.parse(JSON.stringify(state,(key,value)=>
     ['at','t'].includes(key)||(typeof value==='string'&&/^\d{4}-\d\d-\d\dT/.test(value))?new Date(value).toISOString():value));
   for(let i=0;i<500;i++){
-    now+=rnd()<.04?20*3600e3:Math.floor(rnd()*400)*1000;
+    now+=rnd()<.02?(60+Math.floor(rnd()*120))*3600e3:rnd()<.04?20*3600e3:Math.floor(rnd()*400)*1000;
+    if(i===0)js=Pet.defaultState(now); // the server creates the pet on first use
     const [actor,actorName]=pick(people),action=pick(actions),chapter=1+Math.floor(rnd()*5);
-    const arg=action==='unwear'?pick(['hat','neck','bg']):action==='game'?pick([null,'snack','memory','bubble','run','nope']):action==='wash'||action==='pet'||action==='rest'?null:pick(items);
+    const arg=action==='unwear'?pick(['hat','neck','bg']):action==='game'?pick([null,'snack','memory','bubble','run','nope']):action==='wash'||action==='pet'||action==='rest'||action==='hatch'?null:pick(items);
     const score=action==='game'?Math.floor(rnd()*60)-5:null;
     if(i%25===0)await db.query("update public.cast_pets set state=jsonb_set(state,'{people}',(select coalesce(jsonb_object_agg(k,jsonb_set(v,'{coins}','40')),'{}') from jsonb_each(state->'people') e(k,v)))");
     if(i%25===0)for(const [id] of people)if(js.people[id])js.people[id]={...js.people[id],coins:40};
@@ -94,10 +95,16 @@ const Pet=require('../pet-minigame.js');
     assert.equal(local.ok,sql.ok,`step ${i} ${action} ${arg}: ok mismatch (${local.error} vs ${sql.error})`);
     if(sql.ok){
       okCount++;js=local.state;
-      assert.deepEqual(clean(js),clean(sql.state),`step ${i} ${action} ${arg}: state mismatch`);
-    }else assert.equal(local.error.replace(/\d+/,'N'),sql.error.replace(/\d+/,'N'));
+      if(action==='hatch')sawHatch=true;
+      if(js.graves.length)sawGrave=true;
+      assert.deepEqual(clean(js),clean(sql.state),`step ${i} ${action} ${arg}: state mismatch ${JSON.stringify(Object.keys(js).filter(k=>JSON.stringify(clean(js)[k])!==JSON.stringify(clean(sql.state)[k])).map(k=>[k,clean(js)[k],clean(sql.state)[k]]))}`);
+    }else{
+      assert.equal(local.error.replace(/\d+/,'N'),sql.error.replace(/\d+/,'N'));
+      if(sql.state){js=local.state;assert.deepEqual(clean(js),clean(sql.state),`step ${i} ${action}: dead state mismatch`);sawDeadBlock=true;}
+    }
   }
   assert.ok(okCount>80,`random run exercised the rules (${okCount} accepted)`);
+  assert.ok(sawDeadBlock&&sawHatch&&sawGrave,'random run covered death, graves and hatching');
 
   // Daily limits: game coins stop at 60, care coins at 20, then reset on the next Copenhagen day
   await db.exec('delete from public.cast_pets');
@@ -109,5 +116,44 @@ const Pet=require('../pet-minigame.js');
   t=Date.parse('2030-07-02T08:00:00Z');
   assert.equal((await run('game',null,40)).state.people.a.dayGame,10,'cap resets the next day');
   assert.equal((await run('game',null,999)).state.people.a.dayGame,20,'score is clamped to 40');
+  // Life cycle: neglect kills the pet, a grave is kept, a new pet can hatch, care and pausing keep it alive
+  const apply=async(ms,actor,action,arg=null,chapter=3)=>(await db.query('select public.cast_pet_apply($1,$2,$3,$4,$5,$6,$7,$8::timestamptz) r',
+    ['board',actor,'Alice',action,arg,null,chapter,new Date(ms).toISOString()])).rows[0].r;
+  const stateOf=async()=>(await db.query("select state from public.cast_pets where slug='board'")).rows[0].state;
+  await db.exec('delete from public.cast_pets');
+  const t0=Date.parse('2031-01-05T09:00:00Z');
+  assert.equal((await apply(t0,'a','pet')).ok,true);
+  const dead=await apply(t0+200*3600e3,'a','pet');
+  assert.equal(dead.ok,false);assert.equal(dead.error,Pet.DEAD_TEXT);
+  assert.deepEqual([dead.state.dead,dead.state.cause,dead.state.graves.length,dead.state.graves[0].ch],[true,'hunger',1,3]);
+  assert.ok(['monokuma','monoshit'].includes(dead.state.form),'a neglected pet grows into a mischievous form');
+  assert.ok(Date.parse(dead.state.died)<t0+200*3600e3);
+  assert.equal((await apply(t0+201*3600e3,'a','feed','biscuit')).ok,false,'cannot care for a dead pet');
+  assert.equal((await apply(t0+201*3600e3,'a','wash')).state.graves.length,1,'the grave is only written once');
+  const hatched=await apply(t0+202*3600e3,'a','hatch');
+  assert.deepEqual([hatched.ok,hatched.state.dead,hatched.state.gen,hatched.state.graves.length,hatched.state.hp,hatched.state.form],[true,false,2,1,300,null]);
+  assert.equal((await apply(t0+203*3600e3,'a','hatch')).error,'Your pet is alive and well.');
+
+  await as(bob,true);
+  await host('pause','true');
+  const pausedAt=await stateOf();
+  await db.query("update public.cast_pets set state=jsonb_set(jsonb_set(state,'{at}',to_jsonb($1::text)),'{lt}',to_jsonb($1::text))",[new Date(Date.now()-100*3600e3).toISOString()]);
+  assert.equal(pausedAt.paused,true);
+  assert.equal((await host('reveal','false')).state.age,0,'a paused pet does not age');
+  await host('pause','false');
+
+  await db.exec('delete from public.cast_pets');
+  let careAt=Date.parse('2031-02-01T09:00:00Z'),cared;
+  for(let visit=0;visit<20;visit++){
+    for(const [action,arg] of [['feed','biscuit'],['play','beach_ball'],['wash',null],['pet',null],['rest',null]])cared=await apply(careAt+=60e3,'a',action,arg);
+    careAt+=4*3600e3;
+  }
+  const grown=await apply(careAt,'a','pet');
+  assert.deepEqual([grown.state.dead,grown.state.age>=72,['monomi','usami'].includes(grown.state.form),grown.state.hp],[false,true,true,300],'a cared-for pet grows up healthy');
+  await host('rename','Hope');
+  await db.exec("update public.cast_pets set state=state||'{\"dead\":true}'::jsonb");
+  await as(bob,true);
+  assert.equal((await host('revive')).state.dead,false,'the host can revive a pet');
+  await fails(()=>host('revive'),/alive/);
   console.log('island pet ok');
 })().catch(error=>{console.error(error);process.exit(1);});
