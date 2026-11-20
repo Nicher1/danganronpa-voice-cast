@@ -47,9 +47,13 @@ Supabase
   published first, because wrong passwords now return false instead of raising. Logins lock
   for 15 minutes after 10 failed attempts. Unlock early with
   `delete from public.cast_login_failures where target = 'host';` (or `'actor:<id>'`).
+- Island Pet (island-pet-migration.sql, tab only in the 2x2 routes) is one shared pet per board.
+  Players change it only through cast_pet_action; the server owns cooldowns, daily coin caps,
+  prices and chapter unlocks. pet-minigame.js mirrors those rules for the preview sandbox, and
+  	ests/island-pet.integration.js checks the two agree. The host's secret switch only renames the pet to Usami and adds a glow; there is no Usami art.
 - Run the PGlite tests with `NODE_PATH` pointing at a folder that has `@electric-sql/pglite`.
 
 Known issues and parked work
 - Parked: Class Trial theme (`feature/class-trial-theme`, owner prefers the current theme),
-  actor badges, Usami pet, DR2 gift guide (needs a spoiler review), anime tracker.
+  actor badges, DR2 gift guide (needs a spoiler review), anime tracker.
 - The gift guide covers the first game only. Data comes from the Danganronpa Wiki (CC BY-SA).

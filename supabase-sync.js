@@ -172,6 +172,38 @@
       return data || {};
     }
 
+    async getPet() {
+      const { data, error } = await this.client.from("cast_pets").select("state,updated_at")
+        .eq("slug", this.slug).maybeSingle().abortSignal(AbortSignal.timeout(12000));
+      if (error) throw error;
+      return data;
+    }
+
+    async petAction(actorId, action, arg = null, score = null) {
+      const { data, error } = await this.client.rpc("cast_pet_action", {
+        p_slug: this.slug, p_actor: actorId, p_action: action, p_arg: arg, p_score: score
+      }).abortSignal(AbortSignal.timeout(12000));
+      if (error) throw error;
+      return data || {};
+    }
+
+    async petHost(action, arg = null) {
+      const { data, error } = await this.client.rpc("cast_pet_host", {
+        p_slug: this.slug, p_action: action, p_arg: arg
+      }).abortSignal(AbortSignal.timeout(12000));
+      if (error) throw error;
+      return data || {};
+    }
+
+    subscribePet(onPet) {
+      const channel = this.client.channel(`cast-pet-${this.slug}`)
+        .on("postgres_changes", {
+          event: "*", schema: "public", table: "cast_pets", filter: `slug=eq.${this.slug}`
+        }, payload => onPet(payload.new))
+        .subscribe();
+      return () => this.client.removeChannel(channel);
+    }
+
     async getPresenceActivity(days = 7) {
       const { data, error } = await this.client.rpc("cast_presence_activity", {
         p_slug: this.slug,
