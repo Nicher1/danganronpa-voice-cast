@@ -1074,11 +1074,12 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 
 </style>
-<link rel="stylesheet" href="finale.css?v=20261123-2">
-<link rel="stylesheet" href="island-skin.css?v=20261123-2">
-<link rel="stylesheet" href="slayhem-and-layout.css?v=20261123-2">
-<link rel="stylesheet" href="session-planner.css?v=20261123-2">
-<link rel="stylesheet" href="pet-minigame.css?v=20261123-2">
+<link rel="stylesheet" href="finale.css?v=20261123-3">
+<link rel="stylesheet" href="island-skin.css?v=20261123-3">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261123-3">
+<link rel="stylesheet" href="session-planner.css?v=20261123-3">
+<link rel="stylesheet" href="pet-minigame.css?v=20261123-3">
+<link rel="stylesheet" href="release-countdown.css?v=20261123-3">
 </head>
 <body>
   <header class="topbar">
@@ -1152,6 +1153,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     <div><div class="section-kicker">NEXT SESSION</div><h2>Loading the schedule…</h2></div>
     <a class="button" href="#schedule">Open Schedule</a>
   </section>
+
+  <section id="releaseCountdown" class="release-countdown" aria-label="Danganronpa 2×2 release countdown" hidden></section>
 
   <div id="themeProgress" class="theme-progress" aria-label="Current story progress">
     <strong id="themeProgressLabel">CH. 01 · PRE-TRIAL</strong>
@@ -1541,7 +1544,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.5.24</span><span class="patch-release-title"><strong>Newest game first</strong><small>Current release · 23 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.25</span><span class="patch-release-title"><strong>Release countdown</strong><small>Current release · 23 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Danganronpa 2×2 countdown</h4><p>The front page now has a countdown to the Danganronpa 2×2 release on 14 January 2027. It gets more intense as the day gets closer, and it disappears the day after release.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.24</span><span class="patch-release-title"><strong>Newest game first</strong><small>23 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Opens on the newest game</h4><p>The board now opens on the newest unlocked game. Each player is asked which game they want only once after a new game unlocks, and the choice is remembered from then on. To switch later, press the game button in the menu at the top.</p></section>
           </div>
@@ -2205,26 +2214,27 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="sha384-uteMfOloLDGt042uDz+xHGF3ym63/WQ6rFq7murQRG8Ih7QrXGEGNtWd8688sb4O" crossorigin="anonymous"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js?v=20261123-2"></script>
-  <script src="activity-history.js?v=20261123-2"></script>
-  <script src="dr2-monopad-art.js?v=20261123-2"></script>
-  <script src="admin-preview-safety.js?v=20261123-2"></script>
+  <script src="supabase-sync.js?v=20261123-3"></script>
+  <script src="activity-history.js?v=20261123-3"></script>
+  <script src="dr2-monopad-art.js?v=20261123-3"></script>
+  <script src="admin-preview-safety.js?v=20261123-3"></script>
   <script src="voice-clips-v4.js"></script>
-  <script src="monopad-data.js?v=20261123-2"></script>
-<script src="gift-guide-data.js?v=20261123-2"></script>
-  <script src="endgame-data.js?v=20261123-2"></script>
-  <script src="unconfirmed-student.js?v=20261123-2"></script>
-  <script src="session-planner.js?v=20261123-2"></script>
-  <script src="session-planner-store.js?v=20261123-2"></script>
-  <script src="session-planner-ui.js?v=20261123-2"></script>
-  <script src="pet-minigame.js?v=20261123-2"></script>
-  <script src="pet-games.js?v=20261123-2"></script>
-  <script src="pet-ui.js?v=20261123-2"></script>
+  <script src="monopad-data.js?v=20261123-3"></script>
+<script src="gift-guide-data.js?v=20261123-3"></script>
+  <script src="endgame-data.js?v=20261123-3"></script>
+  <script src="unconfirmed-student.js?v=20261123-3"></script>
+  <script src="session-planner.js?v=20261123-3"></script>
+  <script src="session-planner-store.js?v=20261123-3"></script>
+  <script src="session-planner-ui.js?v=20261123-3"></script>
+  <script src="release-countdown.js?v=20261123-3"></script>
+<script src="pet-minigame.js?v=20261123-3"></script>
+  <script src="pet-games.js?v=20261123-3"></script>
+  <script src="pet-ui.js?v=20261123-3"></script>
   <script>
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.23.2";
+  const APP_BUILD = "2026.11.23.3";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -6366,6 +6376,9 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       chapter:()=>currentSettings().voiceChapter||1,toast,login:()=>beginLogin()
     });
     petStoreRef=petStore; petStore.subscribe(refreshPetGraveyard);
+    // Only the host can preview other dates, with ?countdownPreview=<ISO date time>.
+    const previewNow=mode==="host"?Date.parse(params.get("countdownPreview")||""):NaN,clockShift=Number.isFinite(previewNow)?previewNow-Date.now():0;
+    window.CastReleaseCountdown.mount({root:$("#releaseCountdown"),now:()=>Date.now()+clockShift});
     petStore.load().then(()=>{petUi.render();refreshPetGraveyard()}).catch(error=>console.warn("Island Pet could not load",error));
   }
 
