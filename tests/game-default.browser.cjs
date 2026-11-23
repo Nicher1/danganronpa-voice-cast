@@ -68,6 +68,8 @@ const root=path.resolve(__dirname,'..');
     assert.equal(await page.evaluate(()=>window.gameTest.active()),'dr2x2');
     assert.equal(await pickerOpen(page),true,'each player is asked once');
     await page.keyboard.press('Escape');
+    await page.waitForFunction(()=>!document.querySelector('#gamePickerDialog').open);
+    await page.evaluate(()=>new Promise(resolve=>setTimeout(resolve,100)));
     await page.close();
 
     // Closing the question without choosing keeps the newest game next time too.
