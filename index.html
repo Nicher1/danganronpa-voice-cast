@@ -1074,11 +1074,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 
 </style>
-<link rel="stylesheet" href="finale.css?v=20261123-1">
-<link rel="stylesheet" href="island-skin.css?v=20261123-1">
-<link rel="stylesheet" href="slayhem-and-layout.css?v=20261123-1">
-<link rel="stylesheet" href="session-planner.css?v=20261123-1">
-<link rel="stylesheet" href="pet-minigame.css?v=20261123-1">
+<link rel="stylesheet" href="finale.css?v=20261123-2">
+<link rel="stylesheet" href="island-skin.css?v=20261123-2">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261123-2">
+<link rel="stylesheet" href="session-planner.css?v=20261123-2">
+<link rel="stylesheet" href="pet-minigame.css?v=20261123-2">
 </head>
 <body>
   <header class="topbar">
@@ -1541,7 +1541,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.5.23</span><span class="patch-release-title"><strong>Mark dead fix</strong><small>Current release · 23 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.24</span><span class="patch-release-title"><strong>Newest game first</strong><small>Current release · 23 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Opens on the newest game</h4><p>The board now opens on the newest unlocked game. Each player is asked which game they want only once after a new game unlocks, and the choice is remembered from then on. To switch later, press the game button in the menu at the top.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.23</span><span class="patch-release-title"><strong>Mark dead fix</strong><small>23 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Marking a character dead works again</h4><p>The host's Mark dead button did nothing after confirming, so the character stayed alive and the actor got no death point. It now moves the character to the Memorial, credits the actor and hands out a replacement token if the character was locked.</p></section>
           </div>
@@ -2199,26 +2205,26 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="sha384-uteMfOloLDGt042uDz+xHGF3ym63/WQ6rFq7murQRG8Ih7QrXGEGNtWd8688sb4O" crossorigin="anonymous"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js?v=20261123-1"></script>
-  <script src="activity-history.js?v=20261123-1"></script>
-  <script src="dr2-monopad-art.js?v=20261123-1"></script>
-  <script src="admin-preview-safety.js?v=20261123-1"></script>
+  <script src="supabase-sync.js?v=20261123-2"></script>
+  <script src="activity-history.js?v=20261123-2"></script>
+  <script src="dr2-monopad-art.js?v=20261123-2"></script>
+  <script src="admin-preview-safety.js?v=20261123-2"></script>
   <script src="voice-clips-v4.js"></script>
-  <script src="monopad-data.js?v=20261123-1"></script>
-<script src="gift-guide-data.js?v=20261123-1"></script>
-  <script src="endgame-data.js?v=20261123-1"></script>
-  <script src="unconfirmed-student.js?v=20261123-1"></script>
-  <script src="session-planner.js?v=20261123-1"></script>
-  <script src="session-planner-store.js?v=20261123-1"></script>
-  <script src="session-planner-ui.js?v=20261123-1"></script>
-  <script src="pet-minigame.js?v=20261123-1"></script>
-  <script src="pet-games.js?v=20261123-1"></script>
-  <script src="pet-ui.js?v=20261123-1"></script>
+  <script src="monopad-data.js?v=20261123-2"></script>
+<script src="gift-guide-data.js?v=20261123-2"></script>
+  <script src="endgame-data.js?v=20261123-2"></script>
+  <script src="unconfirmed-student.js?v=20261123-2"></script>
+  <script src="session-planner.js?v=20261123-2"></script>
+  <script src="session-planner-store.js?v=20261123-2"></script>
+  <script src="session-planner-ui.js?v=20261123-2"></script>
+  <script src="pet-minigame.js?v=20261123-2"></script>
+  <script src="pet-games.js?v=20261123-2"></script>
+  <script src="pet-ui.js?v=20261123-2"></script>
   <script>
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.23.1";
+  const APP_BUILD = "2026.11.23.2";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -3898,11 +3904,39 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     toast("Custom summary removed.");
   }
 
+  // Each player (or the host/viewer) opens the newest unlocked game. They are asked once after a new game unlocks, and their choice is remembered after that.
+  const GAME_PREF_KEY="danganronpa-game-preference-v1";
+  let gamePrefAppliedFor=null,gamePromptShownFor=null;
+  const gamePrefWho=()=>mode==="player"?(activeActorId||""):mode;
+  const newestGameId=()=>availableGameIds().at(-1)||"dr1";
+  function readGamePrefs(){try{return JSON.parse(localStorage.getItem(GAME_PREF_KEY))||{}}catch(_){return {}}}
+  function saveGamePref(patch){
+    const who=gamePrefWho();if(!who||isAdminPreview||isLocalPreview)return;
+    try{localStorage.setItem(GAME_PREF_KEY,JSON.stringify({...readGamePrefs(),[who]:{...readGamePrefs()[who],...patch}}))}catch(_){}
+  }
+  function gamePromptDue(){
+    const who=gamePrefWho();
+    return !!who&&!isAdminPreview&&!isLocalPreview&&availableGameIds().length>1&&readGamePrefs()[who]?.seen!==newestGameId();
+  }
+  function applyGamePreference(){
+    const who=gamePrefWho();
+    if(!initialBoardLoadComplete||!who||isAdminPreview||isLocalPreview||gamePrefAppliedFor===who)return;
+    const firstApply=gamePrefAppliedFor===null;
+    gamePrefAppliedFor=who;
+    const pref=readGamePrefs()[who]||{},newest=newestGameId(),upToDate=pref.seen===newest;
+    const tabGame=sessionStorage.getItem(SESSION_GAME_KEY);
+    const wanted=!upToDate?newest:firstApply&&isGameUnlocked(tabGame)?tabGame:isGameUnlocked(pref.game)?pref.game:newest;
+    if(wanted===activeGameId)return;
+    if(activeAudio){activeAudio.pause();resetActiveAudio()}
+    activeGameId=wanted;sessionStorage.setItem(SESSION_GAME_KEY,activeGameId);
+    expanded.clear();selectedPredictionKind=null;voiceShuffleBags.clear();
+  }
   function selectGame(gameId,{announce=true}={}){
     if(!isGameUnlocked(gameId)){toast(`${gameDefinition(gameId).title} is still locked.`);return false}
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
     activeGameId=gameId;
     if(!isAdminPreview)sessionStorage.setItem(SESSION_GAME_KEY,activeGameId);
+    saveGamePref({game:gameId,seen:newestGameId()});
     expanded.clear();selectedPredictionKind=null;voiceShuffleBags.clear();
     $("#gamePickerDialog").close();
     render();
@@ -3937,7 +3971,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   function showGamePicker({automatic=false}={}){
     renderGamePicker();
     if(automatic&&availableGameIds().length<2)return;
-    gamePickerShown=true;
+    // Closing the picker without choosing keeps the board that is open.
+    $("#gamePickerDialog").addEventListener("close",()=>saveGamePref({game:activeGameId,seen:newestGameId()}),{once:true});
     $("#gamePickerDialog").showModal();
   }
 
@@ -4030,6 +4065,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
     applyUiTheme();
     synchroniseActorDeathCounts();
+    applyGamePreference();
     renderGameChrome();
     renderEndgame();
     renderPatchNotesVisibility();
@@ -4083,8 +4119,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     renderStatistics();
     renderMonopad();
     renderAdminTools();
-    if(initialBoardLoadComplete&&!isLocalPreview&&availableGameIds().length>1&&!gamePickerShown){
-      setTimeout(()=>{if(!gamePickerShown&&!document.querySelector("dialog[open]"))showGamePicker({automatic:true})},40);
+    if(initialBoardLoadComplete&&!gamePickerShown&&gamePromptDue()&&gamePromptShownFor!==gamePrefWho()){
+      setTimeout(()=>{if(!document.querySelector("dialog[open]")){gamePromptShownFor=gamePrefWho();showGamePicker({automatic:true})}},40);
     }
   }
 
