@@ -50,7 +50,7 @@
   }
 
   function makeRemoteStore(sync){
-    let state=null;const listeners=new Set();
+    let state=null,stopChannel=null;const listeners=new Set();
     const emit=()=>listeners.forEach(fn=>fn());
     const normalize=value=>value&&value.stats?value:null;
     return {
@@ -67,10 +67,11 @@
         if(result?.state){state=result.state;emit();}
         return result;
       },
+      // One shared realtime channel: a second subscribe() on the same channel name throws.
       subscribe(fn){
         listeners.add(fn);
-        const stop=sync.subscribePet?.(row=>{state=normalize(row?.state)||state;emit();});
-        return ()=>{listeners.delete(fn);stop?.();};
+        if(!stopChannel)stopChannel=sync.subscribePet?.(row=>{state=normalize(row?.state)||state;emit();})||null;
+        return ()=>{listeners.delete(fn);if(!listeners.size&&stopChannel){stopChannel();stopChannel=null;}};
       }
     };
   }
