@@ -1074,12 +1074,12 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 }
 
 </style>
-<link rel="stylesheet" href="finale.css?v=20261123-4">
-<link rel="stylesheet" href="island-skin.css?v=20261123-4">
-<link rel="stylesheet" href="slayhem-and-layout.css?v=20261123-4">
-<link rel="stylesheet" href="session-planner.css?v=20261123-4">
-<link rel="stylesheet" href="pet-minigame.css?v=20261123-4">
-<link rel="stylesheet" href="release-countdown.css?v=20261123-4">
+<link rel="stylesheet" href="finale.css?v=20261124-1">
+<link rel="stylesheet" href="island-skin.css?v=20261124-1">
+<link rel="stylesheet" href="slayhem-and-layout.css?v=20261124-1">
+<link rel="stylesheet" href="session-planner.css?v=20261124-1">
+<link rel="stylesheet" href="pet-minigame.css?v=20261124-1">
+<link rel="stylesheet" href="release-countdown.css?v=20261124-1">
 </head>
 <body>
   <header class="topbar">
@@ -1544,7 +1544,13 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
       <p class="muted small">Major changes, fixes and availability notes. Newest first; open a release to read it. Story details stay spoiler-safe.</p>
       <div class="patch-notes">
         <details class="patch-release" open>
-          <summary><span class="patch-version">V1.5.26</span><span class="patch-release-title"><strong>Countdown on the front</strong><small>Current release · 23 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <summary><span class="patch-version">V1.5.27</span><span class="patch-release-title"><strong>Chapter 0 for 2x2</strong><small>Current release · 24 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
+          <div class="patch-release-body">
+            <section class="patch-note"><h4>Chapter 0: not started yet</h4><p>The host can now mark a 2x2 board as "Chapter 0 · Not started". Until Chapter 1 is marked, every talent shows as ??? and the front page quotes are two closing lines from the end of the first game.</p></section>
+          </div>
+        </details>
+        <details class="patch-release">
+          <summary><span class="patch-version">V1.5.26</span><span class="patch-release-title"><strong>Countdown on the front</strong><small>23 November 2026</small></span><span class="patch-chevron">⌄</span></summary>
           <div class="patch-release-body">
             <section class="patch-note"><h4>Countdown now shows up</h4><p>The Danganronpa 2×2 countdown was not appearing on the live site. It now sits as a banner at the very top of the front page and stays there until release day. The same fix keeps the pet graveyard updating live.</p></section>
           </div>
@@ -2220,27 +2226,27 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js" integrity="sha384-uteMfOloLDGt042uDz+xHGF3ym63/WQ6rFq7murQRG8Ih7QrXGEGNtWd8688sb4O" crossorigin="anonymous"></script>
   <script src="supabase-config.js"></script>
-  <script src="supabase-sync.js?v=20261123-4"></script>
-  <script src="activity-history.js?v=20261123-4"></script>
-  <script src="dr2-monopad-art.js?v=20261123-4"></script>
-  <script src="admin-preview-safety.js?v=20261123-4"></script>
+  <script src="supabase-sync.js?v=20261124-1"></script>
+  <script src="activity-history.js?v=20261124-1"></script>
+  <script src="dr2-monopad-art.js?v=20261124-1"></script>
+  <script src="admin-preview-safety.js?v=20261124-1"></script>
   <script src="voice-clips-v4.js"></script>
-  <script src="monopad-data.js?v=20261123-4"></script>
-<script src="gift-guide-data.js?v=20261123-4"></script>
-  <script src="endgame-data.js?v=20261123-4"></script>
-  <script src="unconfirmed-student.js?v=20261123-4"></script>
-  <script src="session-planner.js?v=20261123-4"></script>
-  <script src="session-planner-store.js?v=20261123-4"></script>
-  <script src="session-planner-ui.js?v=20261123-4"></script>
-  <script src="release-countdown.js?v=20261123-4"></script>
-<script src="pet-minigame.js?v=20261123-4"></script>
-  <script src="pet-games.js?v=20261123-4"></script>
-  <script src="pet-ui.js?v=20261123-4"></script>
+  <script src="monopad-data.js?v=20261124-1"></script>
+<script src="gift-guide-data.js?v=20261124-1"></script>
+  <script src="endgame-data.js?v=20261124-1"></script>
+  <script src="unconfirmed-student.js?v=20261124-1"></script>
+  <script src="session-planner.js?v=20261124-1"></script>
+  <script src="session-planner-store.js?v=20261124-1"></script>
+  <script src="session-planner-ui.js?v=20261124-1"></script>
+  <script src="release-countdown.js?v=20261124-1"></script>
+<script src="pet-minigame.js?v=20261124-1"></script>
+  <script src="pet-games.js?v=20261124-1"></script>
+  <script src="pet-ui.js?v=20261124-1"></script>
   <script>
 
 (async () => {
   // Release marker: change it together with build.json, 11037/index.html and the ?v= numbers.
-  const APP_BUILD = "2026.11.23.4";
+  const APP_BUILD = "2026.11.24.1";
   const STORAGE_KEY = "danganronpa-cast-board-v4";
   const SESSION_ACTOR_KEY = "danganronpa-cast-active-actor-v4";
   const SESSION_GAME_KEY = "danganronpa-cast-active-game-v1";
@@ -2690,8 +2696,21 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#sessionReadout").innerHTML=`<span class="case-status">${locked?"GUESSES CLOSED":"GUESSES OPEN"}</span>${settings.panic?"PANIC MODE":""}`;
   }
 
+  const canBeNotStarted=(gameId=activeGameId)=>gameId!=="dr1"&&gameDefinition(gameId).kind==="killing";
+  const gameNotStarted=(gameId=activeGameId)=>!!state.settings.games[gameId]?.notStarted;
+  const quoteSlot=()=>gameNotStarted()?"0":chapterKey();
+  // Until Chapter 1 is marked, the 2×2 board hides every talent.
+  const talentHidden=role=>role?.gameId==="dr2x2"&&gameNotStarted("dr2x2");
+  const shownTitle=(role,fallback)=>talentHidden(role)?"???":(role.title||fallback);
   const frontQuoteFields={heading:"frontQuoteHeading",first:"frontQuoteFirst",credit:"frontQuoteCredit",second:"frontQuoteSecond",source:"frontQuoteSource"};
   function defaultFrontQuotes(){
+    if(activeGameId==="dr2x2"&&gameNotStarted())return {
+      heading:"MAKOTO / END OF THE FIRST GAME",
+      first:"“You claim there’s no hope left in the world. But if despair is contagious like you say… then so is hope!”",
+      credit:"Makoto Naegi",
+      second:"“I’m going to keep moving forward, with hope in my heart. Since I have hope, I can show courage. Since I have hope… I can move ahead.”",
+      source:"Makoto Naegi / EPILOGUE"
+    };
     const clue=activeGameId==="dr1"&&chapterFourComplete(),garden=activeGameId==="dr1"&&currentSettings().voiceChapter>=5;
     // Kyoko's trial lines are shown from chapter 5 onward; the closing scene lines from chapter 6.
     const kyoko=activeGameId==="dr1"&&currentSettings().voiceChapter>=5;
@@ -2718,14 +2737,14 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     };
   }
   function frontQuotes(){
-    const defaults=defaultFrontQuotes(),saved=currentSettings().frontQuotes?.[chapterKey()];
+    const defaults=defaultFrontQuotes(),saved=currentSettings().frontQuotes?.[quoteSlot()];
     return Object.fromEntries(Object.entries(defaults).map(([key,value])=>[key,typeof saved?.[key]==="string"?saved[key]:value]));
   }
   let frontQuotesTarget=null;
   function openFrontQuotes(){
     if(mode!=="host")return;
-    frontQuotesTarget={game:activeGameId,chapter:chapterKey()};
-    $("#frontQuotesContext").textContent=`${gameDefinition(activeGameId).title||gameDefinition(activeGameId).name||activeGameId} · ${storyUnitLabel(activeGameId,currentSettings().voiceChapter)}`;
+    frontQuotesTarget={game:activeGameId,chapter:quoteSlot()};
+    $("#frontQuotesContext").textContent=`${gameDefinition(activeGameId).title||gameDefinition(activeGameId).name||activeGameId} · ${gameNotStarted()?"Not started":storyUnitLabel(activeGameId,currentSettings().voiceChapter)}`;
     const quotes=frontQuotes();
     Object.entries(frontQuoteFields).forEach(([key,id])=>$("#"+id).value=quotes[key]);
     $("#frontQuotesDialog").showModal();
@@ -2738,11 +2757,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   };
   $("#frontQuotesForm").onsubmit=event=>{
     event.preventDefault();if(mode!=="host")return;
-    if(frontQuotesTarget?.game!==activeGameId||frontQuotesTarget?.chapter!==chapterKey()){
+    if(frontQuotesTarget?.game!==activeGameId||frontQuotesTarget?.chapter!==quoteSlot()){
       toast("The active game or chapter changed. Reopen the quote editor.");return;
     }
     const settings=currentSettings();settings.frontQuotes??={};
-    settings.frontQuotes[chapterKey()]=Object.fromEntries(Object.entries(frontQuoteFields).map(([key,id])=>[key,$("#"+id).value.trim()]));
+    settings.frontQuotes[quoteSlot()]=Object.fromEntries(Object.entries(frontQuoteFields).map(([key,id])=>[key,$("#"+id).value.trim()]));
     saveState();$("#frontQuotesDialog").close();render();toast("Front-page quotes saved.");
   };
   function renderEndgame(){
@@ -2786,11 +2805,11 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   }
   $("#chapterCompleteToggle").onchange=event=>{
     if(mode!=="host")return;
-    currentSettings().completedUnits[chapterKey()]=event.target.checked;saveState();render();
+    currentSettings().notStarted=false;currentSettings().completedUnits[chapterKey()]=event.target.checked;saveState();render();
   };
   $("#predictionLockToggle").onchange=event=>{
     if(mode!=="host")return;
-    currentSettings().predictionLocks||={};currentSettings().predictionLocks[chapterKey()]=event.target.checked;
+    currentSettings().notStarted=false;currentSettings().predictionLocks||={};currentSettings().predictionLocks[chapterKey()]=event.target.checked;
     saveState();render();
   };
   $("#panicToggle").onchange=event=>setEndgameSetting("panic",event.target.checked);
@@ -2869,6 +2888,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     settings.completedUnits=completedUnits;
     if(!settings.predictionLocks||typeof settings.predictionLocks!=="object"||Array.isArray(settings.predictionLocks))settings.predictionLocks={};
     settings.panic=!!settings.panic;
+    if(typeof settings.notStarted!=="boolean")settings.notStarted=canBeNotStarted(gameId)&&settings.voiceChapter===1&&!settings.voiceInTrial&&!settings.gameActive&&![...Object.values(settings.completedUnits),...Object.values(settings.predictionLocks),...Object.values(settings.trialByChapter)].some(Boolean);
+    if(!canBeNotStarted(gameId))settings.notStarted=false;
     if(!Number.isFinite(Date.parse(settings.nextSessionAt)))settings.nextSessionAt="";
     const key=String(settings.voiceChapter);
     if(gameDefinition(gameId).kind==="anime"){
@@ -3453,6 +3474,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     });
   }
   function enterChapter(chapter){
+    currentSettings().notStarted=false;
     const settings=currentSettings();
     const next=chapterKey(chapter);
     const firstVisit=!Object.prototype.hasOwnProperty.call(settings.trialByChapter,next);
@@ -3687,6 +3709,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
   function biographyForRole(role){
     if(!role)return "No profile is available yet.";
     if(role.specialRole==="unconfirmed-student")return "Identified as the sixteenth student. Further details have not been confirmed.";
+    if(role.gameId==="dr2x2"&&state.settings.games.dr2x2?.notStarted)return "This file stays sealed until Chapter 1 begins.";
     if(role.gameId==="dr1"&&role.specialRole!=="real-junko"&&chapterFourComplete()&&window.CAST_ENDGAME_DATA.chapter4[role.name])return window.CAST_ENDGAME_DATA.chapter4[role.name];
     if(String(role.biography||"").trim())return String(role.biography).trim();
     const gameBios=monopadData.bios?.[["dr2x2","dr2slayhem"].includes(role.gameId)?"dr2":role.gameId]||{};
@@ -3762,7 +3785,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     wrap.innerHTML=art?`<img class="dossier-dialog-art" data-profile-art src="${esc(art)}" alt="Full character artwork of ${esc(role.name)}" referrerpolicy="no-referrer">`:`<div class="dossier-dialog-art dossier-dialog-placeholder">${esc(role.name.slice(0,1).toUpperCase())}</div>`;
     $("#dossierDialogArtCredit").innerHTML=profileArtCreditForRole(role);
     $("#dossierDialogName").textContent=role.name;
-    $("#dossierDialogTalent").innerHTML=secretVoiceBadgeMarkup(role)||esc(role.title||"Profile");
+    $("#dossierDialogTalent").innerHTML=secretVoiceBadgeMarkup(role)||esc(shownTitle(role,"Profile"));
     bindSecretVoice($("#dossierDialogTalent"),role);
     $("#dossierDialogBio").textContent=biographyForRole(role);
     const measurement=role.gameId==="dr1"&&role.specialRole!=="unconfirmed-student"?(role.specialRole==="real-junko"?(role.revealed?90:null):window.CAST_ENDGAME_DATA.chest[role.name]):null;
@@ -3781,7 +3804,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     roles.forEach(role=>{
       const art=profileImageForRole(role);
       const card=document.createElement("article");card.className="dossier-card";
-      card.innerHTML=`${art?`<img data-profile-art src="${esc(art)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">`:`<div class="dossier-placeholder">${esc(role.name.slice(0,1).toUpperCase())}</div>`}<div class="dossier-card-copy"><h3>${esc(role.name)}</h3><p>${secretVoiceBadgeMarkup(role)||esc(role.title||"Profile")}</p>${profileArtCreditForRole(role)}<button type="button" class="ghost" data-read-description>Read description</button></div>`;
+      card.innerHTML=`${art?`<img data-profile-art src="${esc(art)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">`:`<div class="dossier-placeholder">${esc(role.name.slice(0,1).toUpperCase())}</div>`}<div class="dossier-card-copy"><h3>${esc(role.name)}</h3><p>${secretVoiceBadgeMarkup(role)||esc(shownTitle(role,"Profile"))}</p>${profileArtCreditForRole(role)}<button type="button" class="ghost" data-read-description>Read description</button></div>`;
       card.querySelector("[data-read-description]").onclick=()=>openDossier(role);
       bindSecretVoice(card,role);
       attachImageFallback(card,role);
@@ -4011,10 +4034,10 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#junkoVaultControls").classList.toggle("hidden",activeGameId!=="dr1");
     const settings=currentSettings();
     const phaseProgress=settings.completedUnits?.[settings.voiceChapter]?1:game.kind==="anime" ? .55 : settings.voiceInTrial ? .72 : .28;
-    const progress=Math.round(((settings.voiceChapter-1+phaseProgress)/game.maxChapter)*100);
+    const progress=settings.notStarted?0:Math.round(((settings.voiceChapter-1+phaseProgress)/game.maxChapter)*100);
     $("#themeProgressLabel").textContent=game.kind==="anime"
       ? `${game.unitShort}. ${String(settings.voiceChapter).padStart(2,"0")} · WATCHING`
-      : `${game.unitShort}. ${String(settings.voiceChapter).padStart(2,"0")} · ${settings.completedUnits?.[settings.voiceChapter]?"COMPLETE":settings.voiceInTrial?"CLASS TRIAL":"PRE-TRIAL"}`;
+      : `${game.unitShort}. ${settings.notStarted?"00":String(settings.voiceChapter).padStart(2,"0")} · ${settings.notStarted?"NOT STARTED":settings.completedUnits?.[settings.voiceChapter]?"COMPLETE":settings.voiceInTrial?"CLASS TRIAL":"PRE-TRIAL"}`;
     $("#themeProgressFill").style.width=`${Math.max(0,Math.min(100,progress))}%`;
   }
 
@@ -4103,8 +4126,8 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
     $("#gameActiveToggle").checked=currentSettings().gameActive;
     $("#storyUnitLabel").textContent=`Current ${game.unit.toLowerCase()}`;
     $("#voiceChapterSelect").setAttribute("aria-label",`Current story ${game.unit.toLowerCase()}`);
-    $("#voiceChapterSelect").innerHTML=Array.from({length:game.maxChapter},(_,index)=>`<option value="${index+1}">${esc(storyUnitLabel(activeGameId,index+1))}</option>`).join("");
-    $("#voiceChapterSelect").value=String(currentSettings().voiceChapter);
+    $("#voiceChapterSelect").innerHTML=(canBeNotStarted()?`<option value="0">${esc(game.unit)} 0 · Not started</option>`:"")+Array.from({length:game.maxChapter},(_,index)=>`<option value="${index+1}">${esc(storyUnitLabel(activeGameId,index+1))}</option>`).join("");
+    $("#voiceChapterSelect").value=String(currentSettings().notStarted?0:currentSettings().voiceChapter);
     $("#voiceTrialToggle").checked=currentSettings().voiceInTrial;
     $("#voiceTrialToggleWrap").classList.toggle("hidden",game.kind!=="killing");
     $("#predictionLockToggle").closest("label").classList.toggle("hidden",game.kind==="custom");
@@ -4872,7 +4895,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         <div class="role-copy">
           <div class="role-name">${esc(r.name)}</div>
           ${r.predictionOnly?'<small class="narrator-note">Prediction entry · alive for now</small>':''}
-          <div class="role-title">${esc(r.title||"No title")}</div>
+          <div class="role-title">${esc(shownTitle(r,"No title"))}</div>
           ${r.name==="Narrator"?'<small class="narrator-note">Extra role · does not use a character slot</small>':''}
         </div>
         <div class="role-badges">
@@ -5201,7 +5224,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
           <div class="memorial-name">${esc(r.name)}</div>
           ${voiceButtonMarkup(r)}
         </div>
-        <div class="memorial-title">${esc(r.title||"No title")}</div>
+        <div class="memorial-title">${esc(shownTitle(r,"No title"))}</div>
         <div class="last-actor">Last voiced by: <strong>${esc(r.lastActorName||"None")}</strong></div>
         <div class="chapter-result-line">
           ${isVictim?`<span class="result-badge victim">${game.unitShort}${deathChapter} ${anime?"Next death":"Victim"}</span>`:""}
@@ -5495,7 +5518,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
         const row=document.createElement("label");row.className="choice-row";
         row.innerHTML=`
           <input type="radio" name="locked-choice" value="${r.id}" ${i===0?"checked":""}>
-          <div><strong>${esc(r.name)}</strong><span>${esc(r.title||"No title")}</span></div>
+          <div><strong>${esc(r.name)}</strong><span>${esc(shownTitle(r,"No title"))}</span></div>
         `;
         opts.appendChild(row);
       });
@@ -6061,6 +6084,10 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   $("#voiceChapterSelect").onchange=e=>{
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
+    if(e.target.value==="0"&&canBeNotStarted()){
+      currentSettings().notStarted=true;selectedPredictionKind=null;voiceShuffleBags.clear();saveState();render();
+      toast("Marked as not started. Talents stay hidden until you pick Chapter 1.");return;
+    }
     const firstVisit=enterChapter(Number(e.target.value)||1);
     selectedPredictionKind=null;
     voiceShuffleBags.clear();saveState();render();
@@ -6071,7 +6098,7 @@ html[data-ui-theme="reworked"] .modal-card{border-radius:26px 4px 26px 4px;box-s
 
   $("#voiceTrialToggle").onchange=e=>{
     if(activeAudio){activeAudio.pause();resetActiveAudio()}
-    currentSettings().voiceInTrial=e.target.checked;
+    currentSettings().notStarted=false;currentSettings().voiceInTrial=e.target.checked;
     currentSettings().trialByChapter[chapterKey()]=currentSettings().voiceInTrial;
     selectedPredictionKind=null;
     voiceShuffleBags.clear();saveState();render();
